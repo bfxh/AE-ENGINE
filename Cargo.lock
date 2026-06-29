@@ -4470,6 +4470,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "wasteland_cpp_kernel"
+version = "0.1.0"
+dependencies = [
+ "cc",
+ "glam 0.29.3",
+]
+
+[[package]]
 name = "wasteland_crafting"
 version = "0.1.0"
 dependencies = [

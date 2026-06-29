@@ -8,6 +8,7 @@ members = [
     "wasteland_engine",
     "wasteland_game",
     "wasteland_field",
+    "wasteland_cpp_kernel",
     "wasteland_particle",
     "wasteland_emergence",
     "wasteland_timeslice",

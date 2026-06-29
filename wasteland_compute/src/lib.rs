@@ -8,6 +8,7 @@ pub mod leapfrog_flow_maps;
 pub mod avbd;
 pub mod projective_dynamics;
 pub mod clebsch_fluid;
+pub mod sdf;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

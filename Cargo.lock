@@ -4464,9 +4464,12 @@ dependencies = [
 name = "wasteland_compute"
 version = "0.1.0"
 dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
  "log",
  "rayon",
  "serde",
+ "wgpu",
 ]
 
 [[package]]

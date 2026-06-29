@@ -9,3 +9,14 @@ authors.workspace = true
 rayon.workspace = true
 serde.workspace = true
 log.workspace = true
+glam.workspace = true
+bytemuck.workspace = true
+
+[dependencies.wgpu]
+workspace = true
+optional = true
+
+[features]
+default = []
+# GPU compute shader MPM (需要 wgpu 设备)
+gpu = ["wgpu"]

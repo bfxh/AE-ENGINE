@@ -6,6 +6,7 @@ pub mod skeleton;
 pub mod skinning;
 pub mod surface_contact;
 pub mod surface_stats;
+pub mod cosserat_rod;
 
 pub use behavior::*;
 pub use deformation::*;
@@ -15,3 +16,4 @@ pub use skeleton::*;
 pub use skinning::*;
 pub use surface_contact::*;
 pub use surface_stats::*;
+pub use cosserat_rod::*;

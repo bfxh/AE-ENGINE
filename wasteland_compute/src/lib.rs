@@ -13,6 +13,7 @@ pub mod ogc;
 pub mod noise;
 pub mod fms;
 pub mod shape_matching;
+pub mod wavelet_turbulence;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

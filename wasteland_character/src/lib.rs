@@ -3,6 +3,7 @@ pub mod deformation;
 pub mod force_feedback;
 pub mod muscle;
 pub mod skeleton;
+pub mod skinning;
 pub mod surface_contact;
 pub mod surface_stats;
 
@@ -11,5 +12,6 @@ pub use deformation::*;
 pub use force_feedback::*;
 pub use muscle::*;
 pub use skeleton::*;
+pub use skinning::*;
 pub use surface_contact::*;
 pub use surface_stats::*;

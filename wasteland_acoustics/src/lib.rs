@@ -4,6 +4,7 @@ pub mod reverb;
 pub mod sources;
 pub mod synthesis;
 pub mod wave;
+pub mod wave_gpu;
 
 pub mod prelude {
     pub use crate::hrtf::*;
@@ -12,4 +13,5 @@ pub mod prelude {
     pub use crate::sources::*;
     pub use crate::synthesis::*;
     pub use crate::wave::*;
+    pub use crate::wave_gpu::*;
 }

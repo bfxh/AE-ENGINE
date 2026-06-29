@@ -4278,11 +4278,13 @@ dependencies = [
 name = "wasteland_acoustics"
 version = "0.1.0"
 dependencies = [
+ "bytemuck",
  "glam 0.29.3",
  "hashbrown 0.15.5",
  "log",
  "serde",
  "uuid",
+ "wgpu",
 ]
 
 [[package]]

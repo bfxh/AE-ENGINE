@@ -1,4 +1,4 @@
-[package]
+﻿[package]
 name = "wasteland_acoustics"
 version.workspace = true
 edition.workspace = true
@@ -11,3 +11,13 @@ log.workspace = true
 glam.workspace = true
 hashbrown.workspace = true
 uuid.workspace = true
+bytemuck.workspace = true
+
+[dependencies.wgpu]
+workspace = true
+optional = true
+
+[features]
+default = []
+# GPU FDTD (WaveBlender) — 需要 wgpu 设备
+gpu = ["wgpu"]

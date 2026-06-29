@@ -11,6 +11,7 @@ pub mod clebsch_fluid;
 pub mod sdf;
 pub mod ogc;
 pub mod noise;
+pub mod fms;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

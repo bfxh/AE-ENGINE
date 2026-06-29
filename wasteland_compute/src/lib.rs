@@ -15,6 +15,7 @@ pub mod fms;
 pub mod shape_matching;
 pub mod wavelet_turbulence;
 pub mod strain_based_dynamics;
+pub mod ck_mpm;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

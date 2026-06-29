@@ -1,0 +1,93 @@
+# Wasteland Project Configuration
+# This file contains all configuration options for the Wasteland project
+
+# ============================================
+# GAME SETTINGS
+# ============================================
+[game]
+title = "Wasteland - 废土创世"
+version = "0.1.0"
+description = "A procedural post-apocalyptic survival simulation"
+
+# ============================================
+# ENGINE SETTINGS
+# ============================================
+[engine]
+godot_version = "4.6"
+rendering_driver = "vulkan"
+physics_engine = "GodotPhysics3D"
+max_fps = 60
+vsync = true
+
+# ============================================
+# WORLD GENERATION
+# ============================================
+[world]
+seed = 42
+world_size = 200.0
+max_trees = 200
+max_rocks = 100
+max_vegetation = 500
+water_bodies = 3
+max_animals = 30
+
+# ============================================
+# NPC SETTINGS
+# ============================================
+[npc]
+max_count = 50
+species = ["human", "mutant", "ghoul", "robot"]
+factions = ["wanderers", "raiders", "traders", "settlers"]
+
+# ============================================
+# PERFORMANCE SETTINGS
+# ============================================
+[performance]
+lod_distance = 200.0
+shadow_distance = 150.0
+particle_limit = 10000
+draw_distance = 500.0
+
+# ============================================
+# CONTROLS
+# ============================================
+[controls]
+move_forward = "W"
+move_back = "S"
+move_left = "A"
+move_right = "D"
+jump = "Space"
+attack = "Mouse1"
+interact = "E"
+inventory = "Tab"
+pause = "P"
+
+# ============================================
+# DEBUG SETTINGS
+# ============================================
+[debug]
+show_fps = true
+show_stats = false
+enable_profiler = false
+console_visible = false
+
+# ============================================
+# DEVELOPMENT SETTINGS
+# ============================================
+[development]
+hot_reload = true
+auto_save = true
+save_interval = 60
+log_level = "info"
+
+# ============================================
+# PATH SETTINGS
+# ============================================
+[paths]
+godot_project = "godot_project"
+gdextension_bin = "godot_project/bin"
+scripts = "godot_project/scripts"
+scenes = "godot_project/scenes"
+assets = "godot_project/assets"
+reports = "reports"
+scripts_dir = "scripts"

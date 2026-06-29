@@ -1,0 +1,796 @@
+//! V8 沙盒：Meso 层集总参数物理模型
+//!
+//! 房间/建筑级集总参数模型，用于远处场景的低精度物理模拟。
+//! 将一个房间/建筑聚合为单个节点，用集总参数法快速计算热力学和气体组分演化。
+//!
+//! 设计要点：
+//! - 一个 MesoNode = 一个房间/建筑（聚合 Micro 层 16³ cell 网格）
+//! - 集总热容法：空气热容 + 墙体热容，统一温度节点
+//! - 燃烧模型：木材燃烧消耗 O2，产生 CO2 和热量（简化化学计量）
+//! - 通风模型：墙体稳态导热 + 开口自然通风
+//! - 气体组份：O2/CO2/H2O_vapor/toxic_gas 集总追踪
+//! - 压力更新：理想气体定律 P = nRT/V
+//! - 节点间交换：通过开口/连接进行热交换和压力驱动气体流动
+//! - 时间步默认 1.0s（比 Micro 层 60Hz 慢 60 倍）
+
+use serde::{Deserialize, Serialize};
+
+use crate::materials;
+
+// ─── MesoExchange：节点间交换量 ─────────────────────────────
+/// 节点间交换量（一个 step 内对外传递的累积量）
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct MesoExchange {
+    /// J 向外传递的热量
+    pub heat_out: f32,
+    /// kg 向外传递的 O2
+    pub o2_out: f32,
+    /// kg 向外传递的 CO2
+    pub co2_out: f32,
+}
+
+// ─── MesoNode：房间/建筑集总节点 ────────────────────────────
+/// Meso 层节点：一个房间/建筑聚合为单个集总参数节点
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct MesoNode {
+    /// 节点 ID
+    pub id: u32,
+    /// 中心位置 m
+    pub position: [f32; 3],
+    /// 尺寸 m (长宽高)
+    pub size: [f32; 3],
+    /// m³ 内部体积
+    pub volume: f32,
+    /// K 平均温度
+    pub temperature: f32,
+    /// Pa 平均压力
+    pub pressure: f32,
+    /// kg 空气总质量
+    pub air_mass: f32,
+    /// kg O2 质量
+    pub o2_mass: f32,
+    /// kg CO2 质量
+    pub co2_mass: f32,
+    /// kg 水蒸气
+    pub h2o_vapor: f32,
+    /// kg 有毒气体
+    pub toxic_gas: f32,
+    /// 墙体材料
+    pub wall_material: materials::MaterialKind,
+    /// m 墙厚
+    pub wall_thickness: f32,
+    /// m² 开口面积（门窗）
+    pub openings_area: f32,
+    /// 是否有火源
+    pub has_fire: bool,
+    /// W 火源功率
+    pub fire_power: f32,
+    /// kg 剩余可燃物
+    pub fuel_mass: f32,
+    /// 内部 NPC 数
+    pub npc_count: u32,
+    /// kg 内部有机物
+    pub biomass_mass: f32,
+    /// 连接的相邻 MesoNode ID
+    pub connections: Vec<u32>,
+}
+
+impl MesoNode {
+    /// 推进一步集总参数物理
+    ///
+    /// 物理过程：
+    /// 1. 火源直接加热（fire_power · dt）
+    /// 2. 木材燃烧：消耗 O2 + 燃料，产生 CO2 + 热量（简化化学计量）
+    /// 3. 集总热容法温度更新：空气热容 + 墙体热容
+    /// 4. NPC 呼吸消耗 O2 产生 CO2
+    /// 5. 生物腐烂产生有毒气体和 CO2
+    /// 6. 理想气体定律更新压力
+    ///
+    /// 返回：向外传递的热量（节点间交换由 MesoLayer::step 计算）
+    pub fn step(&mut self, dt: f32, ambient_temp: f32) -> MesoExchange {
+        // 1. 火源加热
+        let fire_heat = if self.has_fire { self.fire_power * dt } else { 0.0 };
+
+        // 2. 燃烧消耗 O2（简化：木材燃烧 1kg 消耗 1.1kg O2，产 1.6e7 J/kg）
+        let mut burn_heat = 0.0f32;
+        if self.has_fire && self.fuel_mass > 0.0 && self.o2_mass > 0.0 {
+            let burn_rate = 0.01 * dt; // kg/s 燃烧速率
+            let fuel_burned = burn_rate.min(self.fuel_mass);
+            let o2_needed = fuel_burned * 1.1;
+            let o2_available = o2_needed.min(self.o2_mass);
+            let actual_burn = o2_available / 1.1;
+
+            self.fuel_mass = (self.fuel_mass - actual_burn).max(0.0);
+            self.o2_mass -= o2_available;
+            self.co2_mass += actual_burn * 1.6; // CO2 产生系数
+            burn_heat = actual_burn * 1.6e7;
+        }
+
+        // 3. 温度变化（集总热容法）
+        // 总热容 = 空气热容 + 墙体热容
+        let air_cp = 1005.0; // J/(kg·K)
+        let air_heat_capacity = self.air_mass * air_cp;
+        let wall_density = self.wall_material.properties().density;
+        let wall_surface_area = self.size[0] * self.size[1] * 2.0
+            + self.size[0] * self.size[2] * 2.0
+            + self.size[1] * self.size[2] * 2.0;
+        let wall_volume = wall_surface_area * self.wall_thickness;
+        let wall_heat_capacity =
+            wall_density * wall_volume * self.wall_material.properties().specific_heat;
+        let total_heat_capacity = (air_heat_capacity + wall_heat_capacity).max(1.0);
+
+        let total_heat_in = fire_heat + burn_heat;
+
+        // 墙体导热损失（简化的稳态导热）
+        let k_wall = self.wall_material.properties().thermal_conductivity;
+        let wall_heat_loss = if self.wall_thickness > 0.0 {
+            k_wall * wall_surface_area * (self.temperature - ambient_temp) / self.wall_thickness * dt
+        } else {
+            0.0
+        };
+
+        // 开口通风损失（自然通风，简化系数）
+        let vent_heat_loss = 0.5 * self.openings_area * (self.temperature - ambient_temp) * dt * 1000.0;
+
+        let d_t = (total_heat_in - wall_heat_loss - vent_heat_loss) / total_heat_capacity;
+        self.temperature += d_t;
+
+        // 4. NPC 呼吸（简化：每人每秒消耗 0.0008 kg O2，产 0.001 kg CO2）
+        let npc_o2 = self.npc_count as f32 * 0.0008 * dt;
+        let npc_co2 = self.npc_count as f32 * 0.001 * dt;
+        self.o2_mass = (self.o2_mass - npc_o2).max(0.0);
+        self.co2_mass += npc_co2;
+
+        // 5. 生物腐烂（简化：1kg 有机物每秒产 1e-6 kg CH4 + 5e-7 kg H2S）
+        if self.biomass_mass > 0.0 {
+            let decay_rate = 1e-6 * dt;
+            let decayed = self.biomass_mass * decay_rate;
+            self.toxic_gas += decayed * 1.5; // CH4 + H2S
+            self.co2_mass += decayed * 2.0;
+            self.biomass_mass = (self.biomass_mass - decayed).max(0.0);
+        }
+
+        // 6. 压力更新（理想气体）
+        let n_total =
+            (self.air_mass / 0.029 + self.h2o_vapor / 0.018 + self.co2_mass / 0.044).max(1e-6);
+        self.pressure = n_total * 8.314 * self.temperature / self.volume.max(0.001);
+
+        // 返回要传递给相邻节点的交换量
+        MesoExchange {
+            heat_out: wall_heat_loss + vent_heat_loss,
+            o2_out: 0.0, // 由 MesoLayer::step 计算节点间交换
+            co2_out: 0.0,
+        }
+    }
+}
+
+// ─── MesoLayer：Meso 层管理器 ───────────────────────────────
+/// Meso 层管理器：管理所有 Meso 节点并推进物理
+#[derive(Debug, Clone, Default, Serialize, Deserialize)]
+pub struct MesoLayer {
+    /// 所有 Meso 节点
+    pub nodes: Vec<MesoNode>,
+    /// 当前模拟时间 s
+    pub time: f32,
+    /// Meso 层时间步 s（默认 1.0s，比 Micro 层慢）
+    pub dt: f32,
+}
+
+impl MesoLayer {
+    /// 创建新的 Meso 层
+    pub fn new(dt: f32) -> Self {
+        Self {
+            nodes: Vec::new(),
+            time: 0.0,
+            dt,
+        }
+    }
+
+    /// 推进所有 Meso 节点
+    ///
+    /// 流程：
+    /// 1. 每个节点独立推进集总参数物理
+    /// 2. 计算节点间通过开口/连接的交换（热交换 + 压力驱动气体流动）
+    /// 3. 应用交换量
+    pub fn step(&mut self, ambient_temp: f32) {
+        let dt = self.dt;
+
+        // 1. 每个节点独立推进
+        for node in &mut self.nodes {
+            node.step(dt, ambient_temp);
+        }
+
+        // 2. 节点间交换（通过开口/连接）
+        let mut exchanges: Vec<MesoExchange> = vec![MesoExchange::default(); self.nodes.len()];
+
+        for i in 0..self.nodes.len() {
+            let conns = self.nodes[i].connections.clone();
+            for &conn_id in &conns {
+                if let Some(j) = self.nodes.iter().position(|n| n.id == conn_id) {
+                    let temp_diff = self.nodes[i].temperature - self.nodes[j].temperature;
+                    let pressure_diff = self.nodes[i].pressure - self.nodes[j].pressure;
+
+                    // 热交换（通过开口）
+                    let opening_area = self.nodes[i]
+                        .openings_area
+                        .min(self.nodes[j].openings_area);
+                    let heat_exchange = 5.0 * opening_area * temp_diff * dt; // W/m²K
+
+                    // 气体交换（压力驱动）
+                    let gas_flow = pressure_diff * opening_area * dt * 1e-5; // 简化系数
+                    let air_mass_i = self.nodes[i].air_mass.max(1e-6);
+                    let o2_exchange = gas_flow * self.nodes[i].o2_mass / air_mass_i;
+                    let co2_exchange = gas_flow * self.nodes[i].co2_mass / air_mass_i;
+
+                    exchanges[i].heat_out += heat_exchange;
+                    exchanges[i].o2_out += o2_exchange;
+                    exchanges[i].co2_out += co2_exchange;
+                }
+            }
+        }
+
+        // 3. 应用交换
+        for i in 0..self.nodes.len() {
+            let cap = (self.nodes[i].air_mass * 1005.0).max(1.0);
+            self.nodes[i].temperature -= exchanges[i].heat_out / cap;
+            self.nodes[i].o2_mass = (self.nodes[i].o2_mass - exchanges[i].o2_out).max(0.0);
+            self.nodes[i].co2_mass = (self.nodes[i].co2_mass - exchanges[i].co2_out).max(0.0);
+        }
+
+        self.time += dt;
+    }
+
+    /// 从 Micro 层 cell 数据聚合创建 Meso 节点
+    ///
+    /// 将一个矩形区域的 cells 聚合为一个 MesoNode：
+    /// - 质量加权平均温度
+    /// - 累加空气/O2/CO2/H2O/有毒气体质量
+    /// - 体积 = nx × ny × nz × cell_size³
+    pub fn aggregate_from_cells(
+        &mut self,
+        cells: &[crate::Cell],
+        gas_chemistry: &[crate::chemistry::ChemicalMixture],
+        cell_size: f32,
+        origin: [f32; 3],
+        size_cells: [usize; 3],
+        node_id: u32,
+        material: materials::MaterialKind,
+    ) {
+        let (nx, ny, nz) = (size_cells[0], size_cells[1], size_cells[2]);
+        let volume = (nx as f32 * cell_size) * (ny as f32 * cell_size) * (nz as f32 * cell_size);
+
+        let mut total_temp = 0.0f32;
+        let mut total_mass = 0.0f32;
+        let mut total_o2 = 0.0f32;
+        let mut total_co2 = 0.0f32;
+        let mut total_h2o = 0.0f32;
+        let mut total_toxic = 0.0f32;
+
+        for k in 0..nz {
+            for j in 0..ny {
+                for i in 0..nx {
+                    let idx = k * nx * ny + j * nx + i;
+                    if idx >= cells.len() {
+                        continue;
+                    }
+                    let c = &cells[idx];
+                    total_temp += c.temperature * c.mass;
+                    total_mass += c.mass;
+                    if c.kind == crate::CellKind::Gas && idx < gas_chemistry.len() {
+                        total_o2 += gas_chemistry[idx].o2;
+                        total_co2 += gas_chemistry[idx].co2;
+                        total_h2o += gas_chemistry[idx].h2o_vapor;
+                        total_toxic += gas_chemistry[idx].ch4
+                            + gas_chemistry[idx].h2s
+                            + gas_chemistry[idx].co;
+                    }
+                }
+            }
+        }
+
+        let avg_temp = if total_mass > 1e-6 {
+            total_temp / total_mass
+        } else {
+            300.0
+        };
+        let center = [
+            origin[0] + nx as f32 * cell_size / 2.0,
+            origin[1] + ny as f32 * cell_size / 2.0,
+            origin[2] + nz as f32 * cell_size / 2.0,
+        ];
+
+        let node = MesoNode {
+            id: node_id,
+            position: center,
+            size: [
+                nx as f32 * cell_size,
+                ny as f32 * cell_size,
+                nz as f32 * cell_size,
+            ],
+            volume,
+            temperature: avg_temp,
+            pressure: 101_325.0,
+            air_mass: total_mass,
+            o2_mass: total_o2,
+            co2_mass: total_co2,
+            h2o_vapor: total_h2o,
+            toxic_gas: total_toxic,
+            wall_material: material,
+            wall_thickness: 0.2,
+            openings_area: 1.0, // 默认 1m² 开口
+            has_fire: false,
+            fire_power: 0.0,
+            fuel_mass: 0.0,
+            npc_count: 0,
+            biomass_mass: 0.0,
+            connections: Vec::new(),
+        };
+
+        self.add_node(node);
+    }
+
+    /// 添加节点
+    pub fn add_node(&mut self, node: MesoNode) {
+        self.nodes.push(node);
+    }
+
+    /// 连接两个节点（双向，去重）
+    pub fn connect(&mut self, id_a: u32, id_b: u32) {
+        let pos_a = self.nodes.iter().position(|n| n.id == id_a);
+        let pos_b = self.nodes.iter().position(|n| n.id == id_b);
+        if let (Some(i), Some(j)) = (pos_a, pos_b) {
+            if !self.nodes[i].connections.contains(&id_b) {
+                self.nodes[i].connections.push(id_b);
+            }
+            if !self.nodes[j].connections.contains(&id_a) {
+                self.nodes[j].connections.push(id_a);
+            }
+        }
+    }
+}
+
+// ─── 单元测试 ──────────────────────────────────────────────
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::chemistry::ChemicalMixture;
+    use crate::{Cell, CellKind};
+
+    /// 构造测试用默认 MesoNode（4m × 4m × 3m 砖墙房间，常温常压空气）
+    fn make_test_node(id: u32) -> MesoNode {
+        let size = [4.0, 4.0, 3.0];
+        let volume = size[0] * size[1] * size[2];
+        // 标准空气：1.225 kg/m³，O2 占 23.2%（质量分数）
+        let air_mass = 1.225 * volume;
+        let o2_mass = air_mass * 0.232;
+        MesoNode {
+            id,
+            position: [2.0, 2.0, 1.5],
+            size,
+            volume,
+            temperature: 300.0,
+            pressure: 101_325.0,
+            air_mass,
+            o2_mass,
+            co2_mass: 0.0,
+            h2o_vapor: 0.0,
+            toxic_gas: 0.0,
+            wall_material: materials::MaterialKind::Brick,
+            wall_thickness: 0.2,
+            openings_area: 1.0,
+            has_fire: false,
+            fire_power: 0.0,
+            fuel_mass: 0.0,
+            npc_count: 0,
+            biomass_mass: 0.0,
+            connections: Vec::new(),
+        }
+    }
+
+    #[test]
+    fn test_meso_node_creation() {
+        let node = make_test_node(1);
+        assert_eq!(node.id, 1);
+        assert_eq!(node.size, [4.0, 4.0, 3.0]);
+        assert!((node.volume - 48.0).abs() < 1e-3, "体积应为 48 m³");
+        assert!((node.temperature - 300.0).abs() < 1e-3);
+        assert!(node.air_mass > 0.0, "空气质量应 > 0");
+        assert!(node.o2_mass > 0.0, "O2 质量应 > 0");
+        assert!(node.connections.is_empty());
+    }
+
+    #[test]
+    fn test_fire_heating_increases_temperature() {
+        let mut node = make_test_node(1);
+        node.has_fire = true;
+        node.fire_power = 100_000.0; // 100 kW 火源
+        let temp_before = node.temperature;
+        node.step(1.0, 300.0);
+        assert!(
+            node.temperature > temp_before,
+            "有火源时温度应上升: before={} after={}",
+            temp_before,
+            node.temperature
+        );
+    }
+
+    #[test]
+    fn test_combustion_consumes_o2_produces_co2() {
+        let mut node = make_test_node(1);
+        node.has_fire = true;
+        node.fire_power = 0.0; // 关闭直接加热，仅靠燃烧
+        node.fuel_mass = 10.0;
+        let o2_before = node.o2_mass;
+        let co2_before = node.co2_mass;
+        let fuel_before = node.fuel_mass;
+
+        node.step(1.0, 300.0);
+
+        assert!(
+            node.o2_mass < o2_before,
+            "O2 应被消耗: {} -> {}",
+            o2_before,
+            node.o2_mass
+        );
+        assert!(
+            node.co2_mass > co2_before,
+            "CO2 应增加: {} -> {}",
+            co2_before,
+            node.co2_mass
+        );
+        assert!(
+            node.fuel_mass < fuel_before,
+            "燃料应减少: {} -> {}",
+            fuel_before,
+            node.fuel_mass
+        );
+    }
+
+    #[test]
+    fn test_wall_conduction_loss_when_above_ambient() {
+        let mut node = make_test_node(1);
+        node.temperature = 400.0; // 高于环境
+        node.openings_area = 0.0; // 关闭通风，仅测试墙体导热
+        let temp_before = node.temperature;
+
+        // 多步推进使损失可见
+        for _ in 0..10 {
+            node.step(1.0, 300.0);
+        }
+
+        assert!(
+            node.temperature < temp_before,
+            "温度高于环境时墙体导热应使温度下降: before={} after={}",
+            temp_before,
+            node.temperature
+        );
+    }
+
+    #[test]
+    fn test_npc_breathing_consumes_o2() {
+        let mut node = make_test_node(1);
+        node.npc_count = 5;
+        node.openings_area = 0.0;
+        let o2_before = node.o2_mass;
+        let co2_before = node.co2_mass;
+
+        // 多步推进以使呼吸效应可见
+        for _ in 0..100 {
+            node.step(1.0, 300.0);
+        }
+
+        assert!(
+            node.o2_mass < o2_before,
+            "NPC 呼吸应消耗 O2: {} -> {}",
+            o2_before,
+            node.o2_mass
+        );
+        assert!(
+            node.co2_mass > co2_before,
+            "NPC 呼吸应产生 CO2: {} -> {}",
+            co2_before,
+            node.co2_mass
+        );
+    }
+
+    #[test]
+    fn test_biomass_decay_produces_gas() {
+        let mut node = make_test_node(1);
+        node.biomass_mass = 100.0;
+        node.openings_area = 0.0;
+        let toxic_before = node.toxic_gas;
+        let co2_before = node.co2_mass;
+        let biomass_before = node.biomass_mass;
+
+        // 多步推进使腐烂效应可见
+        for _ in 0..1000 {
+            node.step(1.0, 300.0);
+        }
+
+        assert!(
+            node.toxic_gas > toxic_before,
+            "腐烂应产生有毒气体: {} -> {}",
+            toxic_before,
+            node.toxic_gas
+        );
+        assert!(
+            node.co2_mass > co2_before,
+            "腐烂应产生 CO2: {} -> {}",
+            co2_before,
+            node.co2_mass
+        );
+        assert!(
+            node.biomass_mass < biomass_before,
+            "有机物应减少: {} -> {}",
+            biomass_before,
+            node.biomass_mass
+        );
+    }
+
+    #[test]
+    fn test_pressure_changes_with_temperature() {
+        let mut node = make_test_node(1);
+        node.has_fire = true;
+        node.fire_power = 1_000_000.0; // 1MW 火源
+        node.openings_area = 0.0; // 关闭通风
+        let pressure_before = node.pressure;
+
+        // 多步推进使温度显著上升
+        for _ in 0..10 {
+            node.step(1.0, 300.0);
+        }
+
+        assert!(
+            node.pressure > pressure_before,
+            "温度上升应使压力升高（理想气体）: before={} after={}",
+            pressure_before,
+            node.pressure
+        );
+    }
+
+    #[test]
+    fn test_meso_layer_multi_node_exchange() {
+        let mut layer = MesoLayer::new(1.0);
+        let mut node_a = make_test_node(0);
+        node_a.temperature = 400.0; // 热节点
+        let mut node_b = make_test_node(1);
+        node_b.temperature = 300.0; // 冷节点
+        layer.add_node(node_a);
+        layer.add_node(node_b);
+        layer.connect(0, 1);
+
+        let temp_a_before = layer.nodes[0].temperature;
+        let temp_b_before = layer.nodes[1].temperature;
+
+        layer.step(300.0);
+
+        // 热节点温度应下降（向外传热）
+        assert!(
+            layer.nodes[0].temperature < temp_a_before,
+            "热节点温度应下降: before={} after={}",
+            temp_a_before,
+            layer.nodes[0].temperature
+        );
+        // 节点间交换应使温差减小
+        let diff_before = temp_a_before - temp_b_before;
+        let diff_after = layer.nodes[0].temperature - layer.nodes[1].temperature;
+        assert!(
+            diff_after < diff_before,
+            "节点间交换应使温差减小: before={} after={}",
+            diff_before,
+            diff_after
+        );
+    }
+
+    #[test]
+    fn test_aggregate_from_cells() {
+        // 构造 4×4×4 的 Gas cell 网格
+        let nx = 4;
+        let ny = 4;
+        let nz = 4;
+        let cell_size = 0.5;
+        let cell_vol = cell_size * cell_size * cell_size;
+        let air_mass_per_cell = 1.225 * cell_vol;
+        let o2_per_cell = air_mass_per_cell * 0.232;
+
+        let mut cells = Vec::with_capacity(nx * ny * nz);
+        let mut gas_chem = Vec::with_capacity(nx * ny * nz);
+        for _ in 0..(nx * ny * nz) {
+            cells.push(Cell::gas(air_mass_per_cell, 0.0, 300.0, 101_325.0));
+            let mut m = ChemicalMixture::default();
+            m.o2 = o2_per_cell;
+            gas_chem.push(m);
+        }
+
+        let mut layer = MesoLayer::new(1.0);
+        layer.aggregate_from_cells(
+            &cells,
+            &gas_chem,
+            cell_size,
+            [0.0, 0.0, 0.0],
+            [nx, ny, nz],
+            42,
+            materials::MaterialKind::Concrete,
+        );
+
+        assert_eq!(layer.nodes.len(), 1, "应聚合出 1 个节点");
+        let node = &layer.nodes[0];
+        assert_eq!(node.id, 42);
+        // 体积 = 4*0.5 * 4*0.5 * 4*0.5 = 2*2*2 = 8 m³
+        assert!((node.volume - 8.0).abs() < 1e-3, "体积应为 8 m³: {}", node.volume);
+        // 温度应接近 300K
+        assert!(
+            (node.temperature - 300.0).abs() < 1.0,
+            "温度应接近 300K: {}",
+            node.temperature
+        );
+        // O2 质量应等于所有 cell 的 O2 之和
+        let expected_o2 = o2_per_cell * (nx * ny * nz) as f32;
+        assert!(
+            (node.o2_mass - expected_o2).abs() < 1e-3,
+            "O2 质量应为 {}: {}",
+            expected_o2,
+            node.o2_mass
+        );
+        assert_eq!(node.wall_material, materials::MaterialKind::Concrete);
+    }
+
+    #[test]
+    fn test_stable_temperature_without_fire_or_npc() {
+        let mut node = make_test_node(1);
+        // 关闭所有损失源和热源
+        node.openings_area = 0.0;
+        node.has_fire = false;
+        node.npc_count = 0;
+        node.biomass_mass = 0.0;
+        // 温度等于环境，墙体导热损失应为 0
+        node.temperature = 300.0;
+
+        let temp_before = node.temperature;
+        node.step(1.0, 300.0);
+
+        // 温度应保持稳定（无热源无损失）
+        assert!(
+            (node.temperature - temp_before).abs() < 1e-3,
+            "无热源无损失时温度应稳定: before={} after={}",
+            temp_before,
+            node.temperature
+        );
+    }
+
+    #[test]
+    fn test_add_node_and_connect() {
+        let mut layer = MesoLayer::new(1.0);
+        let node_a = make_test_node(10);
+        let node_b = make_test_node(20);
+        layer.add_node(node_a);
+        layer.add_node(node_b);
+        assert_eq!(layer.nodes.len(), 2);
+
+        layer.connect(10, 20);
+        assert!(
+            layer.nodes[0].connections.contains(&20),
+            "节点 A 应连接到节点 B"
+        );
+        assert!(
+            layer.nodes[1].connections.contains(&10),
+            "节点 B 应连接到节点 A（双向）"
+        );
+
+        // 重复 connect 不应产生重复连接
+        layer.connect(10, 20);
+        let count_a = layer.nodes[0]
+            .connections
+            .iter()
+            .filter(|&&id| id == 20)
+            .count();
+        assert_eq!(count_a, 1, "连接应去重");
+    }
+
+    #[test]
+    fn test_meso_layer_new_and_default() {
+        let layer = MesoLayer::new(1.0);
+        assert!((layer.dt - 1.0).abs() < 1e-6);
+        assert!(layer.nodes.is_empty());
+        assert!((layer.time - 0.0).abs() < 1e-6);
+
+        // Default trait：dt=0（由 derive(Default) 产生）
+        let default_layer = MesoLayer::default();
+        assert!(default_layer.nodes.is_empty());
+        assert!((default_layer.time - 0.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_layer_step_advances_time() {
+        let mut layer = MesoLayer::new(1.0);
+        layer.add_node(make_test_node(0));
+        let time_before = layer.time;
+        layer.step(300.0);
+        assert!(
+            layer.time > time_before,
+            "step 后时间应推进: before={} after={}",
+            time_before,
+            layer.time
+        );
+    }
+
+    #[test]
+    fn test_no_combustion_without_fuel() {
+        let mut node = make_test_node(1);
+        node.has_fire = true;
+        node.fire_power = 0.0;
+        node.fuel_mass = 0.0; // 无燃料
+        let o2_before = node.o2_mass;
+        let co2_before = node.co2_mass;
+
+        node.step(1.0, 300.0);
+
+        assert!(
+            (node.o2_mass - o2_before).abs() < 1e-6,
+            "无燃料时不应消耗 O2"
+        );
+        assert!(
+            (node.co2_mass - co2_before).abs() < 1e-6,
+            "无燃料时不应产生 CO2"
+        );
+    }
+
+    #[test]
+    fn test_no_combustion_without_o2() {
+        let mut node = make_test_node(1);
+        node.has_fire = true;
+        node.fire_power = 0.0;
+        node.fuel_mass = 10.0;
+        node.o2_mass = 0.0; // 无 O2
+        let fuel_before = node.fuel_mass;
+
+        node.step(1.0, 300.0);
+
+        assert!(
+            (node.fuel_mass - fuel_before).abs() < 1e-6,
+            "无 O2 时不应消耗燃料"
+        );
+    }
+
+    #[test]
+    fn test_meso_exchange_default() {
+        let ex = MesoExchange::default();
+        assert!((ex.heat_out - 0.0).abs() < 1e-6);
+        assert!((ex.o2_out - 0.0).abs() < 1e-6);
+        assert!((ex.co2_out - 0.0).abs() < 1e-6);
+    }
+
+    #[test]
+    fn test_aggregate_from_cells_empty_region() {
+        // 空 cells 数组：应回退到默认温度 300K
+        let mut layer = MesoLayer::new(1.0);
+        layer.aggregate_from_cells(
+            &[],
+            &[],
+            0.5,
+            [0.0, 0.0, 0.0],
+            [2, 2, 2],
+            99,
+            materials::MaterialKind::Wood,
+        );
+
+        // cells 为空时，所有 idx >= cells.len()，total_mass=0，avg_temp 回退到 300K
+        assert_eq!(layer.nodes.len(), 1);
+        assert!(
+            (layer.nodes[0].temperature - 300.0).abs() < 1e-3,
+            "空区域应回退到 300K: {}",
+            layer.nodes[0].temperature
+        );
+        assert_eq!(layer.nodes[0].wall_material, materials::MaterialKind::Wood);
+    }
+
+    #[test]
+    fn test_connect_nonexistent_nodes_no_panic() {
+        let mut layer = MesoLayer::new(1.0);
+        layer.add_node(make_test_node(0));
+        // 连接不存在的节点不应 panic
+        layer.connect(0, 999);
+        // 节点 0 不应连接到不存在的节点
+        assert!(layer.nodes[0].connections.is_empty());
+    }
+}

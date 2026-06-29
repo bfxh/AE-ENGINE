@@ -1,0 +1,9 @@
+[package]
+name = "wasteland_bvh"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+glam.workspace = true
+
+[dev-dependencies]

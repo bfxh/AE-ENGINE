@@ -1,0 +1,6 @@
+allow-unwrap-in-tests = true
+allow-expect-in-tests = true
+too-many-arguments-threshold = 8
+cognitive-complexity-threshold = 30
+type-complexity-threshold = 300
+doc-valid-idents = ["GDExtension", "MPM", "IPC", "XPBD", "ECS", "SMNA", "GOAP", "SIMD", "FFI", "LOD", "PBR", "OIDN", "FSR", "SSR", "SDFGI", "IK", "WASM", "CCD", "AABB", "OBB", "BVH", "NaN", "UUID", "CRC", "LRU", "SoA", "AoS", "RDKit", "SMARTS", "GPU", "CPU", "FPS", "API", "MIT", "SPDX", "CD", "CI"]

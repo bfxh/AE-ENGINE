@@ -1,0 +1,10 @@
+[configuration]
+
+entry_symbol = "wasteland_gdextension_init"
+compatibility_minimum = "4.4"
+
+[libraries]
+
+windows.x86_64 = "res://../target/release/wasteland_gdextension.dll"
+linux.x86_64 = "res://../target/release/libwasteland_gdextension.so"
+macos = "res://../target/release/libwasteland_gdextension.dylib"

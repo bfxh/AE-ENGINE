@@ -1,0 +1,42 @@
+[package]
+name = "wasteland_thermo_sandbox"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+wasteland_thermo = { path = "../wasteland_thermo" }
+serde.workspace = true
+log.workspace = true
+env_logger.workspace = true
+
+[dependencies.wasteland_render]
+path = "../wasteland_render"
+
+[dependencies.glam]
+workspace = true
+
+[dependencies.wgpu]
+workspace = true
+
+[dependencies.winit]
+workspace = true
+
+[dependencies.pollster]
+workspace = true
+
+[dependencies.bytemuck]
+workspace = true
+
+[[bin]]
+name = "thermo_sandbox_demo"
+path = "src/bin/demo.rs"
+
+[[bin]]
+name = "thermo_sandbox_multi_demo"
+path = "src/bin/multi_demo.rs"
+
+[[bin]]
+name = "thermo_sandbox_3d_viewer"
+path = "src/bin/viewer_3d.rs"

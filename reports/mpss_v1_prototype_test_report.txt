@@ -1,0 +1,60 @@
+# MPSS v1.0 原型测试报告
+## 日期: 2026-06-10
+## 环境: Windows 11, Rust 1.95.0, Godot 4.6
+
+---
+
+## 测试结果: 12/12 全部通过
+
+### 单元测试 (5)
+| 测试 | 状态 | 说明 |
+|------|------|------|
+| test_spawn_and_kill | PASS | 分配+回收+复用 (free list) |
+| test_integration | PASS | Euler位置积分 dt=0.1 |
+| test_gravity | PASS | 重力加速度 g=9.8 |
+| test_compact | PASS | 紧凑化后active连续 |
+| test_strain_identity | PASS | 变形梯度初始为单位阵 |
+
+### 集成测试 (7)
+| 测试 | 状态 | 说明 |
+|------|------|------|
+| test_scale_100k_particles | PASS | 97K粒子 @60fps×1s, 重力验证 |
+| test_mixed_kinds | PASS | 5种粒子类型混合 (Inert/Rigid/Fluid/Chemical/Bio) |
+| test_lifetime_expiry | PASS | 50粒子2秒过期全清除 |
+| test_strain_preservation | PASS | 非单位变形梯度保留 |
+| test_compact_full | PASS | 500→250 compact后active连续 |
+| test_memory_usage | PASS | 100K容量≈16.8MB |
+| test_sparse_buffer | PASS | 5K/500K稀疏填充 (1%), 迭代正确 |
+
+---
+
+## 编译状态
+- wasteland_particle: OK (5 unit + 7 integration pass)
+- wasteland_engine: OK (w/ MpssBuffer集成)
+- wasteland_gdextension: OK (w/ WastelandMpss GodotClass)
+- Full workspace: OK (52 crates)
+
+---
+
+## 代码量
+| 文件 | 行数 | 说明 |
+|------|------|------|
+| wasteland_particle/src/mpss.rs | 404 | MPSS SoA粒子缓冲 (ParticleKind/MpssPhase/MaterialDesc/MpssBuffer) |
+| gdextension/src/mpss_node.rs | 127 | Godot桥接节点 (WastelandMpss) |
+| godot_project/scripts/mpss_demo.gd | 55 | GDScript测试场景 |
+| _v52_test.py | 128 | v5.2文档一致性测试 (已删除) |
+
+---
+
+## 已知局限
+1. 暂无Godot 4.6可执行文件 — 仅编译验证, 未运行时测试
+2. MPSS使用顺序迭代 (rayon并行因借用检查移除), 100K粒子时顺序性能已饱和内存带宽
+3. 集成测试仅覆盖Rust层, Godot层需安装Godot 4.6后验证
+
+---
+
+## 下一步
+1. 安装Godot 4.6运行 WastelandMpss 可视化测试
+2. 实现 MPM 统一求解器 (Material Point Method)
+3. 实现 CTM-DiT 资产生成管线
+4. 实现 RecFM 20x加速器

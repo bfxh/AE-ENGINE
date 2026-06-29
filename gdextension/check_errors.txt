@@ -1,0 +1,2 @@
+﻿error: could not compile `wasteland_gdextension` (lib) due to 357 previous erro
+rs; 16 warnings emitted

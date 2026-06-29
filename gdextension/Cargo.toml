@@ -1,0 +1,42 @@
+[package]
+name = "wasteland_gdextension"
+version.workspace = true
+edition.workspace = true
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+wasteland_engine = { path = "../wasteland_engine" }
+wasteland_physics = { path = "../wasteland_physics" }
+wasteland_ai = { path = "../wasteland_ai" }
+wasteland_ai_bridge = { path = "../wasteland_ai_bridge" }
+wasteland_ai_tools = { path = "../wasteland_ai_tools" }
+wasteland_character = { path = "../wasteland_character" }
+wasteland_metaentity = { path = "../wasteland_metaentity" }
+wasteland_chemistry = { path = "../wasteland_chemistry" }
+wasteland_materials = { path = "../wasteland_materials" }
+wasteland_audio = { path = "../wasteland_audio" }
+wasteland_profiler = { path = "../wasteland_profiler" }
+wasteland_storage = { path = "../wasteland_storage" }
+wasteland_network = { path = "../wasteland_network" }
+wasteland_compute = { path = "../wasteland_compute" }
+wasteland_memory = { path = "../wasteland_memory" }
+wasteland_timeslice = { path = "../wasteland_timeslice" }
+wasteland_frequency = { path = "../wasteland_frequency" }
+wasteland_eventbus = { path = "../wasteland_eventbus" }
+wasteland_weave = { path = "../wasteland_weave" }
+wasteland_xpbd = { path = "../wasteland_xpbd" }
+wasteland_simd = { path = "../wasteland_simd" }
+wasteland_io = { path = "../wasteland_io" }
+wasteland_asset = { path = "../wasteland_asset" }
+wasteland_serialize = { path = "../wasteland_serialize" }
+wasteland_pathfinding = { path = "../wasteland_pathfinding" }
+wasteland_animation = { path = "../wasteland_animation" }
+wasteland_terrain = { path = "../wasteland_terrain" }
+wasteland_particle = { path = "../wasteland_particle" }
+godot = { git = "https://github.com/godot-rust/gdext", branch = "master" }
+glam.workspace = true
+uuid.workspace = true
+rand = "0.8"
+slotmap.workspace = true

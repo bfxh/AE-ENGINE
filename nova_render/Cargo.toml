@@ -1,0 +1,59 @@
+[package]
+name = "nova_render"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+# 数学与序列化
+glam.workspace = true
+bytemuck.workspace = true
+serde.workspace = true
+log.workspace = true
+
+# 容器与并发
+hashbrown.workspace = true
+smallvec.workspace = true
+slotmap.workspace = true
+parking_lot = "0.12"
+crossbeam-channel.workspace = true
+rayon.workspace = true
+
+# GPU 与窗口
+wgpu = "24"
+raw-window-handle = "0.6"
+winit = { workspace = true }
+pollster = "0.4"
+
+# 资源加载
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "tiff"] }
+ddsfile = "0.5"
+gltf = "1"
+basis-universal = { version = "0.3", optional = true }
+flate2.workspace = true
+
+# 工具
+bitflags = { version = "2", features = ["serde"] }
+uuid = { workspace = true }
+profiling = { version = "1", optional = true }
+anyhow.workspace = true
+rand.workspace = true
+
+[features]
+default = []
+# KTX2 / BasisU 纹理压缩
+ktx2 = ["basis-universal"]
+# 性能追踪（零开销，默认关闭）
+profile = ["profiling"]
+# 兼容 v1 渲染层
+compat-v1 = []
+# Engine bridge（通过 GameWorldSource trait 对接上层引擎，不依赖具体引擎 crate）
+engine-bridge = []
+
+[lib]
+name = "nova_render"
+path = "src/lib.rs"
+
+[dev-dependencies]
+env_logger = "0.11"

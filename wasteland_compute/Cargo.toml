@@ -1,0 +1,11 @@
+[package]
+name = "wasteland_compute"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+rayon.workspace = true
+serde.workspace = true
+log.workspace = true

@@ -1,0 +1,19 @@
+[gd_scene load_steps=2 format=3 uid="uid://default_environment"]
+
+[sub_resource type="Environment" id="env_default"]
+background_mode = 1
+background_color = Color(0.1, 0.1, 0.15, 1)
+ambient_light_source = 3
+ambient_light_color = Color(0.15, 0.14, 0.18, 1)
+ambient_light_energy = 0.5
+tonemap_mode = 2
+tonemap_exposure = 1.0
+glow_enabled = false
+ssao_enabled = false
+ssil_enabled = false
+sdfgi_enabled = false
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.01
+
+[node name="DefaultEnvironment" type="WorldEnvironment"]
+environment = SubResource("env_default")

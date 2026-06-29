@@ -1,0 +1,128 @@
+[workspace]
+resolver = "2"
+members = [
+    "wasteland_physics",
+    "wasteland_chemistry",
+    "wasteland_biology",
+    "wasteland_biomech",
+    "wasteland_engine",
+    "wasteland_game",
+    "wasteland_field",
+    "wasteland_particle",
+    "wasteland_emergence",
+    "wasteland_timeslice",
+    "wasteland_metaentity",
+    "wasteland_eventbus",
+    "wasteland_crafting",
+    "wasteland_modding",
+    "gdextension", "wasteland_weave", "wasteland_generalizer",
+    "wasteland_frequency",
+    "wasteland_thermo",
+    "wasteland_thermo_sandbox",
+    "wasteland_electro",
+    "wasteland_materials",
+    "wasteland_fluid",
+    "wasteland_acoustics",
+    "wasteland_optics",
+    "wasteland_geo",
+    "wasteland_weather",
+    "wasteland_hydro",
+    "wasteland_eco",
+    "wasteland_factory",
+    "wasteland_axiom",
+    "wasteland_info",
+    "wasteland_simd",
+    "wasteland_xpbd",
+    "wasteland_character",
+    "wasteland_ai",
+    "wasteland_memory",
+    "wasteland_compute",
+    "wasteland_audio",
+    "wasteland_storage",
+    "wasteland_network",
+    "wasteland_profiler",
+    "wasteland_io",
+    "wasteland_asset",
+    "wasteland_serialize",
+    "wasteland_ai_tools",
+    "wasteland_ai_bridge",
+    "wasteland_pathfinding",
+    "wasteland_animation",
+    "wasteland_terrain",
+    "wasteland_render",
+    "nova_render",
+    "wasteland_unified_interface",
+    "wasteland_scheduler",
+    "wasteland_registry",
+    "wasteland_save_system",
+    "wasteland_asset_pipeline",
+    "wasteland_bvh",
+    "wasteland_physchem",
+    "wasteland_botany",
+    "editor",
+    "game",
+]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["wasteland team"]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+bincode = "1"
+bytemuck = { version = "1", features = ["derive"] }
+glam = { version = "0.29", features = ["serde"] }
+kf-editor = { path = "../KF/editor" }
+rolt = "0.3"
+joltc-sys = "0.3"
+bevy = { version = "0.15", default-features = false }
+log = "0.4"
+uuid = { version = "1", features = ["v4", "serde"] }
+slotmap = { version = "1", features = ["serde"] }
+smallvec = { version = "1", features = ["serde"] }
+arrayvec = "0.7"
+hashbrown = { version = "0.15", features = ["serde"] }
+rand = "0.8"
+rand_distr = "0.4"
+rayon = "1"
+toml = "0.8"
+lru = "0.12"
+bitflags = { version = "2", features = ["serde"] }
+flate2 = "1"
+fixed = "1"
+criterion = "0.5"
+cpal = "0.15"
+mlua = { version = "0.10", features = ["lua54", "vendored"] }
+wgpu = "24"
+image = "0.25"
+ddsfile = "0.5"
+gltf = "1"
+raw-window-handle = "0.6"
+pollster = "0.4"
+rfd = "0.15"
+egui = "0.31"
+egui-wgpu = "0.31"
+egui-winit = "0.31"
+egui_dock = "0.16"
+winit = "0.30"
+anyhow = "1"
+env_logger = "0.11"
+crossbeam-channel = "0.5"
+
+[profile.release]
+opt-level = 3
+lto = "fat"
+codegen-units = 1
+panic = "abort"
+strip = "symbols"
+
+[profile.release-pgo]
+inherits = "release"
+lto = "fat"
+codegen-units = 1
+
+[profile.dev]
+opt-level = 1

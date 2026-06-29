@@ -1,0 +1,38 @@
+[package]
+name = "wasteland_physics"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = []
+jolt = ["rolt", "joltc-sys"]
+
+[dependencies]
+serde.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+slotmap.workspace = true
+smallvec.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+bytemuck.workspace = true
+bincode.workspace = true
+bitflags = { version = "2", features = ["serde"] }
+rolt = { workspace = true, optional = true }
+joltc-sys = { workspace = true, optional = true }
+
+[dev-dependencies]
+criterion = { workspace = true, features = ["html_reports"] }
+
+[[bench]]
+name = "fixed_point_bench"
+harness = false
+
+[[bench]]
+name = "mpm_bench"
+harness = false
+
+[[bench]]
+name = "collision_bench"
+harness = false

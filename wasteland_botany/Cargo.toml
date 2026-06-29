@@ -1,0 +1,16 @@
+[package]
+name = "wasteland_botany"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+slotmap.workspace = true
+smallvec.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+rand_distr.workspace = true
+rayon.workspace = true

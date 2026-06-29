@@ -1,0 +1,19 @@
+[package]
+name = "wasteland_game"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+wasteland_ai = { path = "../wasteland_ai" }
+wasteland_ai_bridge = { path = "../wasteland_ai_bridge" }
+serde.workspace = true
+serde_json.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+slotmap.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+smallvec.workspace = true

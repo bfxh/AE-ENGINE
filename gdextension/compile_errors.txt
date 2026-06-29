@@ -1,0 +1,2 @@
+﻿error: could not compile `wasteland_gdextension` (lib) due to 86 previous error
+s; 14 warnings emitted

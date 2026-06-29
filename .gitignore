@@ -1,0 +1,103 @@
+# Rust 构建产物
+/target/
+/target2/
+**/target/
+**/target2/
+
+# 备用构建目录
+/cargo_target/
+**/cargo_target/
+
+# Cargo.lock 由项目决定是否提交（库项目通常提交）
+# 此处保留提交以保重现性
+
+# IDE 配置
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# OS 文件
+.DS_Store
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# 临时文件和日志
+*.log
+*.tmp
+*.bak
+*.old
+*_output.txt
+*_error.txt
+cargo_check_output*.txt
+cargo_errors*.txt
+clippy_*.txt
+prof_out*.txt
+stderr*.txt
+stdout*.txt
+water_test_output*.txt
+
+# 性能/调试输出
+perf_test*.txt
+demo_error*.log
+physchem_*.log
+
+# 截图（开发期临时）
+godot_screenshot*.png
+*.mp4
+
+# Python 缓存（fix_*.py 脚本的 __pycache__）
+__pycache__/
+*.pyc
+*.pyo
+
+# 根目录临时 Python 脚本（子代理创建模块时的辅助工具，非项目源码）
+/fix_*.py
+/edit*.py
+/extend_*.py
+/_append_*.rs
+/auto_*.py
+/build_*.py
+/check_*.py
+/test_*.py
+/verify_*.py
+/patch_*.py
+/analyze_*.py
+/merge_*.py
+/split_*.py
+
+# Trae IDE 内部
+.trae/.cache/
+.trae/.tmp/
+
+# 编辑器临时文件
+*.orig
+*.rej
+
+# 环境变量
+.env
+.env.local
+*.env.local
+
+# 数据库文件
+*.db
+*.db-journal
+*.sqlite
+*.sqlite-journal
+
+# Lock 文件（除 Cargo.lock）
+*.lock
+!Cargo.lock
+!rust-toolchain.toml
+
+# 测试输出
+test_output/
+test_results/
+
+# 嵌套独立 git 仓库（有自己的 .git，作为独立项目维护）
+/wasteland_generalizer/
+/wasteland_render/
+/wasteland_weave/

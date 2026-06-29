@@ -1,0 +1,31 @@
+[package]
+name = "slime-editor"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "slime-editor"
+path = "src/main.rs"
+
+[lib]
+name = "slime_editor"
+path = "src/lib.rs"
+
+[dependencies]
+winit = "0.30"
+egui = "0.31"
+egui-wgpu = "0.31"
+egui-winit = "0.31"
+wgpu = "24"
+rfd = "0.15"
+log.workspace = true
+env_logger = "0.11"
+serde.workspace = true
+serde_json.workspace = true
+glam.workspace = true
+bytemuck.workspace = true
+pollster = "0.4"
+anyhow = "1"
+wasteland_bvh = { path = "../wasteland_bvh" }

@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-06-04T19:29:22.644217",
+  "blender_installations": [
+    {
+      "path": "E:\\SteamLibrary\\steamapps\\common\\Blender",
+      "version": "5.x",
+      "executable": "E:\\SteamLibrary\\steamapps\\common\\Blender\\blender.exe"
+    },
+    {
+      "path": "E:\\C\u76d8\u8fc1\u79fb\u6587\u4ef6\\\u6e38\u620f\\\u5efa\u6a21\u4e0e\u6e38\u620f\u5f15\u64ce\\New Folder",
+      "version": "New Folder",
+      "executable": "E:\\C\u76d8\u8fc1\u79fb\u6587\u4ef6\\\u6e38\u620f\\\u5efa\u6a21\u4e0e\u6e38\u620f\u5f15\u64ce\\New Folder\\blender.exe"
+    }
+  ],
+  "installed_to": "E:\\SteamLibrary\\steamapps\\common\\Blender\\5.x\\scripts\\addons",
+  "plugin_files": [
+    "install_plugin.py",
+    "verify_wasteland.py",
+    "wasteland_generator.py"
+  ],
+  "status": "SUCCESS"
+}

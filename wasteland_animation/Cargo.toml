@@ -1,0 +1,13 @@
+[package]
+name = "wasteland_animation"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+glam = { workspace = true }
+smallvec = { workspace = true }
+hashbrown = { workspace = true }
+log = { workspace = true }

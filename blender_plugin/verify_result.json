@@ -1,0 +1,13 @@
+{
+  "status": "OK",
+  "elapsed_seconds": 2.92,
+  "objects": 1578,
+  "total_vertices": 42481,
+  "total_faces": 45264,
+  "terrain_vertices": 16641,
+  "terrain_faces": 16384,
+  "buildings": 30,
+  "trees": 100,
+  "export_path": "D:\\rj\\wasteland_project\\blender_plugin\\wasteland_verify.glb",
+  "export_size_bytes": 636420
+}

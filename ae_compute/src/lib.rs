@@ -35,6 +35,7 @@ pub mod gross_pitaevskii;
 pub mod hardware;
 pub mod heat_diffusion;
 pub mod henon_heiles;
+pub mod henon_map;
 pub mod hodgkin_huxley;
 pub mod ising_model;
 pub mod job;

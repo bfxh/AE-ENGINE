@@ -15,6 +15,7 @@ pub mod dispatcher;
 pub mod drucker_prager;
 pub mod dynamic_aabb_tree;
 pub mod eigenfluid;
+pub mod electromagnetic_fdtd;
 pub mod fluid;
 pub mod fms;
 pub mod hardware;

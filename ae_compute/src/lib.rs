@@ -57,6 +57,7 @@ pub mod reaction_diffusion;
 pub mod rigid_body;
 pub mod schrodinger;
 pub mod sdf;
+pub mod shallow_water;
 pub mod shape_matching;
 pub mod sine_gordon;
 pub mod sir_model;

@@ -70,6 +70,7 @@ pub mod shape_matching;
 pub mod sine_gordon;
 pub mod sir_model;
 pub mod stable_neo_hookean;
+pub mod standard_map;
 pub mod strain_based_dynamics;
 pub mod swift_hohenberg;
 pub mod three_body;

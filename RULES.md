@@ -1,4 +1,4 @@
-# ae_project 规则 — 废土创世游戏引擎
+# ae_project 规则 — AE-ENGINE游戏引擎
 
 > **版本**: v4.1
 > **更新**: 2026-06-07
@@ -11,7 +11,7 @@
 
 | 属性 | 值 |
 |------|-----|
-| 项目名 | ae_project / 废土创世 |
+| 项目名 | ae_project / AE-ENGINE |
 | 类型 | 规则驱动物理沙盒游戏引擎 |
 | 语言 | Rust (核心 Crate) + C (数学/SIMD) + C++ (Godot 集成) + Go (场服务) + Java (宏观模拟) + Python (资产管线) |
 | 目标引擎 | Godot 4.6+ (Jolt Physics 默认) |

@@ -1,11 +1,11 @@
-# Wasteland Project Configuration
+# AE-ENGINE Configuration
 # This file contains all configuration options for the Wasteland project
 
 # ============================================
 # GAME SETTINGS
 # ============================================
 [game]
-title = "Wasteland - 废土创世"
+title = "Wasteland - AE-ENGINE"
 version = "0.1.0"
 description = "A procedural post-apocalyptic survival simulation"
 

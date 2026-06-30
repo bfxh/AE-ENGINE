@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-GDScript Syntax Validator for Wasteland Project
+GDScript Syntax Validator for AE-ENGINE
 Validates GDScript files without needing Godot engine
 """
 

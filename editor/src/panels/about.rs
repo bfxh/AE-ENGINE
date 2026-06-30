@@ -51,7 +51,7 @@ impl EditorPanel for AboutPanel {
                     ui.add_space(5.0);
 
                     ui.label("A Rust-native 3D game engine editor");
-                    ui.label("for the Wasteland Project.");
+                    ui.label("for the AE-ENGINE.");
                     ui.add_space(10.0);
 
                     ui.separator();

@@ -1,6 +1,6 @@
 @echo off
 echo ==========================================
-echo   WASTELAND PROJECT - AUTOMATIC LAUNCHER
+echo   AE-ENGINE - AUTOMATIC LAUNCHER
 echo ==========================================
 echo.
 

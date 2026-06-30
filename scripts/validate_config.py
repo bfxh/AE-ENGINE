@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Wasteland Project Configuration Validator
+AE-ENGINE Configuration Validator
 Checks all configuration files and dependencies
 """
 
@@ -15,7 +15,7 @@ PROJECT_ROOT = Path(r'd:\rj\wasteland_project')
 def check_config():
     """Check all project configurations"""
     print("=" * 60)
-    print("  WASTELAND PROJECT CONFIGURATION VALIDATOR")
+    print("  AE-ENGINE CONFIGURATION VALIDATOR")
     print("=" * 60)
     
     checks = []

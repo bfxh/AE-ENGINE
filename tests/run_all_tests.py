@@ -1,5 +1,5 @@
 """
-Wasteland Project Test Runner
+AE-ENGINE Test Runner
 Run all test suites to verify the complete system
 """
 import subprocess
@@ -78,7 +78,7 @@ def run_blender_verification():
 
 def main():
     print("=" * 70)
-    print("WASTELAND PROJECT COMPREHENSIVE TEST SUITE")
+    print("AE-ENGINE COMPREHENSIVE TEST SUITE")
     print("=" * 70)
     print(f"Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 70)

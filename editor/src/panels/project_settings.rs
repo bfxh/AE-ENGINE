@@ -45,7 +45,7 @@ impl Default for ProjectSettingsPanel {
         Self {
             visible: false,
             active_tab: SettingsTab::General,
-            project_name: "Wasteland Project".into(),
+            project_name: "AE-ENGINE".into(),
             project_version: "0.1.0".into(),
             render_quality: RenderQuality::High,
             vsync: true,

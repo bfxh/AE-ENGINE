@@ -1,5 +1,5 @@
 @echo off
-:: Wasteland Project Launch Script
+:: AE-ENGINE Launch Script
 :: Godot 4.6 + Rust GDExtension
 
 setlocal enabledelayedexpansion
@@ -51,7 +51,7 @@ if not exist "%GDEXTENSION_DIR%\wasteland_gdextension.dll" (
 )
 
 :: Launch game
-echo [LAUNCHER] Starting Wasteland Project...
+echo [LAUNCHER] Starting AE-ENGINE...
 echo [LAUNCHER] Godot: %GODOT_EXE%
 echo [LAUNCHER] Project: %PROJECT_DIR%
 echo [LAUNCHER] Log: %OUTPUT_LOG%

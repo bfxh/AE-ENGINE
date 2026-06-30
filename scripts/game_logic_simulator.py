@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Game Logic Simulator for Wasteland Project
+Game Logic Simulator for AE-ENGINE
 Tests game logic without requiring Godot engine
 """
 

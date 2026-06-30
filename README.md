@@ -1,4 +1,4 @@
-# Wasteland Project — 废土创世
+# AE-ENGINE — AE-ENGINE
 
 > 3A 级独立游戏引擎 · 多语言混合架构（Rust + C++ + Java）
 > 状态: 活跃开发中
@@ -10,7 +10,7 @@
 
 ## 项目简介
 
-Wasteland Project 是一个 3A 级独立游戏引擎，采用**多语言混合架构**：
+AE-ENGINE 是一个 3A 级独立游戏引擎，采用**多语言混合架构**：
 - **Rust** — 游戏逻辑 + 模拟层 + 引擎主体（62 crate workspace）
 - **C++** — 性能关键路径（AVX2 SIMD 内核 + 工业 Jolt 物理后端预留）
 - **Java** — 后端服务（多人匹配 / 房间 / 排行榜）

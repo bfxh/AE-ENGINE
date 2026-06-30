@@ -1,4 +1,4 @@
-# 废土创世 (Wasteland Genesis) - 功能演示文档
+# AE-ENGINE (AE-ENGINE) - 功能演示文档
 
 > **版本**: v5.0
 > **日期**: 2026-06-05
@@ -9,8 +9,8 @@
 
 ## 设计文档
 
-- [废土创世 终极设计文档 v1.0](file:///d:/rj/ae_project/废土创世_终极设计文档_v1.0.md) — 世界观、核心机制、技术架构总纲
-- [各模块详细设计 v1.0](file:///d:/rj/kf/jm/废土创世_各模块详细设计_v1.0.md) — 接口定义、数据结构、数据流、性能预算
+- [AE-ENGINE 终极设计文档 v1.0](file:///d:/rj/ae_project/AE-ENGINE_终极设计文档_v1.0.md) — 世界观、核心机制、技术架构总纲
+- [各模块详细设计 v1.0](file:///d:/rj/kf/jm/AE-ENGINE_各模块详细设计_v1.0.md) — 接口定义、数据结构、数据流、性能预算
 
 ---
 
@@ -737,4 +737,4 @@ python install_plugin.py
 ---
 
 **项目状态**: ✅ 所有核心功能已实现并通过测试
-**设计文档**: [废土创世 终极设计文档 v1.0](file:///d:/rj/ae_project/废土创世_终极设计文档_v1.0.md)
+**设计文档**: [AE-ENGINE 终极设计文档 v1.0](file:///d:/rj/ae_project/AE-ENGINE_终极设计文档_v1.0.md)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Automatic Setup and Installer for Wasteland Project
+Automatic Setup and Installer for AE-ENGINE
 Installs all dependencies and configures the project automatically
 """
 
@@ -156,7 +156,7 @@ set "OUTPUT_LOG=%~dp0logs\\game.log"
 
 if not exist "%~dp0logs" mkdir "%~dp0logs"
 
-echo [LAUNCHER] Starting Wasteland Project...
+echo [LAUNCHER] Starting AE-ENGINE...
 echo [LAUNCHER] Godot: %GODOT_EXE%
 echo [LAUNCHER] Project: %PROJECT_DIR%
 echo [LAUNCHER] Log: %OUTPUT_LOG%
@@ -178,7 +178,7 @@ pause
 
 def write_setup_guide():
     """Write setup guide"""
-    guide_content = """# Wasteland Project Setup Guide
+    guide_content = """# AE-ENGINE Setup Guide
 
 ## Quick Start
 
@@ -242,7 +242,7 @@ Press **T** key in-game to run all tests, which will verify:
 
 def main():
     print("="*60)
-    print("  WASTELAND PROJECT - AUTOMATIC SETUP")
+    print("  AE-ENGINE - AUTOMATIC SETUP")
     print("="*60)
     
     # Step 1: Godot

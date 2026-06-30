@@ -26,6 +26,7 @@ pub mod resting_rigid_bodies;
 pub mod contact_manifold;
 pub mod broadphase_sap;
 pub mod contact_solver;
+pub mod dynamic_aabb_tree;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

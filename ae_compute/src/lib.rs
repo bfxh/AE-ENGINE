@@ -77,6 +77,7 @@ pub mod stable_neo_hookean;
 pub mod standard_map;
 pub mod strain_based_dynamics;
 pub mod swift_hohenberg;
+pub mod thomas_attractor;
 pub mod three_body;
 pub mod van_der_pol;
 pub mod vbd_solver;

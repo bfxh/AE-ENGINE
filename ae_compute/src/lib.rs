@@ -53,6 +53,7 @@ pub mod leapfrog_flow_maps;
 pub mod logistic_map;
 pub mod lorenz96;
 pub mod lotka_volterra;
+pub mod lu_attractor;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
 pub mod mackey_glass;
 pub mod molecular_dynamics;

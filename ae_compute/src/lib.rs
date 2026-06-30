@@ -53,6 +53,7 @@ pub mod logistic_map;
 pub mod lorenz96;
 pub mod lotka_volterra;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
+pub mod mackey_glass;
 pub mod molecular_dynamics;
 pub mod mpm_compute;
 pub mod navier_stokes_2d;

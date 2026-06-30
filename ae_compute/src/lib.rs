@@ -21,6 +21,7 @@ pub mod corotational_fem;
 pub mod cosserat_rod;
 pub mod dispatcher;
 pub mod drucker_prager;
+pub mod duffing;
 pub mod dynamic_aabb_tree;
 pub mod eigenfluid;
 pub mod electromagnetic_fdtd;

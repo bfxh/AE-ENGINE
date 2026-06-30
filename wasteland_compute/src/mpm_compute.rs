@@ -37,14 +37,7 @@ pub struct MpmParticle {
 
 impl MpmParticle {
     pub fn new(position: Vec3, mass: f32) -> Self {
-        Self {
-            position,
-            velocity: Vec3::ZERO,
-            c: [0.0; 9],
-            j: 1.0,
-            mass,
-            volume_ratio: 1.0,
-        }
+        Self { position, velocity: Vec3::ZERO, c: [0.0; 9], j: 1.0, mass, volume_ratio: 1.0 }
     }
 }
 
@@ -63,22 +56,14 @@ pub struct MpmGrid3D {
 impl MpmGrid3D {
     pub fn new(nx: usize, ny: usize, nz: usize, dx: f32, origin: Vec3) -> Self {
         let n = nx * ny * nz;
-        Self {
-            nx,
-            ny,
-            nz,
-            dx,
-            origin,
-            mass: vec![0.0; n],
-            velocity: vec![Vec3::ZERO; n],
-        }
+        Self { nx, ny, nz, dx, origin, mass: vec![0.0; n], velocity: vec![Vec3::ZERO; n] }
     }
 
     pub fn clear(&mut self) {
         for m in &mut self.mass {
             *m = 0.0;
         }
- for v in &mut self.velocity {
+        for v in &mut self.velocity {
             *v = Vec3::ZERO;
         }
     }
@@ -172,11 +157,7 @@ fn quadratic_weight_grad(d: f32) -> f32 {
     if ad < 0.5 {
         -2.0 * d
     } else if ad < 1.5 {
-        if d > 0.0 {
-            d - 1.5
-        } else {
-            d + 1.5
-        }
+        if d > 0.0 { d - 1.5 } else { d + 1.5 }
     } else {
         0.0
     }
@@ -199,11 +180,7 @@ impl MpmSolver {
             config.dx,
             config.origin,
         );
-        Self {
-            config,
-            particles: Vec::new(),
-            grid,
-        }
+        Self { config, particles: Vec::new(), grid }
     }
 
     pub fn add_particle(&mut self, p: MpmParticle) -> usize {
@@ -288,9 +265,21 @@ impl MpmSolver {
             let wz = [quadratic_weight(fz), quadratic_weight(fz - 1.0), quadratic_weight(fz - 2.0)];
 
             // 权重梯度（节点距离 d 的导数 dN/dd）
-            let gx = [quadratic_weight_grad(fx), quadratic_weight_grad(fx - 1.0), quadratic_weight_grad(fx - 2.0)];
-            let gy = [quadratic_weight_grad(fy), quadratic_weight_grad(fy - 1.0), quadratic_weight_grad(fy - 2.0)];
-            let gz = [quadratic_weight_grad(fz), quadratic_weight_grad(fz - 1.0), quadratic_weight_grad(fz - 2.0)];
+            let gx = [
+                quadratic_weight_grad(fx),
+                quadratic_weight_grad(fx - 1.0),
+                quadratic_weight_grad(fx - 2.0),
+            ];
+            let gy = [
+                quadratic_weight_grad(fy),
+                quadratic_weight_grad(fy - 1.0),
+                quadratic_weight_grad(fy - 2.0),
+            ];
+            let gz = [
+                quadratic_weight_grad(fz),
+                quadratic_weight_grad(fz - 1.0),
+                quadratic_weight_grad(fz - 2.0),
+            ];
 
             // 仿射动量 C (3×3, 列主序)
             let c_mat = Mat3::from_cols_array(&p.c);
@@ -450,11 +439,8 @@ impl MpmSolver {
 
                         new_v += gv * w;
                         // C += w * v ⊗ dpos * D_inv
-                        new_c += Mat3::from_cols(
-                            gv * dpos.x,
-                            gv * dpos.y,
-                            gv * dpos.z,
-                        ) * (w / d_inv);
+                        new_c +=
+                            Mat3::from_cols(gv * dpos.x, gv * dpos.y, gv * dpos.z) * (w / d_inv);
                     }
                 }
             }
@@ -474,10 +460,7 @@ impl MpmSolver {
 
     /// 计算总动能（用于验证）
     pub fn kinetic_energy(&self) -> f32 {
-        self.particles
-            .iter()
-            .map(|p| 0.5 * p.mass * p.velocity.length_squared())
-            .sum()
+        self.particles.iter().map(|p| 0.5 * p.mass * p.velocity.length_squared()).sum()
     }
 
     /// 计算总质量
@@ -488,11 +471,7 @@ impl MpmSolver {
     /// 质心位置
     pub fn center_of_mass(&self) -> Vec3 {
         let total = self.total_mass().max(1e-10);
-        let weighted: Vec3 = self
-            .particles
-            .iter()
-            .map(|p| p.position * p.mass)
-            .sum();
+        let weighted: Vec3 = self.particles.iter().map(|p| p.position * p.mass).sum();
         weighted / total
     }
 }
@@ -884,41 +863,42 @@ pub mod gpu {
                 .ok()?;
 
             // 创建 bind group layout
-            let bind_group_layout = device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
-                label: Some("MPM bind group layout"),
-                entries: &[
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 0,
-                        visibility: wgpu::ShaderStages::COMPUTE,
-                        ty: wgpu::BindingType::Buffer {
-                            ty: wgpu::BufferBindingType::Storage { read_only: false },
-                            has_dynamic_offset: false,
-                            min_binding_size: None,
+            let bind_group_layout =
+                device.create_bind_group_layout(&wgpu::BindGroupLayoutDescriptor {
+                    label: Some("MPM bind group layout"),
+                    entries: &[
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 0,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::Buffer {
+                                ty: wgpu::BufferBindingType::Storage { read_only: false },
+                                has_dynamic_offset: false,
+                                min_binding_size: None,
+                            },
+                            count: None,
                         },
-                        count: None,
-                    },
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 1,
-                        visibility: wgpu::ShaderStages::COMPUTE,
-                        ty: wgpu::BindingType::Buffer {
-                            ty: wgpu::BufferBindingType::Storage { read_only: false },
-                            has_dynamic_offset: false,
-                            min_binding_size: None,
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 1,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::Buffer {
+                                ty: wgpu::BufferBindingType::Storage { read_only: false },
+                                has_dynamic_offset: false,
+                                min_binding_size: None,
+                            },
+                            count: None,
                         },
-                        count: None,
-                    },
-                    wgpu::BindGroupLayoutEntry {
-                        binding: 2,
-                        visibility: wgpu::ShaderStages::COMPUTE,
-                        ty: wgpu::BindingType::Buffer {
-                            ty: wgpu::BufferBindingType::Uniform,
-                            has_dynamic_offset: false,
-                            min_binding_size: None,
+                        wgpu::BindGroupLayoutEntry {
+                            binding: 2,
+                            visibility: wgpu::ShaderStages::COMPUTE,
+                            ty: wgpu::BindingType::Buffer {
+                                ty: wgpu::BufferBindingType::Uniform,
+                                has_dynamic_offset: false,
+                                min_binding_size: None,
+                            },
+                            count: None,
                         },
-                        count: None,
-                    },
-                ],
-            });
+                    ],
+                });
 
             let pipeline_layout = device.create_pipeline_layout(&wgpu::PipelineLayoutDescriptor {
                 label: Some("MPM pipeline layout"),
@@ -946,13 +926,14 @@ pub mod gpu {
                 entry_point: "main",
                 compilation_options: Default::default(),
             });
-            let gridop_pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
-                label: Some("MPM GridOp pipeline"),
-                layout: Some(&pipeline_layout),
-                module: &gridop_shader,
-                entry_point: "main",
-                compilation_options: Default::default(),
-            });
+            let gridop_pipeline =
+                device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
+                    label: Some("MPM GridOp pipeline"),
+                    layout: Some(&pipeline_layout),
+                    module: &gridop_shader,
+                    entry_point: "main",
+                    compilation_options: Default::default(),
+                });
             let g2p_pipeline = device.create_compute_pipeline(&wgpu::ComputePipelineDescriptor {
                 label: Some("MPM G2P pipeline"),
                 layout: Some(&pipeline_layout),
@@ -1009,11 +990,14 @@ pub mod gpu {
                 })
                 .collect();
 
-            let particle_buffer = self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
-                label: Some("MPM particle buffer"),
-                contents: bytemuck::cast_slice(&gpu_particles),
-                usage: wgpu::BufferUsages::STORAGE | wgpu::BufferUsages::COPY_DST | wgpu::BufferUsages::COPY_SRC,
-            });
+            let particle_buffer =
+                self.device.create_buffer_init(&wgpu::util::BufferInitDescriptor {
+                    label: Some("MPM particle buffer"),
+                    contents: bytemuck::cast_slice(&gpu_particles),
+                    usage: wgpu::BufferUsages::STORAGE
+                        | wgpu::BufferUsages::COPY_DST
+                        | wgpu::BufferUsages::COPY_SRC,
+                });
 
             let grid_size = self.config.grid_nx * self.config.grid_ny * self.config.grid_nz;
             let grid_buffer = self.device.create_buffer(&wgpu::BufferDescriptor {
@@ -1056,10 +1040,7 @@ pub mod gpu {
                         binding: 0,
                         resource: particle_buffer.as_entire_binding(),
                     },
-                    wgpu::BindGroupEntry {
-                        binding: 1,
-                        resource: grid_buffer.as_entire_binding(),
-                    },
+                    wgpu::BindGroupEntry { binding: 1, resource: grid_buffer.as_entire_binding() },
                     wgpu::BindGroupEntry {
                         binding: 2,
                         resource: self.params_buffer.as_entire_binding(),
@@ -1074,7 +1055,8 @@ pub mod gpu {
             let particle_count = self.config.particle_density as u32; // placeholder, should be actual count
             let workgroups_x = (particle_count + 63) / 64;
 
-            let grid_size = (self.config.grid_nx * self.config.grid_ny * self.config.grid_nz) as u32;
+            let grid_size =
+                (self.config.grid_nx * self.config.grid_ny * self.config.grid_nz) as u32;
             let grid_workgroups = (grid_size + 63) / 64;
 
             // P2G
@@ -1192,7 +1174,11 @@ mod tests {
             assert!(p.position.x.is_finite(), "x became non-finite");
             assert!(p.position.y.is_finite(), "y became non-finite");
             assert!(p.position.z.is_finite(), "z became non-finite");
-            assert!(p.position.y >= -1.0 && p.position.y <= 2.0, "y out of bounds: {}", p.position.y);
+            assert!(
+                p.position.y >= -1.0 && p.position.y <= 2.0,
+                "y out of bounds: {}",
+                p.position.y
+            );
             assert!(p.j > 0.0 && p.j.is_finite(), "J invalid: {}", p.j);
         }
         // 应在重力下下落
@@ -1228,12 +1214,7 @@ mod tests {
             ..Default::default()
         };
         let mut solver = MpmSolver::new(config);
-        solver.add_particle_block(
-            Vec3::new(0.5, 0.5, 0.5),
-            Vec3::new(0.2, 0.2, 0.2),
-            4,
-            1.0,
-        );
+        solver.add_particle_block(Vec3::new(0.5, 0.5, 0.5), Vec3::new(0.2, 0.2, 0.2), 4, 1.0);
         assert_eq!(solver.particles.len(), 64); // 4³ = 64
         let total_mass = solver.total_mass();
         assert!((total_mass - 1.0).abs() < 1e-5, "total mass = {}", total_mass);
@@ -1261,7 +1242,12 @@ mod tests {
         solver.step();
         let y_after = solver.particles[0].position.y;
 
-        assert!(y_after < y_before, "particle should fall: y_before={} y_after={}", y_before, y_after);
+        assert!(
+            y_after < y_before,
+            "particle should fall: y_before={} y_after={}",
+            y_before,
+            y_after
+        );
     }
 
     #[test]
@@ -1276,12 +1262,7 @@ mod tests {
             ..Default::default()
         };
         let mut solver = MpmSolver::new(config);
-        solver.add_particle_block(
-            Vec3::new(0.5, 0.5, 0.5),
-            Vec3::new(0.15, 0.15, 0.15),
-            3,
-            2.0,
-        );
+        solver.add_particle_block(Vec3::new(0.5, 0.5, 0.5), Vec3::new(0.15, 0.15, 0.15), 3, 2.0);
 
         let m0 = solver.total_mass();
         for _ in 0..10 {

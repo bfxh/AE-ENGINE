@@ -41,18 +41,12 @@ impl Aabb {
 
     /// 从中心和半尺寸构造
     pub fn from_center_half(center: Vec3, half: Vec3) -> Self {
-        Self {
-            min: center - half,
-            max: center + half,
-        }
+        Self { min: center - half, max: center + half }
     }
 
     /// 合并两个 AABB
     pub fn union(&self, other: &Aabb) -> Aabb {
-        Aabb {
-            min: self.min.min(other.min),
-            max: self.max.max(other.max),
-        }
+        Aabb { min: self.min.min(other.min), max: self.max.max(other.max) }
     }
 
     /// 中心点
@@ -149,10 +143,7 @@ impl Aabb {
 
     /// 膨胀 (各方向扩展 delta)
     pub fn fattened(&self, delta: f32) -> Aabb {
-        Aabb {
-            min: self.min - Vec3::splat(delta),
-            max: self.max + Vec3::splat(delta),
-        }
+        Aabb { min: self.min - Vec3::splat(delta), max: self.max + Vec3::splat(delta) }
     }
 }
 
@@ -218,11 +209,7 @@ impl SapBroadphase {
     /// 添加物体
     pub fn add_body(&mut self, body_id: u32, aabb: Aabb) {
         let fat_aabb = aabb.fattened(self.fat_margin);
-        self.proxies.push(BroadphaseProxy {
-            body_id,
-            aabb: fat_aabb,
-            dirty: true,
-        });
+        self.proxies.push(BroadphaseProxy { body_id, aabb: fat_aabb, dirty: true });
         // 新增物体打破排序, 标记需要重新排序
         // 插入排序会在下次 compute_pairs 时修复
     }
@@ -537,9 +524,9 @@ mod tests {
     fn test_sap_chain() {
         // 三个物体排成一排, 相邻重叠
         let mut sap = SapBroadphase::new();
-        sap.add_body(0, aabb_at(0.0, 0.0, 0.0, 1.0));  // [-1, 1]
-        sap.add_body(1, aabb_at(1.5, 0.0, 0.0, 1.0));  // [0.5, 2.5]
-        sap.add_body(2, aabb_at(3.0, 0.0, 0.0, 1.0));  // [2, 4]
+        sap.add_body(0, aabb_at(0.0, 0.0, 0.0, 1.0)); // [-1, 1]
+        sap.add_body(1, aabb_at(1.5, 0.0, 0.0, 1.0)); // [0.5, 2.5]
+        sap.add_body(2, aabb_at(3.0, 0.0, 0.0, 1.0)); // [2, 4]
         let pairs = sap.compute_pairs();
         // 0-1 重叠, 1-2 重叠, 0-2 不重叠
         assert_eq!(pairs.len(), 2);

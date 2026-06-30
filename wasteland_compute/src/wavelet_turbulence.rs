@@ -22,9 +22,9 @@
 //! - 自然的湍流外观 (涡旋、水花)
 //! - 可控的细节强度
 
-use serde::{Deserialize, Serialize};
+use crate::noise::{CurlNoise3D, FbmConfig, PerlinNoise3D, fbm_perlin};
 use glam::Vec3;
-use crate::noise::{CurlNoise3D, PerlinNoise3D, fbm_perlin, FbmConfig};
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -146,7 +146,8 @@ impl WaveletTurbulenceSolver {
             // 4. 多倍频叠加 curl noise
             let mut turb = Vec3::ZERO;
             let mut scale = self.config.max_scale;
-            let scale_ratio = (self.config.min_scale / self.config.max_scale).powf(1.0 / self.config.octaves as f32);
+            let scale_ratio = (self.config.min_scale / self.config.max_scale)
+                .powf(1.0 / self.config.octaves as f32);
             for _ in 0..self.config.octaves {
                 // 噪声坐标按 scale 缩放
                 let coord = p.turb_coord / scale;
@@ -171,9 +172,7 @@ impl WaveletTurbulenceSolver {
 
     /// 获取所有粒子的合成速度
     pub fn all_final_velocities(&self) -> Vec<Vec3> {
-        self.particles.iter()
-            .map(|p| p.velocity + p.turbulence)
-            .collect()
+        self.particles.iter().map(|p| p.velocity + p.turbulence).collect()
     }
 
     /// 获取粒子湍流强度
@@ -189,9 +188,9 @@ impl WaveletTurbulenceSolver {
         if self.particles.is_empty() {
             return 0.0;
         }
-        self.particles.iter()
-            .map(|p| p.turbulence.length_squared())
-            .sum::<f32>() / self.particles.len() as f32 * 0.5
+        self.particles.iter().map(|p| p.turbulence.length_squared()).sum::<f32>()
+            / self.particles.len() as f32
+            * 0.5
     }
 }
 
@@ -299,7 +298,12 @@ impl GridWaveletTurbulence {
     }
 
     /// 获取合成速度场 (大尺度 + 湍流)
-    pub fn composite_velocity(&self, u: &[f32], v: &[f32], w: &[f32]) -> (Vec<f32>, Vec<f32>, Vec<f32>) {
+    pub fn composite_velocity(
+        &self,
+        u: &[f32],
+        v: &[f32],
+        w: &[f32],
+    ) -> (Vec<f32>, Vec<f32>, Vec<f32>) {
         let n = self.n;
         let size = (n + 2).pow(3);
         let mut cu = vec![0.0; size];
@@ -502,11 +506,14 @@ mod tests {
 
     #[test]
     fn test_grid_wt_step() {
-        let mut gwt = GridWaveletTurbulence::new(WaveletTurbulenceConfig {
-            amplitude: 1.0,
-            velocity_threshold: 0.1,
-            ..WaveletTurbulenceConfig::default()
-        }, 8);
+        let mut gwt = GridWaveletTurbulence::new(
+            WaveletTurbulenceConfig {
+                amplitude: 1.0,
+                velocity_threshold: 0.1,
+                ..WaveletTurbulenceConfig::default()
+            },
+            8,
+        );
         let n = gwt.n;
         let size = (n + 2).pow(3);
         let u = vec![1.0; size]; // 恒定速度
@@ -520,11 +527,14 @@ mod tests {
 
     #[test]
     fn test_grid_wt_composite() {
-        let mut gwt = GridWaveletTurbulence::new(WaveletTurbulenceConfig {
-            amplitude: 0.5,
-            velocity_threshold: 0.1,
-            ..WaveletTurbulenceConfig::default()
-        }, 8);
+        let mut gwt = GridWaveletTurbulence::new(
+            WaveletTurbulenceConfig {
+                amplitude: 0.5,
+                velocity_threshold: 0.1,
+                ..WaveletTurbulenceConfig::default()
+            },
+            8,
+        );
         let n = gwt.n;
         let size = (n + 2).pow(3);
         let u = vec![1.0; size];

@@ -26,7 +26,7 @@
 //! - 频率可控 (调节权重即可改变湍流频谱)
 //! - 无 CFL 限制 (隐式粘度可大步长)
 
-use glam::{Vec2, Mat3};
+use glam::{Mat3, Vec2};
 
 // ============================================================
 // 工具函数 (避免重复计算三角函数)
@@ -115,29 +115,31 @@ impl EigenMode {
 // ============================================================
 
 /// 4 点 Gauss-Legendre 在 [-1, 1] 上的节点和权重
-const GL4_NODES: [f32; 4] = [
-    -0.8611363115940526,
-    -0.3399810435848563,
-    0.3399810435848563,
-    0.8611363115940526,
-];
-const GL4_WEIGHTS: [f32; 4] = [
-    0.3478548451374538,
-    0.6521451548625461,
-    0.6521451548625461,
-    0.3478548451374538,
-];
+const GL4_NODES: [f32; 4] =
+    [-0.8611363115940526, -0.3399810435848563, 0.3399810435848563, 0.8611363115940526];
+const GL4_WEIGHTS: [f32; 4] =
+    [0.3478548451374538, 0.6521451548625461, 0.6521451548625461, 0.3478548451374538];
 
 /// 8 点 Gauss-Legendre 节点
 const GL8_NODES: [f32; 8] = [
-    -0.9602898564975363, -0.7966664774136267, -0.5255324099163290,
-    -0.1834346424956498,  0.1834346424956498,  0.5255324099163290,
-     0.7966664774136267,  0.9602898564975363,
+    -0.9602898564975363,
+    -0.7966664774136267,
+    -0.5255324099163290,
+    -0.1834346424956498,
+    0.1834346424956498,
+    0.5255324099163290,
+    0.7966664774136267,
+    0.9602898564975363,
 ];
 const GL8_WEIGHTS: [f32; 8] = [
-    0.1012285362903763, 0.2223810344533745, 0.3137066458778873,
-    0.3626837833783620, 0.3626837833783620, 0.3137066458778873,
-    0.2223810344533745, 0.1012285362903763,
+    0.1012285362903763,
+    0.2223810344533745,
+    0.3137066458778873,
+    0.3626837833783620,
+    0.3626837833783620,
+    0.3137066458778873,
+    0.2223810344533745,
+    0.1012285362903763,
 ];
 
 // ============================================================
@@ -299,8 +301,8 @@ impl EigenFluidSolver {
                 for i in 0..n {
                     for j in 0..n {
                         for k in 0..n {
-                            let poisson = grad_psi[j].x * grad_psi[k].y
-                                        - grad_psi[j].y * grad_psi[k].x;
+                            let poisson =
+                                grad_psi[j].x * grad_psi[k].y - grad_psi[j].y * grad_psi[k].x;
                             self.advection_tensor[i][j][k] += w_total * psi[i] * poisson;
                         }
                     }
@@ -330,11 +332,15 @@ impl EigenFluidSolver {
         if !self.advection_tensor.is_empty() {
             for i in 0..n {
                 let lambda_i = self.modes[i].eigenvalue;
-                if lambda_i < 1e-10 { continue; }
+                if lambda_i < 1e-10 {
+                    continue;
+                }
                 let mut sum = 0.0;
                 for j in 0..n {
                     let wj = w[j];
-                    if wj.abs() < 1e-12 { continue; }
+                    if wj.abs() < 1e-12 {
+                        continue;
+                    }
                     for k in 0..n {
                         let lambda_k = self.modes[k].eigenvalue;
                         let c = self.advection_tensor[i][j][k];
@@ -531,8 +537,12 @@ mod tests {
         assert_eq!(m.n, 1);
         // λ = (π/2)² + (π/2)² = π²/2 ≈ 4.9348
         let expected = std::f32::consts::PI * std::f32::consts::PI / 2.0;
-        assert!(approx_eq(m.eigenvalue, expected, 1e-4),
-            "eigenvalue: {} expected: {}", m.eigenvalue, expected);
+        assert!(
+            approx_eq(m.eigenvalue, expected, 1e-4),
+            "eigenvalue: {} expected: {}",
+            m.eigenvalue,
+            expected
+        );
         // ||ψ|| = sqrt(Lx·Ly/4) = sqrt(1) = 1
         assert!(approx_eq(m.norm, 1.0, 1e-4));
     }
@@ -560,8 +570,7 @@ mod tests {
         // 中心点 (Lx/2, Ly/2) 处 ψ 最大
         let m = EigenMode::new(1, 1, 2.0, 2.0);
         let psi_center = m.stream_function(1.0, 1.0, 2.0, 2.0);
-        assert!(approx_eq(psi_center, 1.0, 1e-6),
-            "psi at center: {}", psi_center);
+        assert!(approx_eq(psi_center, 1.0, 1e-6), "psi at center: {}", psi_center);
     }
 
     #[test]
@@ -577,8 +586,7 @@ mod tests {
         let y = 1.3;
         let dudx = km * kn * (km * x).cos() * (kn * y).cos();
         let dvdy = -km * kn * (km * x).cos() * (kn * y).cos();
-        assert!(approx_eq(dudx + dvdy, 0.0, 1e-5),
-            "divergence: {}", dudx + dvdy);
+        assert!(approx_eq(dudx + dvdy, 0.0, 1e-5), "divergence: {}", dudx + dvdy);
     }
 
     #[test]
@@ -607,8 +615,12 @@ mod tests {
         let y = 0.9;
         let psi = m.stream_function(x, y, 1.5, 2.0);
         let omega = m.vorticity(x, y, 1.5, 2.0);
-        assert!(approx_eq(omega, m.eigenvalue * psi, 1e-5),
-            "omega: {}, lambda*psi: {}", omega, m.eigenvalue * psi);
+        assert!(
+            approx_eq(omega, m.eigenvalue * psi, 1e-5),
+            "omega: {}, lambda*psi: {}",
+            omega,
+            m.eigenvalue * psi
+        );
     }
 
     #[test]
@@ -650,15 +662,20 @@ mod tests {
         let ly = 2.0;
         let lambda_11 = 2.0 * (std::f32::consts::PI / 2.0).powi(2);
         solver.set_initial_vorticity(|x, y| {
-            lambda_11 * (std::f32::consts::PI * x / lx).sin() * (std::f32::consts::PI * y / ly).sin()
+            lambda_11
+                * (std::f32::consts::PI * x / lx).sin()
+                * (std::f32::consts::PI * y / ly).sin()
         });
         // 第一个模式 (1,1) 的权重应接近 1
-        assert!(approx_eq(solver.weights[0], 1.0, 0.05),
-            "weights[0]: {}", solver.weights[0]);
+        assert!(approx_eq(solver.weights[0], 1.0, 0.05), "weights[0]: {}", solver.weights[0]);
         // 其他模式应接近 0
         for i in 1..solver.weights.len() {
-            assert!(solver.weights[i].abs() < 0.05,
-                "weights[{}]: {} should be ~0", i, solver.weights[i]);
+            assert!(
+                solver.weights[i].abs() < 0.05,
+                "weights[{}]: {} should be ~0",
+                i,
+                solver.weights[i]
+            );
         }
     }
 
@@ -676,14 +693,20 @@ mod tests {
         // 无外力, 有粘性 → 权重应衰减
         let mut solver = EigenFluidSolver::new(2.0, 2.0, 3, 0.5);
         // 初始化为单一模式
-        for w in &mut solver.weights { *w = 0.0; }
+        for w in &mut solver.weights {
+            *w = 0.0;
+        }
         solver.weights[0] = 1.0;
         let initial_energy = solver.kinetic_energy();
         // 多步推进
         solver.simulate(0.01, 100);
         let final_energy = solver.kinetic_energy();
-        assert!(final_energy < initial_energy * 0.99,
-            "energy should decay: initial={} final={}", initial_energy, final_energy);
+        assert!(
+            final_energy < initial_energy * 0.99,
+            "energy should decay: initial={} final={}",
+            initial_energy,
+            final_energy
+        );
     }
 
     #[test]
@@ -695,8 +718,12 @@ mod tests {
         let initial_energy = solver.kinetic_energy();
         solver.simulate(0.005, 50);
         let final_energy = solver.kinetic_energy();
-        assert!(approx_eq(final_energy, initial_energy, 1e-4),
-            "energy: initial={} final={}", initial_energy, final_energy);
+        assert!(
+            approx_eq(final_energy, initial_energy, 1e-4),
+            "energy: initial={} final={}",
+            initial_energy,
+            final_energy
+        );
     }
 
     #[test]
@@ -759,7 +786,9 @@ mod tests {
                     let a = solver.advection_tensor[i][j][k];
                     let b = solver.advection_tensor[i][k][j];
                     let s = (a + b).abs();
-                    if s > max_sum { max_sum = s; }
+                    if s > max_sum {
+                        max_sum = s;
+                    }
                 }
             }
         }
@@ -775,8 +804,7 @@ mod tests {
         // 解析: ω = λ·ψ, ∫ω² = λ²·||ψ||² = λ²·(Lx·Ly/4)
         let mode = solver.mode(0);
         let expected = mode.eigenvalue * mode.eigenvalue * (2.0 * 2.0 * 0.25);
-        assert!(approx_eq(ens, expected, 1e-3),
-            "enstrophy: {} expected: {}", ens, expected);
+        assert!(approx_eq(ens, expected, 1e-3), "enstrophy: {} expected: {}", ens, expected);
     }
 
     #[test]
@@ -812,9 +840,12 @@ mod tests {
         let ratio_low = solver_low.kinetic_energy() / e0_low;
         let ratio_high = solver_high.kinetic_energy() / e0_high;
         // 高频衰减更快
-        assert!(ratio_high < ratio_low,
+        assert!(
+            ratio_high < ratio_low,
             "high mode ratio: {} should be < low mode ratio: {}",
-            ratio_high, ratio_low);
+            ratio_high,
+            ratio_low
+        );
     }
 
     #[test]
@@ -834,8 +865,11 @@ mod tests {
         // 想象钟表逆时针转: 3点位置 (右) 的点向上走 (+y)
         let r = 0.3;
         let v_at_r = solver.velocity_at(cx + r, cy);
-        assert!(v_at_r.y > 0.0,
-            "v.y at right of vortex: {} (should be > 0 for CCW vortex)", v_at_r.y);
+        assert!(
+            v_at_r.y > 0.0,
+            "v.y at right of vortex: {} (should be > 0 for CCW vortex)",
+            v_at_r.y
+        );
         let kinetic = solver.kinetic_energy();
         assert!(kinetic > 0.0, "kinetic energy: {}", kinetic);
     }

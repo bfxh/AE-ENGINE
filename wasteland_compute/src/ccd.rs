@@ -26,7 +26,7 @@
 //! - `swept_sphere`: 球扫掠体 vs 静态形状 (子弹/投掷物)
 //! - `CcdSolver`: 多体 CCD 管线, 找最早 TOI 并推进
 
-use glam::{Vec3, Quat, Mat3};
+use glam::{Mat3, Quat, Vec3};
 
 use crate::collision::Collider;
 
@@ -94,8 +94,7 @@ pub fn gjk_distance<A: Collider, B: Collider>(a: &A, b: &B) -> DistanceResult {
         }
         simplex.push(new_pt);
         // 更新 simplex 为包含原点的最小子单纯形, 同时返回新的搜索方向和最近点
-        let (new_simplex, new_dir, new_closest, contains_origin) =
-            do_simplex_distance(&simplex);
+        let (new_simplex, new_dir, new_closest, contains_origin) = do_simplex_distance(&simplex);
         simplex = new_simplex;
         direction = new_dir;
         closest = new_closest;
@@ -132,13 +131,7 @@ pub fn gjk_distance<A: Collider, B: Collider>(a: &A, b: &B) -> DistanceResult {
     // b_pt (B 上离 A 最近点) 在 +closest 方向: b.support(closest/dist) = b.support(-normal)
     let closest_a = a.support(normal);
     let closest_b = b.support(-normal);
-    DistanceResult {
-        distance: dist,
-        closest_a,
-        closest_b,
-        normal,
-        intersecting: false,
-    }
+    DistanceResult { distance: dist, closest_a, closest_b, normal, intersecting: false }
 }
 
 /// Minkowski Difference support: md_support(a, b, d) = a.support(d) - b.support(-d)
@@ -151,14 +144,12 @@ fn md_support<A: Collider, B: Collider>(a: &A, b: &B, d: Vec3) -> Vec3 {
 ///
 /// 对于距离查询, 不要求原点在 simplex 内部, 而是找 simplex 上离原点最近的点.
 /// 用 Voronoi 区域 (Johnson 算法) 投影原点到 simplex.
-fn do_simplex_distance(
-    simplex: &[Vec3],
-) -> (Vec<Vec3>, Vec3, Vec3, bool) {
+fn do_simplex_distance(simplex: &[Vec3]) -> (Vec<Vec3>, Vec3, Vec3, bool) {
     match simplex.len() {
         1 => {
             let p = simplex[0];
             (vec![p], -p, p, false) // 单点: 方向指向原点, 最近点就是该点
-        }
+        },
         2 => do_simplex_line(simplex),
         3 => do_simplex_triangle(simplex),
         4 => do_simplex_tetrahedron(simplex),
@@ -166,7 +157,7 @@ fn do_simplex_distance(
             // 不应发生, 取最后一个点
             let p = *simplex.last().unwrap();
             (vec![p], -p, p, false)
-        }
+        },
     }
 }
 
@@ -259,8 +250,7 @@ fn do_simplex_triangle(simplex: &[Vec3]) -> (Vec<Vec3>, Vec3, Vec3, bool) {
     let bp = proj - b;
     let d3 = ab.dot(bp);
     let d4 = ac.dot(bp);
-    let inside = (d1 >= 0.0 && d2 >= 0.0 && d3 <= 0.0 && d4 >= d3)
-        && (d1 * d4 - d3 * d2 >= 0.0); // 简化判断
+    let inside = (d1 >= 0.0 && d2 >= 0.0 && d3 <= 0.0 && d4 >= d3) && (d1 * d4 - d3 * d2 >= 0.0); // 简化判断
     if inside && dist_to_plane.abs() < GJK_DISTANCE_TOLERANCE {
         // 原点在三角形平面且三角形内 -> 真正相交
         return (vec![c, b, a], Vec3::ZERO, Vec3::ZERO, true);
@@ -417,17 +407,14 @@ pub struct Toi {
 
 // 为常用形状对提供具体实现 (避免 Clone + 可变位置的复杂性)
 
-use crate::collision::{SphereCollider, BoxCollider, CapsuleCollider};
+use crate::collision::{BoxCollider, CapsuleCollider, SphereCollider};
 
 /// 推进球体到时刻 t
 #[inline]
 fn advance_sphere(s: &SphereCollider, motion: &Motion, t: f32) -> SphereCollider {
     let translation = motion.linear_velocity * t;
     // 角速度对球体无视觉影响 (球对称), 但对球心位置无影响
-    SphereCollider {
-        center: s.center + translation,
-        radius: s.radius,
-    }
+    SphereCollider { center: s.center + translation, radius: s.radius }
 }
 
 /// 推进盒子到时刻 t (含旋转)
@@ -602,7 +589,11 @@ pub fn sphere_sphere_toi(
         // 相对静止
         if cc <= 0.0 {
             // 已接触
-            return Some(Toi { t: 0.0, normal: d0.normalize_or_zero(), point: (a.center + b.center) * 0.5 });
+            return Some(Toi {
+                t: 0.0,
+                normal: d0.normalize_or_zero(),
+                point: (a.center + b.center) * 0.5,
+            });
         }
         return None;
     }
@@ -628,11 +619,7 @@ pub fn sphere_sphere_toi(
     let contact_point_a = a.center + motion_a.linear_velocity * t_clamped;
     let contact_point_b = b.center + motion_b.linear_velocity * t_clamped;
     let normal = (contact_point_b - contact_point_a).normalize_or_zero();
-    Some(Toi {
-        t: t_clamped,
-        normal,
-        point: contact_point_a + normal * a.radius,
-    })
+    Some(Toi { t: t_clamped, normal, point: contact_point_a + normal * a.radius })
 }
 
 /// 射线 vs 球: 返回最近正参数 t (沿 ray.direction)
@@ -670,7 +657,9 @@ pub fn ray_sphere(
     } else {
         return None;
     };
-    if t > max_t { return None; }
+    if t > max_t {
+        return None;
+    }
     Some(t)
 }
 
@@ -920,7 +909,9 @@ impl Default for CcdSolver {
 }
 
 impl CcdSolver {
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self {
+        Self::default()
+    }
 
     pub fn with_substeps(mut self, n: usize) -> Self {
         self.max_substeps = n;
@@ -929,14 +920,11 @@ impl CcdSolver {
 
     /// 从一组 TOI 查询结果中找最早的接触
     pub fn find_earliest<'a>(&self, pairs: &'a [CcdPair]) -> Option<&'a CcdPair> {
-        pairs
-            .iter()
-            .filter(|p| p.toi.map(|t| t.t >= 0.0).unwrap_or(false))
-            .min_by(|a, b| {
-                let ta = a.toi.unwrap().t;
-                let tb = b.toi.unwrap().t;
-                ta.partial_cmp(&tb).unwrap_or(std::cmp::Ordering::Equal)
-            })
+        pairs.iter().filter(|p| p.toi.map(|t| t.t >= 0.0).unwrap_or(false)).min_by(|a, b| {
+            let ta = a.toi.unwrap().t;
+            let tb = b.toi.unwrap().t;
+            ta.partial_cmp(&tb).unwrap_or(std::cmp::Ordering::Equal)
+        })
     }
 
     /// 把单帧 dt 切分为子步: 最早 TOI 之前 + 之后
@@ -1222,9 +1210,9 @@ mod tests {
         let toi = swept_sphere_vs_sphere(
             Vec3::new(0.0, 0.0, 0.0),
             Vec3::new(1.0, 0.0, 0.0),
-            0.5,  // bullet radius
+            0.5, // bullet radius
             Vec3::new(5.0, 0.0, 0.0),
-            0.5,  // target radius
+            0.5, // target radius
             100.0,
         );
         assert!(toi.is_some());
@@ -1321,17 +1309,16 @@ mod tests {
         let solver = CcdSolver::new();
         let pairs = vec![
             CcdPair {
-                a_index: 0, b_index: 1,
+                a_index: 0,
+                b_index: 1,
                 toi: Some(Toi { t: 5.0, normal: Vec3::X, point: Vec3::ZERO }),
             },
             CcdPair {
-                a_index: 0, b_index: 2,
+                a_index: 0,
+                b_index: 2,
                 toi: Some(Toi { t: 2.0, normal: Vec3::Y, point: Vec3::ZERO }),
             },
-            CcdPair {
-                a_index: 1, b_index: 2,
-                toi: None,
-            },
+            CcdPair { a_index: 1, b_index: 2, toi: None },
         ];
         let earliest = solver.find_earliest(&pairs);
         assert!(earliest.is_some());
@@ -1375,10 +1362,8 @@ mod tests {
         let box_max = Vec3::new(0.5, 1.0, 1.0);
         let dt = 0.016f32;
 
-        let toi = swept_sphere_vs_aabb(
-            bullet_start, bullet_vel, bullet_radius,
-            box_min, box_max, dt,
-        );
+        let toi =
+            swept_sphere_vs_aabb(bullet_start, bullet_vel, bullet_radius, box_min, box_max, dt);
         assert!(toi.is_some(), "CCD should catch tunneling bullet");
         let t = toi.unwrap().t;
         // 膨胀盒子 x_min = -0.5 - 0.05 = -0.55

@@ -18,8 +18,8 @@
 //! - PD 是 FMS 的推广 (用投影代替方向固定)
 //! - FMS 的弹簧约束是 PD 弹簧约束的特例
 
-use serde::{Deserialize, Serialize};
 use glam::Vec3;
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -71,12 +71,7 @@ impl FmsParticle {
     }
 
     pub fn pinned(position: Vec3) -> Self {
-        Self {
-            position,
-            velocity: Vec3::ZERO,
-            inv_mass: 0.0,
-            pinned: true,
-        }
+        Self { position, velocity: Vec3::ZERO, inv_mass: 0.0, pinned: true }
     }
 
     #[inline]
@@ -156,7 +151,8 @@ impl FmsSolver {
         let mut predicted = vec![Vec3::ZERO; n];
         for (i, p) in self.particles.iter().enumerate() {
             if p.is_dynamic() {
-                predicted[i] = p.position + p.velocity * dt * self.config.damping
+                predicted[i] = p.position
+                    + p.velocity * dt * self.config.damping
                     + self.config.gravity * dt * dt;
             } else {
                 predicted[i] = p.position;
@@ -299,7 +295,8 @@ impl FmsSolver {
 
     /// 最大速度 (稳定性监测)
     pub fn max_velocity(&self) -> f32 {
-        self.particles.iter()
+        self.particles
+            .iter()
             .filter(|p| p.is_dynamic())
             .map(|p| p.velocity.length())
             .fold(0.0f32, f32::max)
@@ -370,8 +367,16 @@ mod tests {
         solver.add_particle(FmsParticle::new(Vec3::new(0.0, 10.0, 0.0), 1.0));
         solver.step();
         // 应下落
-        assert!(solver.particles[0].position.y < 10.0, "should fall: y={}", solver.particles[0].position.y);
-        assert!(solver.particles[0].velocity.y < 0.0, "downward velocity: {}", solver.particles[0].velocity.y);
+        assert!(
+            solver.particles[0].position.y < 10.0,
+            "should fall: y={}",
+            solver.particles[0].position.y
+        );
+        assert!(
+            solver.particles[0].velocity.y < 0.0,
+            "downward velocity: {}",
+            solver.particles[0].velocity.y
+        );
     }
 
     #[test]
@@ -388,7 +393,10 @@ mod tests {
         solver.connect(p0, p1, 100.0);
         solver.step();
         // p0 应保持位置
-        assert!((solver.particles[p0].position - Vec3::new(0.0, 5.0, 0.0)).length() < 1e-4, "pinned stays");
+        assert!(
+            (solver.particles[p0].position - Vec3::new(0.0, 5.0, 0.0)).length() < 1e-4,
+            "pinned stays"
+        );
     }
 
     #[test]
@@ -489,10 +497,7 @@ mod tests {
         // 5 个粒子的链, 第一个固定
         let mut prev = solver.add_particle(FmsParticle::pinned(Vec3::new(0.0, 5.0, 0.0)));
         for i in 1..5 {
-            let p = solver.add_particle(FmsParticle::new(
-                Vec3::new(i as f32 * 0.5, 5.0, 0.0),
-                1.0,
-            ));
+            let p = solver.add_particle(FmsParticle::new(Vec3::new(i as f32 * 0.5, 5.0, 0.0), 1.0));
             solver.connect(prev, p, 500.0);
             prev = p;
         }
@@ -526,23 +531,30 @@ mod tests {
         for j in 0..ny {
             for i in 0..nx {
                 let p = if i == 0 && j == 0 {
-                    FmsParticle::pinned(Vec3::new(i as f32 * spacing, 2.0 - j as f32 * spacing, 0.0))
+                    FmsParticle::pinned(Vec3::new(
+                        i as f32 * spacing,
+                        2.0 - j as f32 * spacing,
+                        0.0,
+                    ))
                 } else {
-                    FmsParticle::new(Vec3::new(i as f32 * spacing, 2.0 - j as f32 * spacing, 0.0), 0.1)
+                    FmsParticle::new(
+                        Vec3::new(i as f32 * spacing, 2.0 - j as f32 * spacing, 0.0),
+                        0.1,
+                    )
                 };
                 idx[j * nx + i] = solver.add_particle(p);
             }
         }
         // 水平弹簧
         for j in 0..ny {
-            for i in 0..nx-1 {
-                solver.connect(idx[j*nx+i], idx[j*nx+i+1], 200.0);
+            for i in 0..nx - 1 {
+                solver.connect(idx[j * nx + i], idx[j * nx + i + 1], 200.0);
             }
         }
         // 垂直弹簧
-        for j in 0..ny-1 {
+        for j in 0..ny - 1 {
             for i in 0..nx {
-                solver.connect(idx[j*nx+i], idx[(j+1)*nx+i], 200.0);
+                solver.connect(idx[j * nx + i], idx[(j + 1) * nx + i], 200.0);
             }
         }
         // 跑 100 步

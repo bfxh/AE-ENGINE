@@ -15,7 +15,7 @@
 //! 5. 限制为 4 个接触点 (Box2D 策略: 保留构成最大面积的四边形)
 //! 6. 跨帧持久化: 匹配旧点与新点, 保留累积冲量 (warm starting)
 
-use glam::{Vec3, Quat};
+use glam::{Quat, Vec3};
 
 use crate::collision::{BoxCollider, ContactInfo};
 use crate::resting_rigid_bodies::ConvexPolyhedron;
@@ -185,13 +185,9 @@ impl ContactManifold {
                 } else {
                     (rb, find_incident_face(&faces_a, -contact.normal).cloned())
                 }
-            }
-            (Some(ra), None) => {
-                (ra, find_incident_face(&faces_b, contact.normal).cloned())
-            }
-            (None, Some(rb)) => {
-                (rb, find_incident_face(&faces_a, -contact.normal).cloned())
-            }
+            },
+            (Some(ra), None) => (ra, find_incident_face(&faces_b, contact.normal).cloned()),
+            (None, Some(rb)) => (rb, find_incident_face(&faces_a, -contact.normal).cloned()),
             (None, None) => {
                 // fallback: 用 EPA 的单点
                 let cp = ContactPoint::new(
@@ -201,7 +197,7 @@ impl ContactManifold {
                 );
                 self.points = vec![cp];
                 return;
-            }
+            },
         };
 
         let Some(incident) = incident else {
@@ -299,11 +295,7 @@ impl ContactManifold {
 
 /// 用平面裁剪多边形 (保留平面正侧的点)
 /// plane_normal 指向保留侧
-pub fn clip_polygon_by_plane(
-    subject: &[Vec3],
-    plane_point: Vec3,
-    plane_normal: Vec3,
-) -> Vec<Vec3> {
+pub fn clip_polygon_by_plane(subject: &[Vec3], plane_point: Vec3, plane_normal: Vec3) -> Vec<Vec3> {
     if subject.is_empty() {
         return Vec::new();
     }
@@ -363,10 +355,7 @@ pub fn clip_polygon_by_face(subject: &[Vec3], reference: &WorldFace) -> Vec<Vec3
 // ============================================================
 
 /// 找法线最平行于 direction 的面 (最大 dot product)
-pub fn find_reference_face<'a>(
-    faces: &'a [WorldFace],
-    direction: Vec3,
-) -> Option<&'a WorldFace> {
+pub fn find_reference_face<'a>(faces: &'a [WorldFace], direction: Vec3) -> Option<&'a WorldFace> {
     faces.iter().max_by(|a, b| {
         let da = a.normal.dot(direction);
         let db = b.normal.dot(direction);
@@ -375,10 +364,7 @@ pub fn find_reference_face<'a>(
 }
 
 /// 找法线最反平行于 direction 的面 (最小 dot product)
-pub fn find_incident_face<'a>(
-    faces: &'a [WorldFace],
-    direction: Vec3,
-) -> Option<&'a WorldFace> {
+pub fn find_incident_face<'a>(faces: &'a [WorldFace], direction: Vec3) -> Option<&'a WorldFace> {
     faces.iter().min_by(|a, b| {
         let da = a.normal.dot(direction);
         let db = b.normal.dot(direction);
@@ -413,11 +399,7 @@ pub fn world_face_groups(
                 }
             }
             if verts.is_empty() {
-                return WorldFace {
-                    vertices: Vec::new(),
-                    normal: wn,
-                    center: position,
-                };
+                return WorldFace { vertices: Vec::new(), normal: wn, center: position };
             }
 
             // 按角度排序 (从外侧看逆时针)
@@ -435,11 +417,7 @@ pub fn world_face_groups(
                 aa.partial_cmp(&bb).unwrap()
             });
 
-            WorldFace {
-                vertices: verts,
-                normal: wn,
-                center,
-            }
+            WorldFace { vertices: verts, normal: wn, center }
         })
         .collect()
 }
@@ -551,7 +529,8 @@ mod tests {
             Vec3::new(1.0, 1.0, 0.0),
             Vec3::new(0.0, 1.0, 0.0),
         ];
-        let result = clip_polygon_by_plane(&poly, Vec3::new(-1.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
+        let result =
+            clip_polygon_by_plane(&poly, Vec3::new(-1.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
         assert_eq!(result.len(), 4, "should keep all 4 vertices");
     }
 
@@ -564,7 +543,8 @@ mod tests {
             Vec3::new(1.0, 1.0, 0.0),
             Vec3::new(0.0, 1.0, 0.0),
         ];
-        let result = clip_polygon_by_plane(&poly, Vec3::new(0.5, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
+        let result =
+            clip_polygon_by_plane(&poly, Vec3::new(0.5, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
         // 保留 x >= 0.5 的部分: 应该有 4 个顶点 (2 原始 + 2 交点)
         assert_eq!(result.len(), 4, "should have 4 vertices after clip");
         for v in &result {
@@ -574,13 +554,11 @@ mod tests {
 
     #[test]
     fn test_clip_polygon_by_plane_remove_all() {
-        let poly = vec![
-            Vec3::new(0.0, 0.0, 0.0),
-            Vec3::new(1.0, 0.0, 0.0),
-            Vec3::new(1.0, 1.0, 0.0),
-        ];
+        let poly =
+            vec![Vec3::new(0.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0), Vec3::new(1.0, 1.0, 0.0)];
         // 平面法线指向 -x, 平面在 x=2 -> 所有点都在负侧
-        let result = clip_polygon_by_plane(&poly, Vec3::new(2.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
+        let result =
+            clip_polygon_by_plane(&poly, Vec3::new(2.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0));
         assert!(result.is_empty(), "should remove all vertices");
     }
 
@@ -637,12 +615,21 @@ mod tests {
         };
         let mut m = ContactManifold::new(0, 1);
         m.generate(
-            &cube, Vec3::new(0.0, 0.0, 0.0), Quat::IDENTITY,
-            &cube, Vec3::new(0.0, 1.8, 0.0), Quat::IDENTITY,
+            &cube,
+            Vec3::new(0.0, 0.0, 0.0),
+            Quat::IDENTITY,
+            &cube,
+            Vec3::new(0.0, 1.8, 0.0),
+            Quat::IDENTITY,
             &contact,
         );
         // 面接触应该生成多个接触点 (正方形面的裁剪结果)
-        assert!(m.points.len() >= 2, "face-to-face should generate {} points, got {}", m.points.len(), m.points.len());
+        assert!(
+            m.points.len() >= 2,
+            "face-to-face should generate {} points, got {}",
+            m.points.len(),
+            m.points.len()
+        );
         for p in &m.points {
             assert!(p.penetration > 0.0, "penetration should be positive");
         }
@@ -653,11 +640,7 @@ mod tests {
         let mut m1 = ContactManifold::new(0, 1);
         m1.normal = Vec3::new(0.0, 1.0, 0.0);
         m1.compute_tangents();
-        m1.points.push(ContactPoint::new(
-            Vec3::new(0.5, 1.0, 0.5),
-            Vec3::new(0.0, 1.0, 0.0),
-            0.1,
-        ));
+        m1.points.push(ContactPoint::new(Vec3::new(0.5, 1.0, 0.5), Vec3::new(0.0, 1.0, 0.0), 0.1));
         m1.points[0].normal_impulse = 5.0;
 
         let mut m2 = m1.clone();
@@ -672,11 +655,7 @@ mod tests {
     fn test_manifold_persist_normal_change() {
         let mut m1 = ContactManifold::new(0, 1);
         m1.normal = Vec3::new(0.0, 1.0, 0.0);
-        m1.points.push(ContactPoint::new(
-            Vec3::new(0.0, 1.0, 0.0),
-            Vec3::new(0.0, 1.0, 0.0),
-            0.1,
-        ));
+        m1.points.push(ContactPoint::new(Vec3::new(0.0, 1.0, 0.0), Vec3::new(0.0, 1.0, 0.0), 0.1));
         m1.points[0].normal_impulse = 5.0;
 
         let mut m2 = m1.clone();
@@ -684,7 +663,10 @@ mod tests {
         m2.points[0].normal_impulse = 0.0;
         m2.persist(&m1);
 
-        assert!(m2.points[0].normal_impulse < 1e-6, "should not preserve impulse when normal changes");
+        assert!(
+            m2.points[0].normal_impulse < 1e-6,
+            "should not preserve impulse when normal changes"
+        );
     }
 
     #[test]
@@ -692,11 +674,7 @@ mod tests {
         let mut pts = Vec::new();
         for i in 0..6 {
             let angle = i as f32 * std::f32::consts::PI / 3.0;
-            pts.push(ContactPoint::new(
-                Vec3::new(angle.cos(), 0.0, angle.sin()),
-                Vec3::Y,
-                0.1,
-            ));
+            pts.push(ContactPoint::new(Vec3::new(angle.cos(), 0.0, angle.sin()), Vec3::Y, 0.1));
         }
         let selected = select_best_points(&pts, 4);
         assert_eq!(selected.len(), 4);
@@ -714,8 +692,12 @@ mod tests {
         let rot_b = Quat::from_rotation_y(std::f32::consts::FRAC_PI_4);
         let mut m = ContactManifold::new(0, 1);
         m.generate(
-            &cube, Vec3::ZERO, Quat::IDENTITY,
-            &cube, Vec3::new(0.0, 1.5, 0.0), rot_b,
+            &cube,
+            Vec3::ZERO,
+            Quat::IDENTITY,
+            &cube,
+            Vec3::new(0.0, 1.5, 0.0),
+            rot_b,
             &contact,
         );
         assert!(!m.points.is_empty(), "edge-to-face should generate contacts");

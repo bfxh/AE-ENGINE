@@ -507,7 +507,8 @@ impl DynamicAabbTree {
                 &self.nodes[self.nodes[i_a as usize].child1 as usize].aabb,
                 &self.nodes[self.nodes[i_a as usize].child2 as usize].aabb,
             );
-            let a_height = 1 + self.nodes[self.nodes[i_a as usize].child1 as usize].height
+            let a_height = 1 + self.nodes[self.nodes[i_a as usize].child1 as usize]
+                .height
                 .max(self.nodes[self.nodes[i_a as usize].child2 as usize].height);
             self.nodes[i_a as usize].aabb = a_aabb;
             self.nodes[i_a as usize].height = a_height;
@@ -516,7 +517,8 @@ impl DynamicAabbTree {
                 &self.nodes[self.nodes[i_b as usize].child1 as usize].aabb,
                 &self.nodes[self.nodes[i_b as usize].child2 as usize].aabb,
             );
-            let b_height = 1 + self.nodes[self.nodes[i_b as usize].child1 as usize].height
+            let b_height = 1 + self.nodes[self.nodes[i_b as usize].child1 as usize]
+                .height
                 .max(self.nodes[self.nodes[i_b as usize].child2 as usize].height);
             self.nodes[i_b as usize].aabb = b_aabb;
             self.nodes[i_b as usize].height = b_height;
@@ -554,7 +556,8 @@ impl DynamicAabbTree {
                 &self.nodes[self.nodes[i_a as usize].child1 as usize].aabb,
                 &self.nodes[self.nodes[i_a as usize].child2 as usize].aabb,
             );
-            let a_height = 1 + self.nodes[self.nodes[i_a as usize].child1 as usize].height
+            let a_height = 1 + self.nodes[self.nodes[i_a as usize].child1 as usize]
+                .height
                 .max(self.nodes[self.nodes[i_a as usize].child2 as usize].height);
             self.nodes[i_a as usize].aabb = a_aabb;
             self.nodes[i_a as usize].height = a_height;
@@ -563,7 +566,8 @@ impl DynamicAabbTree {
                 &self.nodes[self.nodes[i_c as usize].child1 as usize].aabb,
                 &self.nodes[self.nodes[i_c as usize].child2 as usize].aabb,
             );
-            let c_height = 1 + self.nodes[self.nodes[i_c as usize].child1 as usize].height
+            let c_height = 1 + self.nodes[self.nodes[i_c as usize].child1 as usize]
+                .height
                 .max(self.nodes[self.nodes[i_c as usize].child2 as usize].height);
             self.nodes[i_c as usize].aabb = c_aabb;
             self.nodes[i_c as usize].height = c_height;
@@ -657,7 +661,12 @@ impl DynamicAabbTree {
     ///
     /// ray: origin -> origin + direction * max_fraction
     /// 返回 (proxy_id, user_data, fraction) 列表, 按 fraction 升序
-    pub fn ray_cast(&self, origin: Vec3, direction: Vec3, max_fraction: f32) -> Vec<(i32, u64, f32)> {
+    pub fn ray_cast(
+        &self,
+        origin: Vec3,
+        direction: Vec3,
+        max_fraction: f32,
+    ) -> Vec<(i32, u64, f32)> {
         let mut hits: Vec<(i32, u64, f32)> = Vec::new();
         if self.root == NULL_NODE {
             return hits;
@@ -745,20 +754,33 @@ impl DynamicAabbTree {
             return Err(format!("internal {} has NULL child (c1={} c2={})", idx, c1, c2));
         }
         if self.nodes[c1 as usize].parent != idx {
-            return Err(format!("child1 {} parent={} != {}", c1, self.nodes[c1 as usize].parent, idx));
+            return Err(format!(
+                "child1 {} parent={} != {}",
+                c1, self.nodes[c1 as usize].parent, idx
+            ));
         }
         if self.nodes[c2 as usize].parent != idx {
-            return Err(format!("child2 {} parent={} != {}", c2, self.nodes[c2 as usize].parent, idx));
+            return Err(format!(
+                "child2 {} parent={} != {}",
+                c2, self.nodes[c2 as usize].parent, idx
+            ));
         }
-        let expected_height = 1 + self.nodes[c1 as usize].height.max(self.nodes[c2 as usize].height);
+        let expected_height =
+            1 + self.nodes[c1 as usize].height.max(self.nodes[c2 as usize].height);
         if node.height != expected_height {
-            return Err(format!("node {} height={} expected={}", idx, node.height, expected_height));
+            return Err(format!(
+                "node {} height={} expected={}",
+                idx, node.height, expected_height
+            ));
         }
         let expected_aabb = union(&self.nodes[c1 as usize].aabb, &self.nodes[c2 as usize].aabb);
         let diff_min = (expected_aabb.min - node.aabb.min).length();
         let diff_max = (expected_aabb.max - node.aabb.max).length();
         if diff_min > 1e-3 || diff_max > 1e-3 {
-            return Err(format!("node {} aabb mismatch min_diff={} max_diff={}", idx, diff_min, diff_max));
+            return Err(format!(
+                "node {} aabb mismatch min_diff={} max_diff={}",
+                idx, diff_min, diff_max
+            ));
         }
         // Note: Box2D dynamic tree is NOT strict AVL — rotations are heuristic.
         // Balance factor can exceed 1 temporarily; surface area heuristic is the primary quality metric.
@@ -1171,7 +1193,13 @@ mod tests {
                 .filter(|(_, a)| a.intersects(&query_aabb))
                 .map(|(p, _)| *p)
                 .collect();
-            assert_eq!(tree_hits, brute_hits, "query mismatch: tree={} brute={}", tree_hits.len(), brute_hits.len());
+            assert_eq!(
+                tree_hits,
+                brute_hits,
+                "query mismatch: tree={} brute={}",
+                tree_hits.len(),
+                brute_hits.len()
+            );
         }
     }
 

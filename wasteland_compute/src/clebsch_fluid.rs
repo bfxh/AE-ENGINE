@@ -1,4 +1,4 @@
-﻿//! Clebsch Gauge Fluid — 涡量保持流体模拟
+//! Clebsch Gauge Fluid — 涡量保持流体模拟
 //!
 //! 基于:
 //! - Brandenburg, Kaepylae, Mohammed. "Clebsch parameterization for fluids
@@ -18,9 +18,9 @@
 //! - LFM 对流 impulse (含速度信息), 依赖 flow map 保持细节
 //! - Clebsch 对流 (alpha, beta) (标量场), 涡量是它们的叉积, 更天然保持
 
-use serde::{Deserialize, Serialize};
-use glam::Vec3;
 use crate::leapfrog_flow_maps::mgpcg_solve_poisson;
+use glam::Vec3;
+use serde::{Deserialize, Serialize};
 
 #[inline]
 fn ix(i: usize, j: usize, k: usize, n: usize) -> usize {
@@ -167,9 +167,12 @@ impl ClebschSolver {
             for j in 1..=n {
                 for i in 1..=n {
                     let idx = ix(i, j, k, n);
-                    let gbx = (self.beta[ix(i + 1, j, k, n)] - self.beta[ix(i - 1, j, k, n)]) * 0.5 / dx;
-                    let gby = (self.beta[ix(i, j + 1, k, n)] - self.beta[ix(i, j - 1, k, n)]) * 0.5 / dx;
-                    let gbz = (self.beta[ix(i, j, k + 1, n)] - self.beta[ix(i, j, k - 1, n)]) * 0.5 / dx;
+                    let gbx =
+                        (self.beta[ix(i + 1, j, k, n)] - self.beta[ix(i - 1, j, k, n)]) * 0.5 / dx;
+                    let gby =
+                        (self.beta[ix(i, j + 1, k, n)] - self.beta[ix(i, j - 1, k, n)]) * 0.5 / dx;
+                    let gbz =
+                        (self.beta[ix(i, j, k + 1, n)] - self.beta[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     self.u[idx] = self.alpha[idx] * gbx;
                     self.v[idx] = self.alpha[idx] * gby;
                     self.w[idx] = self.alpha[idx] * gbz;
@@ -201,16 +204,21 @@ impl ClebschSolver {
                 for i in 1..=n {
                     let idx = ix(i, j, k, n);
                     let div = (self.u[ix(i + 1, j, k, n)] - self.u[ix(i - 1, j, k, n)]) * 0.5 / dx
-                            + (self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]) * 0.5 / dx
-                            + (self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]) * 0.5 / dx;
+                        + (self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]) * 0.5 / dx
+                        + (self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     rhs[idx] = div;
                 }
             }
         }
         let phi = mgpcg_solve_poisson(
-            &rhs, n, dx,
-            self.config.mg_levels, self.config.mg_pre_relax, self.config.mg_post_relax,
-            self.config.cg_max_iter, self.config.cg_tolerance,
+            &rhs,
+            n,
+            dx,
+            self.config.mg_levels,
+            self.config.mg_pre_relax,
+            self.config.mg_post_relax,
+            self.config.cg_max_iter,
+            self.config.cg_tolerance,
         );
         self.phi = phi.clone();
         for k in 1..=n {
@@ -251,8 +259,8 @@ impl ClebschSolver {
                 for i in 2..n {
                     let idx = ix(i, j, k, n);
                     let div = (self.u[ix(i + 1, j, k, n)] - self.u[ix(i - 1, j, k, n)]) * 0.5 / dx
-                            + (self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]) * 0.5 / dx
-                            + (self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]) * 0.5 / dx;
+                        + (self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]) * 0.5 / dx
+                        + (self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     max_div = max_div.max(div.abs());
                 }
             }
@@ -262,9 +270,13 @@ impl ClebschSolver {
 
     /// 总动能
     pub fn kinetic_energy(&self) -> f32 {
-        self.u.iter().zip(&self.v).zip(&self.w)
+        self.u
+            .iter()
+            .zip(&self.v)
+            .zip(&self.w)
             .map(|((&u, &v), &w)| u * u + v * v + w * w)
-            .sum::<f32>() * 0.5
+            .sum::<f32>()
+            * 0.5
     }
 
     /// 计算涡量 z 分量 omega_z = dv/dx - du/dy (vortex sheet 测试用)
@@ -352,16 +364,26 @@ mod tests {
         solver.project();
         let div_after = solver.max_divergence();
         // 投影后散度应大幅减小 (collocated grid 边界效应允许残差)
-        assert!(div_after < div_before * 2.0 + 100.0,
-            "projection should not blow up: before={} after={}", div_before, div_after);
+        assert!(
+            div_after < div_before * 2.0 + 100.0,
+            "projection should not blow up: before={} after={}",
+            div_before,
+            div_after
+        );
     }
 
     #[test]
     fn test_clebsch_stability() {
         let mut solver = ClebschSolver::new(ClebschConfig {
-            n: 16, dt: 0.02, dx: 1.0/16.0, gravity: 0.0,
-            mg_levels: 3, mg_pre_relax: 2, mg_post_relax: 2,
-            cg_max_iter: 100, cg_tolerance: 1e-5,
+            n: 16,
+            dt: 0.02,
+            dx: 1.0 / 16.0,
+            gravity: 0.0,
+            mg_levels: 3,
+            mg_pre_relax: 2,
+            mg_post_relax: 2,
+            cg_max_iter: 100,
+            cg_tolerance: 1e-5,
         });
         solver.init_vortex_sheet();
         // 先跑一步让速度场建立 (init 后 u=0, 第一步才生成 u_star)

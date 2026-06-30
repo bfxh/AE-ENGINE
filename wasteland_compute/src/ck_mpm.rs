@@ -30,8 +30,8 @@
 //! - 比 FLIP 更平滑 (APIC 仿射矩阵)
 //! - 支持弹性/塑性/流体材料
 
-use serde::{Deserialize, Serialize};
 use glam::{Mat3, Vec3};
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -212,10 +212,13 @@ impl CkMpmSolver {
                         let i = cx + di;
                         let j = cy + dj;
                         let k = cz + dk;
-                        if i < 0 || j < 0 || k < 0
+                        if i < 0
+                            || j < 0
+                            || k < 0
                             || i >= self.config.grid_n as i32
                             || j >= self.config.grid_n as i32
-                            || k >= self.config.grid_n as i32 {
+                            || k >= self.config.grid_n as i32
+                        {
                             continue;
                         }
                         let node_pos = Vec3::new(
@@ -276,10 +279,13 @@ impl CkMpmSolver {
                         let i = cx + di;
                         let j = cy + dj;
                         let k = cz + dk;
-                        if i < 0 || j < 0 || k < 0
+                        if i < 0
+                            || j < 0
+                            || k < 0
                             || i >= self.config.grid_n as i32
                             || j >= self.config.grid_n as i32
-                            || k >= self.config.grid_n as i32 {
+                            || k >= self.config.grid_n as i32
+                        {
                             continue;
                         }
                         let node_pos = Vec3::new(
@@ -294,9 +300,15 @@ impl CkMpmSolver {
                         let idx = self.grid_idx(i as usize, j as usize, k as usize);
                         // 力 = -stress * ∇w (权重梯度)
                         let grad_w = Vec3::new(
-                            Self::weight_grad(diff.x, h) * Self::weight(diff.y, h) * Self::weight(diff.z, h),
-                            Self::weight(diff.x, h) * Self::weight_grad(diff.y, h) * Self::weight(diff.z, h),
-                            Self::weight(diff.x, h) * Self::weight(diff.y, h) * Self::weight_grad(diff.z, h),
+                            Self::weight_grad(diff.x, h)
+                                * Self::weight(diff.y, h)
+                                * Self::weight(diff.z, h),
+                            Self::weight(diff.x, h)
+                                * Self::weight_grad(diff.y, h)
+                                * Self::weight(diff.z, h),
+                            Self::weight(diff.x, h)
+                                * Self::weight(diff.y, h)
+                                * Self::weight_grad(diff.z, h),
                         );
                         let force = stress_force_coeff * (p_kirchhoff * grad_w);
                         let f_len = force.length();
@@ -336,15 +348,15 @@ impl CkMpmSolver {
                     if self.grid_a[idx].mass < 1e-10 {
                         continue;
                     }
-                    let node_pos = Vec3::new(
-                        (i as f32 + 0.5) * h,
-                        (j as f32 + 0.5) * h,
-                        (k as f32 + 0.5) * h,
-                    );
+                    let node_pos =
+                        Vec3::new((i as f32 + 0.5) * h, (j as f32 + 0.5) * h, (k as f32 + 0.5) * h);
                     for axis in 0..3 {
-                        if node_pos[axis] < bound_min[axis] && self.grid_a[idx].velocity[axis] < 0.0 {
+                        if node_pos[axis] < bound_min[axis] && self.grid_a[idx].velocity[axis] < 0.0
+                        {
                             self.grid_a[idx].velocity[axis] *= -self.config.restitution;
-                        } else if node_pos[axis] > bound_max[axis] && self.grid_a[idx].velocity[axis] > 0.0 {
+                        } else if node_pos[axis] > bound_max[axis]
+                            && self.grid_a[idx].velocity[axis] > 0.0
+                        {
                             self.grid_a[idx].velocity[axis] *= -self.config.restitution;
                         }
                     }
@@ -376,10 +388,13 @@ impl CkMpmSolver {
                         let i = cx + di;
                         let j = cy + dj;
                         let k = cz + dk;
-                        if i < 0 || j < 0 || k < 0
+                        if i < 0
+                            || j < 0
+                            || k < 0
                             || i >= grid_n as i32
                             || j >= grid_n as i32
-                            || k >= grid_n as i32 {
+                            || k >= grid_n as i32
+                        {
                             continue;
                         }
                         let node_pos = Vec3::new(
@@ -424,7 +439,12 @@ impl CkMpmSolver {
             let d_inv = 4.0 / (h * h);
             let grad_v = p.affine * d_inv;
             // 限制 grad_v 防止 F 爆炸
-            let gv_norm = grad_v.abs().x_axis.length().max(grad_v.abs().y_axis.length()).max(grad_v.abs().z_axis.length());
+            let gv_norm = grad_v
+                .abs()
+                .x_axis
+                .length()
+                .max(grad_v.abs().y_axis.length())
+                .max(grad_v.abs().z_axis.length());
             let gv_scale = if gv_norm > 100.0 { 100.0 / gv_norm } else { 1.0 };
             let grad_v_safe = grad_v * gv_scale;
             let f_new = (Mat3::IDENTITY + grad_v_safe * dt) * p.deformation;
@@ -462,9 +482,7 @@ impl CkMpmSolver {
 
     /// 总动能
     pub fn kinetic_energy(&self) -> f32 {
-        self.particles.iter()
-            .map(|p| 0.5 * p.mass * p.velocity.length_squared())
-            .sum()
+        self.particles.iter().map(|p| 0.5 * p.mass * p.velocity.length_squared()).sum()
     }
 
     /// 平均速度
@@ -480,9 +498,8 @@ impl CkMpmSolver {
         if self.particles.is_empty() {
             return 1.0;
         }
-        self.particles.iter()
-            .map(|p| p.deformation.determinant())
-            .sum::<f32>() / self.particles.len() as f32
+        self.particles.iter().map(|p| p.deformation.determinant()).sum::<f32>()
+            / self.particles.len() as f32
     }
 }
 
@@ -537,14 +554,9 @@ mod tests {
 
     #[test]
     fn test_ckmpm_single_particle_no_crash() {
-        let mut solver = CkMpmSolver::new(CkMpmConfig {
-            grid_n: 16,
-            grid_h: 0.1,
-            ..CkMpmConfig::default()
-        });
-        solver.add_particle(CkMpmParticle::new(
-            Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001,
-        ));
+        let mut solver =
+            CkMpmSolver::new(CkMpmConfig { grid_n: 16, grid_h: 0.1, ..CkMpmConfig::default() });
+        solver.add_particle(CkMpmParticle::new(Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001));
         solver.step();
         assert_eq!(solver.particles.len(), 1);
     }
@@ -560,9 +572,7 @@ mod tests {
             bounds_max: Vec3::new(2.0, 2.0, 2.0),
             ..CkMpmConfig::default()
         });
-        solver.add_particle(CkMpmParticle::new(
-            Vec3::new(0.8, 1.5, 0.8), 1.0, 0.001,
-        ));
+        solver.add_particle(CkMpmParticle::new(Vec3::new(0.8, 1.5, 0.8), 1.0, 0.001));
         let y0 = solver.particles[0].position.y;
         solver.step();
         let y1 = solver.particles[0].position.y;
@@ -580,9 +590,7 @@ mod tests {
             bounds_max: Vec3::new(1.6, 1.6, 1.6),
             ..CkMpmConfig::default()
         });
-        solver.add_particle(CkMpmParticle::new(
-            Vec3::new(0.8, 1.5, 0.8), 1.0, 0.001,
-        ));
+        solver.add_particle(CkMpmParticle::new(Vec3::new(0.8, 1.5, 0.8), 1.0, 0.001));
         // 多步, 应停在底部附近
         for _ in 0..300 {
             solver.step();
@@ -595,9 +603,7 @@ mod tests {
     #[test]
     fn test_ckmpm_volume_ratio_finite() {
         let mut solver = CkMpmSolver::new(CkMpmConfig::default());
-        solver.add_particle(CkMpmParticle::new(
-            Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001,
-        ));
+        solver.add_particle(CkMpmParticle::new(Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001));
         for _ in 0..10 {
             solver.step();
         }
@@ -619,8 +625,13 @@ mod tests {
             for j in 0..3 {
                 for k in 0..3 {
                     solver.add_particle(CkMpmParticle::new(
-                        Vec3::new(0.5 + i as f32 * 0.05, 0.5 + j as f32 * 0.05, 0.5 + k as f32 * 0.05),
-                        1.0, 0.0001,
+                        Vec3::new(
+                            0.5 + i as f32 * 0.05,
+                            0.5 + j as f32 * 0.05,
+                            0.5 + k as f32 * 0.05,
+                        ),
+                        1.0,
+                        0.0001,
                     ));
                 }
             }
@@ -638,10 +649,8 @@ mod tests {
 
     #[test]
     fn test_ckmpm_kinetic_energy() {
-        let mut solver = CkMpmSolver::new(CkMpmConfig {
-            gravity: Vec3::ZERO,
-            ..CkMpmConfig::default()
-        });
+        let mut solver =
+            CkMpmSolver::new(CkMpmConfig { gravity: Vec3::ZERO, ..CkMpmConfig::default() });
         let mut p = CkMpmParticle::new(Vec3::new(0.5, 0.5, 0.5), 2.0, 0.001);
         p.velocity = Vec3::new(1.0, 0.0, 0.0);
         solver.add_particle(p);
@@ -665,13 +674,13 @@ mod tests {
         for i in 0..3 {
             solver.add_particle(CkMpmParticle::new(
                 Vec3::new(0.5 + i as f32 * 0.05, 1.0, 0.5),
-                1.0, 0.0001,
+                1.0,
+                0.0001,
             ));
         }
         solver.step();
         // 至少一个粒子有非零 affine (重力梯度)
-        let has_affine = solver.particles.iter()
-            .any(|p| p.affine.abs().x_axis.length() > 1e-10);
+        let has_affine = solver.particles.iter().any(|p| p.affine.abs().x_axis.length() > 1e-10);
         // 不严格断言 (取决于网格配置), 只检查不崩溃
         let _ = has_affine;
     }
@@ -693,8 +702,13 @@ mod tests {
             for j in 0..4 {
                 for k in 0..4 {
                     solver.add_particle(CkMpmParticle::new(
-                        Vec3::new(0.6 + i as f32 * 0.04, 0.6 + j as f32 * 0.04, 0.6 + k as f32 * 0.04),
-                        0.01, 0.0001,
+                        Vec3::new(
+                            0.6 + i as f32 * 0.04,
+                            0.6 + j as f32 * 0.04,
+                            0.6 + k as f32 * 0.04,
+                        ),
+                        0.01,
+                        0.0001,
                     ));
                 }
             }
@@ -720,9 +734,7 @@ mod tests {
                 dual_grid: dual,
                 ..CkMpmConfig::default()
             });
-            solver.add_particle(CkMpmParticle::new(
-                Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001,
-            ));
+            solver.add_particle(CkMpmParticle::new(Vec3::new(0.5, 0.5, 0.5), 1.0, 0.001));
             solver.step();
             assert!(solver.particles[0].position.x.is_finite(), "dual_grid={}", dual);
         }
@@ -745,8 +757,13 @@ mod tests {
             for j in 0..3 {
                 for k in 0..3 {
                     solver.add_particle(CkMpmParticle::new(
-                        Vec3::new(0.5 + i as f32 * 0.03, 0.8 + j as f32 * 0.03, 0.5 + k as f32 * 0.03),
-                        0.01, 0.0001,
+                        Vec3::new(
+                            0.5 + i as f32 * 0.03,
+                            0.8 + j as f32 * 0.03,
+                            0.5 + k as f32 * 0.03,
+                        ),
+                        0.01,
+                        0.0001,
                     ));
                 }
             }

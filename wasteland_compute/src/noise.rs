@@ -16,8 +16,6 @@
 //! 4. FBM: 多个倍频噪声叠加, 模拟自然纹理
 //!    - f(p) = Σ (1/2^i) * noise(2^i * p)
 
-
-
 use serde::{Deserialize, Serialize};
 
 // ============================================================
@@ -83,14 +81,18 @@ impl PerlinNoise3D {
         let x2 = lerp(grad(aba, xf, yf - 1.0, zf), grad(bba, xf - 1.0, yf - 1.0, zf), u);
         let y1 = lerp(x1, x2, v);
         let x3 = lerp(grad(aab, xf, yf, zf - 1.0), grad(bab, xf - 1.0, yf, zf - 1.0), u);
-        let x4 = lerp(grad(abb, xf, yf - 1.0, zf - 1.0), grad(bbb, xf - 1.0, yf - 1.0, zf - 1.0), u);
+        let x4 =
+            lerp(grad(abb, xf, yf - 1.0, zf - 1.0), grad(bbb, xf - 1.0, yf - 1.0, zf - 1.0), u);
         let y2 = lerp(x3, x4, v);
         lerp(y1, y2, w)
     }
 
     #[inline]
     fn hash(&self, x: i32, y: i32, z: i32) -> u8 {
-        let h = self.perm[(self.perm[(self.perm[x as usize & 255] as usize + y as usize) & 511] as usize + z as usize) & 511];
+        let h = self.perm[(self.perm[(self.perm[x as usize & 255] as usize + y as usize) & 511]
+            as usize
+            + z as usize)
+            & 511];
         h
     }
 }
@@ -113,7 +115,13 @@ fn grad(hash: u8, x: f32, y: f32, z: f32) -> f32 {
     // 用 hash 的低 4 位选择 12 个梯度方向之一
     let h = hash & 15;
     let u = if h < 8 { x } else { y };
-    let v = if h < 4 { y } else if h == 12 || h == 14 { x } else { z };
+    let v = if h < 4 {
+        y
+    } else if h == 12 || h == 14 {
+        x
+    } else {
+        z
+    };
     (if h & 1 == 0 { u } else { -u }) + (if h & 2 == 0 { v } else { -v })
 }
 
@@ -172,19 +180,49 @@ impl SimplexNoise3D {
         let (i1, j1, k1, i2, j2, k2);
         if x0 >= y0 {
             if y0 >= z0 {
-                i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 1; k2 = 0;
+                i1 = 1;
+                j1 = 0;
+                k1 = 0;
+                i2 = 1;
+                j2 = 1;
+                k2 = 0;
             } else if x0 >= z0 {
-                i1 = 1; j1 = 0; k1 = 0; i2 = 1; j2 = 0; k2 = 1;
+                i1 = 1;
+                j1 = 0;
+                k1 = 0;
+                i2 = 1;
+                j2 = 0;
+                k2 = 1;
             } else {
-                i1 = 0; j1 = 0; k1 = 1; i2 = 1; j2 = 0; k2 = 1;
+                i1 = 0;
+                j1 = 0;
+                k1 = 1;
+                i2 = 1;
+                j2 = 0;
+                k2 = 1;
             }
         } else {
             if y0 < z0 {
-                i1 = 0; j1 = 0; k1 = 1; i2 = 0; j2 = 1; k2 = 1;
+                i1 = 0;
+                j1 = 0;
+                k1 = 1;
+                i2 = 0;
+                j2 = 1;
+                k2 = 1;
             } else if x0 < z0 {
-                i1 = 0; j1 = 1; k1 = 0; i2 = 0; j2 = 1; k2 = 1;
+                i1 = 0;
+                j1 = 1;
+                k1 = 0;
+                i2 = 0;
+                j2 = 1;
+                k2 = 1;
             } else {
-                i1 = 0; j1 = 1; k1 = 0; i2 = 1; j2 = 1; k2 = 0;
+                i1 = 0;
+                j1 = 1;
+                k1 = 0;
+                i2 = 1;
+                j2 = 1;
+                k2 = 0;
             }
         }
         // 4 个角点
@@ -201,15 +239,39 @@ impl SimplexNoise3D {
         let ii = i & 255;
         let jj = j & 255;
         let kk = k & 255;
-        let gi0 = self.perm_mod12[(self.perm[(self.perm[ii as usize] as usize + jj as usize) & 511] as usize + kk as usize) & 511] as usize;
-        let gi1 = self.perm_mod12[(self.perm[(self.perm[(ii + i1) as usize & 255] as usize + (jj + j1) as usize) & 511] as usize + (kk + k1) as usize) & 511] as usize;
-        let gi2 = self.perm_mod12[(self.perm[(self.perm[(ii + i2) as usize & 255] as usize + (jj + j2) as usize) & 511] as usize + (kk + k2) as usize) & 511] as usize;
-        let gi3 = self.perm_mod12[(self.perm[(self.perm[(ii + 1) as usize & 255] as usize + (jj + 1) as usize) & 511] as usize + (kk + 1) as usize) & 511] as usize;
+        let gi0 = self.perm_mod12[(self.perm[(self.perm[ii as usize] as usize + jj as usize) & 511]
+            as usize
+            + kk as usize)
+            & 511] as usize;
+        let gi1 = self.perm_mod12[(self.perm
+            [(self.perm[(ii + i1) as usize & 255] as usize + (jj + j1) as usize) & 511]
+            as usize
+            + (kk + k1) as usize)
+            & 511] as usize;
+        let gi2 = self.perm_mod12[(self.perm
+            [(self.perm[(ii + i2) as usize & 255] as usize + (jj + j2) as usize) & 511]
+            as usize
+            + (kk + k2) as usize)
+            & 511] as usize;
+        let gi3 = self.perm_mod12[(self.perm
+            [(self.perm[(ii + 1) as usize & 255] as usize + (jj + 1) as usize) & 511]
+            as usize
+            + (kk + 1) as usize)
+            & 511] as usize;
         // 12 个梯度方向
         const GRAD3: [[f32; 3]; 12] = [
-            [1.0, 1.0, 0.0], [-1.0, 1.0, 0.0], [1.0, -1.0, 0.0], [-1.0, -1.0, 0.0],
-            [1.0, 0.0, 1.0], [-1.0, 0.0, 1.0], [1.0, 0.0, -1.0], [-1.0, 0.0, -1.0],
-            [0.0, 1.0, 1.0], [0.0, -1.0, 1.0], [0.0, 1.0, -1.0], [0.0, -1.0, -1.0],
+            [1.0, 1.0, 0.0],
+            [-1.0, 1.0, 0.0],
+            [1.0, -1.0, 0.0],
+            [-1.0, -1.0, 0.0],
+            [1.0, 0.0, 1.0],
+            [-1.0, 0.0, 1.0],
+            [1.0, 0.0, -1.0],
+            [-1.0, 0.0, -1.0],
+            [0.0, 1.0, 1.0],
+            [0.0, -1.0, 1.0],
+            [0.0, 1.0, -1.0],
+            [0.0, -1.0, -1.0],
         ];
         // 贡献
         let mut n0 = 0.0;
@@ -262,13 +324,7 @@ pub struct FbmConfig {
 
 impl Default for FbmConfig {
     fn default() -> Self {
-        Self {
-            octaves: 5,
-            persistence: 0.5,
-            lacunarity: 2.0,
-            frequency: 1.0,
-            amplitude: 1.0,
-        }
+        Self { octaves: 5, persistence: 0.5, lacunarity: 2.0, frequency: 1.0, amplitude: 1.0 }
     }
 }
 
@@ -339,17 +395,19 @@ impl CurlNoise3D {
     pub fn curl(&self, x: f32, y: f32, z: f32) -> [f32; 3] {
         let e = self.eps;
         // 偏导数 (中心差分)
-        let dphi_z_dy = (self.noise_z.noise(x, y + e, z) - self.noise_z.noise(x, y - e, z)) / (2.0 * e);
-        let dphi_y_dz = (self.noise_y.noise(x, y, z + e) - self.noise_y.noise(x, y, z - e)) / (2.0 * e);
-        let dphi_x_dz = (self.noise_x.noise(x, y, z + e) - self.noise_x.noise(x, y, z - e)) / (2.0 * e);
-        let dphi_z_dx = (self.noise_z.noise(x + e, y, z) - self.noise_z.noise(x - e, y, z)) / (2.0 * e);
-        let dphi_y_dx = (self.noise_y.noise(x + e, y, z) - self.noise_y.noise(x - e, y, z)) / (2.0 * e);
-        let dphi_x_dy = (self.noise_x.noise(x, y + e, z) - self.noise_x.noise(x, y - e, z)) / (2.0 * e);
-        [
-            dphi_z_dy - dphi_y_dz,
-            dphi_x_dz - dphi_z_dx,
-            dphi_y_dx - dphi_x_dy,
-        ]
+        let dphi_z_dy =
+            (self.noise_z.noise(x, y + e, z) - self.noise_z.noise(x, y - e, z)) / (2.0 * e);
+        let dphi_y_dz =
+            (self.noise_y.noise(x, y, z + e) - self.noise_y.noise(x, y, z - e)) / (2.0 * e);
+        let dphi_x_dz =
+            (self.noise_x.noise(x, y, z + e) - self.noise_x.noise(x, y, z - e)) / (2.0 * e);
+        let dphi_z_dx =
+            (self.noise_z.noise(x + e, y, z) - self.noise_z.noise(x - e, y, z)) / (2.0 * e);
+        let dphi_y_dx =
+            (self.noise_y.noise(x + e, y, z) - self.noise_y.noise(x - e, y, z)) / (2.0 * e);
+        let dphi_x_dy =
+            (self.noise_x.noise(x, y + e, z) - self.noise_x.noise(x, y - e, z)) / (2.0 * e);
+        [dphi_z_dy - dphi_y_dz, dphi_x_dz - dphi_z_dx, dphi_y_dx - dphi_x_dy]
     }
 
     /// Curl noise 加上时间动画 (随时间变化的无散度场)
@@ -357,17 +415,19 @@ impl CurlNoise3D {
         // 第 4 维用时间: 把时间作为偏移
         // 简化: 用 3D 噪声在 (x+t, y, z) 等位置采样
         let e = self.eps;
-        let dphi_z_dy = (self.noise_z.noise(x, y + e, z + t) - self.noise_z.noise(x, y - e, z + t)) / (2.0 * e);
-        let dphi_y_dz = (self.noise_y.noise(x, y, z + e + t) - self.noise_y.noise(x, y, z - e + t)) / (2.0 * e);
-        let dphi_x_dz = (self.noise_x.noise(x, y, z + e + t) - self.noise_x.noise(x, y, z - e + t)) / (2.0 * e);
-        let dphi_z_dx = (self.noise_z.noise(x + e, y, z + t) - self.noise_z.noise(x - e, y, z + t)) / (2.0 * e);
-        let dphi_y_dx = (self.noise_y.noise(x + e, y, z + t) - self.noise_y.noise(x - e, y, z + t)) / (2.0 * e);
-        let dphi_x_dy = (self.noise_x.noise(x, y + e, z + t) - self.noise_x.noise(x, y - e, z + t)) / (2.0 * e);
-        [
-            dphi_z_dy - dphi_y_dz,
-            dphi_x_dz - dphi_z_dx,
-            dphi_y_dx - dphi_x_dy,
-        ]
+        let dphi_z_dy =
+            (self.noise_z.noise(x, y + e, z + t) - self.noise_z.noise(x, y - e, z + t)) / (2.0 * e);
+        let dphi_y_dz =
+            (self.noise_y.noise(x, y, z + e + t) - self.noise_y.noise(x, y, z - e + t)) / (2.0 * e);
+        let dphi_x_dz =
+            (self.noise_x.noise(x, y, z + e + t) - self.noise_x.noise(x, y, z - e + t)) / (2.0 * e);
+        let dphi_z_dx =
+            (self.noise_z.noise(x + e, y, z + t) - self.noise_z.noise(x - e, y, z + t)) / (2.0 * e);
+        let dphi_y_dx =
+            (self.noise_y.noise(x + e, y, z + t) - self.noise_y.noise(x - e, y, z + t)) / (2.0 * e);
+        let dphi_x_dy =
+            (self.noise_x.noise(x, y + e, z + t) - self.noise_x.noise(x, y - e, z + t)) / (2.0 * e);
+        [dphi_z_dy - dphi_y_dz, dphi_x_dz - dphi_z_dx, dphi_y_dx - dphi_x_dy]
     }
 }
 
@@ -475,11 +535,20 @@ mod tests {
         for i in 0..20 {
             let x = i as f32 * 0.05;
             let x2 = x + 0.01;
-            low_diff += (fbm_perlin(&noise, x, 0.0, 0.0, &low_oct) - fbm_perlin(&noise, x2, 0.0, 0.0, &low_oct)).abs();
-            high_diff += (fbm_perlin(&noise, x, 0.0, 0.0, &high_oct) - fbm_perlin(&noise, x2, 0.0, 0.0, &high_oct)).abs();
+            low_diff += (fbm_perlin(&noise, x, 0.0, 0.0, &low_oct)
+                - fbm_perlin(&noise, x2, 0.0, 0.0, &low_oct))
+            .abs();
+            high_diff += (fbm_perlin(&noise, x, 0.0, 0.0, &high_oct)
+                - fbm_perlin(&noise, x2, 0.0, 0.0, &high_oct))
+            .abs();
         }
         // 高倍频总变化更大 (不严格, 但大概率)
-        assert!(high_diff >= low_diff * 0.9, "more octaves should add detail: low={} high={}", low_diff, high_diff);
+        assert!(
+            high_diff >= low_diff * 0.9,
+            "more octaves should add detail: low={} high={}",
+            low_diff,
+            high_diff
+        );
     }
 
     #[test]
@@ -497,8 +566,8 @@ mod tests {
         let u_pos_z = curl.curl(x, y, z + eps);
         let u_neg_z = curl.curl(x, y, z - eps);
         let div = (u_pos_x[0] - u_neg_x[0]) / (2.0 * eps)
-                + (u_pos_y[1] - u_neg_y[1]) / (2.0 * eps)
-                + (u_pos_z[2] - u_neg_z[2]) / (2.0 * eps);
+            + (u_pos_y[1] - u_neg_y[1]) / (2.0 * eps)
+            + (u_pos_z[2] - u_neg_z[2]) / (2.0 * eps);
         // 散度应接近 0 (数值误差来自二阶差分)
         assert!(div.abs() < 50.0, "curl noise divergence should be small: {}", div);
     }
@@ -510,7 +579,12 @@ mod tests {
         let v1 = c1.curl(0.5, 0.5, 0.5);
         let v2 = c2.curl(0.5, 0.5, 0.5);
         for i in 0..3 {
-            assert!((v1[i] - v2[i]).abs() < 1e-6, "curl noise deterministic: {} vs {}", v1[i], v2[i]);
+            assert!(
+                (v1[i] - v2[i]).abs() < 1e-6,
+                "curl noise deterministic: {} vs {}",
+                v1[i],
+                v2[i]
+            );
         }
     }
 

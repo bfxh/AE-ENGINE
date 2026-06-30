@@ -40,7 +40,7 @@
 //!
 //! 复杂度: O(iterations · vertices), 局部 3×3 矩阵求逆
 
-use glam::{Vec3, Mat3};
+use glam::{Mat3, Vec3};
 
 // ============================================================
 // 数据结构
@@ -141,7 +141,14 @@ pub struct VbdVolumeConstraint {
 }
 
 impl VbdVolumeConstraint {
-    pub fn new(v0: usize, v1: usize, v2: usize, v3: usize, rest_volume: f32, stiffness: f32) -> Self {
+    pub fn new(
+        v0: usize,
+        v1: usize,
+        v2: usize,
+        v3: usize,
+        rest_volume: f32,
+        stiffness: f32,
+    ) -> Self {
         Self { v0, v1, v2, v3, rest_volume, stiffness }
     }
 
@@ -451,7 +458,8 @@ impl VbdSolver {
                 if !self.vertices[i].is_dynamic() {
                     continue;
                 }
-                let delta = self.compute_vertex_delta(i, &spring_adj, &bending_adj, &volume_adj, dt, iter);
+                let delta =
+                    self.compute_vertex_delta(i, &spring_adj, &bending_adj, &volume_adj, dt, iter);
 
                 // 动量加速: x_i ← x_i - (Δx + ρ·Δx_prev)
                 let accelerated = if self.momentum > 0.0 && iter > 0 {
@@ -733,12 +741,7 @@ mod tests {
     fn test_spring_gradient() {
         // 弹簧拉伸: pa=(2,0,0), pb=(0,0,0), rest=1, k=100
         // d=2, n̂=(1,0,0), ∇E = 100*(2-1)*(1,0,0) = (100,0,0)
-        let g = VbdSolver::spring_gradient(
-            Vec3::new(2.0, 0.0, 0.0),
-            Vec3::ZERO,
-            1.0,
-            100.0,
-        );
+        let g = VbdSolver::spring_gradient(Vec3::new(2.0, 0.0, 0.0), Vec3::ZERO, 1.0, 100.0);
         assert!((g - Vec3::new(100.0, 0.0, 0.0)).length() < 1e-4, "gradient: {:?}", g);
     }
 
@@ -746,12 +749,7 @@ mod tests {
     fn test_spring_gradient_compressed() {
         // 弹簧压缩: pa=(0.5,0,0), pb=(0,0,0), rest=1, k=100
         // d=0.5, n̂=(1,0,0), ∇E = 100*(0.5-1)*(1,0,0) = (-50,0,0)
-        let g = VbdSolver::spring_gradient(
-            Vec3::new(0.5, 0.0, 0.0),
-            Vec3::ZERO,
-            1.0,
-            100.0,
-        );
+        let g = VbdSolver::spring_gradient(Vec3::new(0.5, 0.0, 0.0), Vec3::ZERO, 1.0, 100.0);
         assert!((g - Vec3::new(-50.0, 0.0, 0.0)).length() < 1e-4, "gradient: {:?}", g);
     }
 
@@ -847,10 +845,16 @@ mod tests {
         solver.add_vertex(VbdVertex::new(Vec3::ZERO, 1.0));
         solver.step(0.1);
         // 自由落体: y ≈ -10 * 0.1² / 2 ... 但 VBD 隐式, 位移向下
-        assert!(solver.vertices[0].position.y < 0.0,
-            "y after gravity: {} (should be < 0)", solver.vertices[0].position.y);
-        assert!(solver.vertices[0].velocity.y < 0.0,
-            "vy after gravity: {} (should be < 0)", solver.vertices[0].velocity.y);
+        assert!(
+            solver.vertices[0].position.y < 0.0,
+            "y after gravity: {} (should be < 0)",
+            solver.vertices[0].position.y
+        );
+        assert!(
+            solver.vertices[0].velocity.y < 0.0,
+            "vy after gravity: {} (should be < 0)",
+            solver.vertices[0].velocity.y
+        );
     }
 
     #[test]
@@ -874,8 +878,11 @@ mod tests {
         for _ in 0..20 {
             solver.step(0.05);
         }
-        assert!(solver.vertices[0].position.y >= -1e-4,
-            "y after floor collision: {} (should be >= 0)", solver.vertices[0].position.y);
+        assert!(
+            solver.vertices[0].position.y >= -1e-4,
+            "y after floor collision: {} (should be >= 0)",
+            solver.vertices[0].position.y
+        );
     }
 
     #[test]
@@ -890,8 +897,7 @@ mod tests {
         }
         let dist = solver.vertices[0].position.length();
         // 应被球体弹开/停在球面
-        assert!(dist >= 0.9,
-            "distance from sphere center: {} (should be >= ~1)", dist);
+        assert!(dist >= 0.9, "distance from sphere center: {} (should be >= ~1)", dist);
     }
 
     #[test]
@@ -1002,8 +1008,12 @@ mod tests {
         solver2.step(0.1);
         let vy_undamped = solver2.vertices[0].velocity.y;
 
-        assert!(vy_damped.abs() < vy_undamped.abs(),
-            "damped |vy|={} should be < undamped |vy|={}", vy_damped, vy_undamped);
+        assert!(
+            vy_damped.abs() < vy_undamped.abs(),
+            "damped |vy|={} should be < undamped |vy|={}",
+            vy_damped,
+            vy_undamped
+        );
     }
 
     #[test]
@@ -1045,8 +1055,13 @@ mod tests {
             solver.vertices[2].position,
             solver.vertices[3].position,
         );
-        assert!((vol_after - vol_before).abs() < 0.1 * rest_vol.abs(),
-            "volume changed: {} -> {} (rest={})", vol_before, vol_after, rest_vol);
+        assert!(
+            (vol_after - vol_before).abs() < 0.1 * rest_vol.abs(),
+            "volume changed: {} -> {} (rest={})",
+            vol_before,
+            vol_after,
+            rest_vol
+        );
     }
 
     #[test]
@@ -1059,7 +1074,8 @@ mod tests {
         solver_no_momentum.momentum = 0.0;
         solver_no_momentum.step(0.01);
         let dist_no = (solver_no_momentum.vertices[0].position
-            - solver_no_momentum.vertices[1].position).length();
+            - solver_no_momentum.vertices[1].position)
+            .length();
 
         let mut solver_momentum = make_two_point_spring();
         solver_momentum.iterations = 3;
@@ -1067,13 +1083,18 @@ mod tests {
         solver_momentum.vertices[0].inv_mass = 0.0;
         solver_momentum.momentum = 0.9;
         solver_momentum.step(0.01);
-        let dist_yes = (solver_momentum.vertices[0].position
-            - solver_momentum.vertices[1].position).length();
+        let dist_yes =
+            (solver_momentum.vertices[0].position - solver_momentum.vertices[1].position).length();
 
         // 动量加速应使弹簧更接近 rest_length (1.0)
         let rest = 1.0;
-        assert!((dist_yes - rest).abs() <= (dist_no - rest).abs() + 0.2,
-            "momentum dist={} vs no-momentum dist={} (rest={})", dist_yes, dist_no, rest);
+        assert!(
+            (dist_yes - rest).abs() <= (dist_no - rest).abs() + 0.2,
+            "momentum dist={} vs no-momentum dist={} (rest={})",
+            dist_yes,
+            dist_no,
+            rest
+        );
     }
 
     #[test]
@@ -1087,8 +1108,7 @@ mod tests {
         solver.step(0.01);
         let e1 = solver.spring_energy();
         // 弹簧能量应下降 (从初始拉伸态收敛)
-        assert!(e1 <= e0 + 1e-4,
-            "energy not decreasing: {} -> {}", e0, e1);
+        assert!(e1 <= e0 + 1e-4, "energy not decreasing: {} -> {}", e0, e1);
     }
 
     #[test]
@@ -1102,8 +1122,18 @@ mod tests {
         for i in 0..100 {
             solver.step(0.016);
             for v in &solver.vertices {
-                assert!(v.position.is_finite(), "step {}: position not finite: {:?}", i, v.position);
-                assert!(v.velocity.is_finite(), "step {}: velocity not finite: {:?}", i, v.velocity);
+                assert!(
+                    v.position.is_finite(),
+                    "step {}: position not finite: {:?}",
+                    i,
+                    v.position
+                );
+                assert!(
+                    v.velocity.is_finite(),
+                    "step {}: velocity not finite: {:?}",
+                    i,
+                    v.velocity
+                );
             }
         }
     }

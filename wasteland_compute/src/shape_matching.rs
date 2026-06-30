@@ -22,8 +22,8 @@
 //! - α 可调硬度 (0=流体, 1=刚体, 中间=软体)
 //! - 比 FEM 简单, 比 PBD 弹簧稳定
 
-use serde::{Deserialize, Serialize};
 use glam::{Mat3, Vec3};
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -81,13 +81,7 @@ impl SmParticle {
     }
 
     pub fn pinned(position: Vec3) -> Self {
-        Self {
-            position,
-            velocity: Vec3::ZERO,
-            inv_mass: 0.0,
-            rest_pos: Vec3::ZERO,
-            pinned: true,
-        }
+        Self { position, velocity: Vec3::ZERO, inv_mass: 0.0, rest_pos: Vec3::ZERO, pinned: true }
     }
 
     #[inline]
@@ -109,11 +103,7 @@ pub struct SmCluster {
 
 impl SmCluster {
     pub fn new(indices: Vec<usize>) -> Self {
-        Self {
-            particle_indices: indices,
-            rest_centroid: Vec3::ZERO,
-            total_inv_mass: 0.0,
-        }
+        Self { particle_indices: indices, rest_centroid: Vec3::ZERO, total_inv_mass: 0.0 }
     }
 }
 
@@ -184,7 +174,8 @@ impl SmSolver {
         let mut predicted = vec![Vec3::ZERO; n];
         for (i, p) in self.particles.iter().enumerate() {
             if p.is_dynamic() {
-                predicted[i] = p.position + p.velocity * dt * self.config.damping
+                predicted[i] = p.position
+                    + p.velocity * dt * self.config.damping
                     + self.config.gravity * dt * dt;
             } else {
                 predicted[i] = p.position;
@@ -297,7 +288,8 @@ impl SmSolver {
 
     /// 最大速度
     pub fn max_velocity(&self) -> f32 {
-        self.particles.iter()
+        self.particles
+            .iter()
             .filter(|p| p.is_dynamic())
             .map(|p| p.velocity.length())
             .fold(0.0f32, f32::max)
@@ -441,7 +433,12 @@ mod tests {
         }
         let final_d01 = (solver.particles[p0].position - solver.particles[p1].position).length();
         // 刚体应保持距离 (允许小误差)
-        assert!((final_d01 - initial_d01).abs() < 0.2, "rigid preserves shape: init={} final={}", initial_d01, final_d01);
+        assert!(
+            (final_d01 - initial_d01).abs() < 0.2,
+            "rigid preserves shape: init={} final={}",
+            initial_d01,
+            final_d01
+        );
     }
 
     #[test]
@@ -469,7 +466,12 @@ mod tests {
         let final_d = (solver.particles[p0].position - solver.particles[p1].position).length();
         // 软体距离可能变化 (但应有界, 不爆炸)
         assert!(final_d < 10.0, "soft body bounded: {}", final_d);
-        assert!((final_d - initial_d).abs() < 8.0, "soft body deformation bounded: init={} final={}", initial_d, final_d);
+        assert!(
+            (final_d - initial_d).abs() < 8.0,
+            "soft body deformation bounded: init={} final={}",
+            initial_d,
+            final_d
+        );
     }
 
     #[test]
@@ -503,17 +505,18 @@ mod tests {
         });
         // 8 个粒子立方体
         let offsets = [
-            [-0.5, -0.5, -0.5], [0.5, -0.5, -0.5],
-            [-0.5, 0.5, -0.5], [0.5, 0.5, -0.5],
-            [-0.5, -0.5, 0.5], [0.5, -0.5, 0.5],
-            [-0.5, 0.5, 0.5], [0.5, 0.5, 0.5],
+            [-0.5, -0.5, -0.5],
+            [0.5, -0.5, -0.5],
+            [-0.5, 0.5, -0.5],
+            [0.5, 0.5, -0.5],
+            [-0.5, -0.5, 0.5],
+            [0.5, -0.5, 0.5],
+            [-0.5, 0.5, 0.5],
+            [0.5, 0.5, 0.5],
         ];
         let mut indices = Vec::new();
         for o in &offsets {
-            let i = solver.add_particle(SmParticle::new(
-                Vec3::new(o[0], o[1] + 5.0, o[2]),
-                1.0,
-            ));
+            let i = solver.add_particle(SmParticle::new(Vec3::new(o[0], o[1] + 5.0, o[2]), 1.0));
             indices.push(i);
         }
         solver.add_cluster(SmCluster::new(indices));

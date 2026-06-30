@@ -56,13 +56,20 @@ fn set_bnd_scalar(b: i32, x: &mut [f32], n: usize) {
     }
     // 8 个角点（三邻居平均）
     x[ix(0, 0, 0, n)] = 0.33 * (x[ix(1, 0, 0, n)] + x[ix(0, 1, 0, n)] + x[ix(0, 0, 1, n)]);
-    x[ix(0, n + 1, 0, n)] = 0.33 * (x[ix(1, n + 1, 0, n)] + x[ix(0, n, 0, n)] + x[ix(0, n + 1, 1, n)]);
-    x[ix(0, 0, n + 1, n)] = 0.33 * (x[ix(1, 0, n + 1, n)] + x[ix(0, 1, n + 1, n)] + x[ix(0, 0, n, n)]);
-    x[ix(0, n + 1, n + 1, n)] = 0.33 * (x[ix(1, n + 1, n + 1, n)] + x[ix(0, n, n + 1, n)] + x[ix(0, n + 1, n, n)]);
-    x[ix(n + 1, 0, 0, n)] = 0.33 * (x[ix(n, 0, 0, n)] + x[ix(n + 1, 1, 0, n)] + x[ix(n + 1, 0, 1, n)]);
-    x[ix(n + 1, n + 1, 0, n)] = 0.33 * (x[ix(n, n + 1, 0, n)] + x[ix(n + 1, n, 0, n)] + x[ix(n + 1, n + 1, 1, n)]);
-    x[ix(n + 1, 0, n + 1, n)] = 0.33 * (x[ix(n, 0, n + 1, n)] + x[ix(n + 1, 1, n + 1, n)] + x[ix(n + 1, 0, n, n)]);
-    x[ix(n + 1, n + 1, n + 1, n)] = 0.33 * (x[ix(n, n + 1, n + 1, n)] + x[ix(n + 1, n, n + 1, n)] + x[ix(n + 1, n + 1, n, n)]);
+    x[ix(0, n + 1, 0, n)] =
+        0.33 * (x[ix(1, n + 1, 0, n)] + x[ix(0, n, 0, n)] + x[ix(0, n + 1, 1, n)]);
+    x[ix(0, 0, n + 1, n)] =
+        0.33 * (x[ix(1, 0, n + 1, n)] + x[ix(0, 1, n + 1, n)] + x[ix(0, 0, n, n)]);
+    x[ix(0, n + 1, n + 1, n)] =
+        0.33 * (x[ix(1, n + 1, n + 1, n)] + x[ix(0, n, n + 1, n)] + x[ix(0, n + 1, n, n)]);
+    x[ix(n + 1, 0, 0, n)] =
+        0.33 * (x[ix(n, 0, 0, n)] + x[ix(n + 1, 1, 0, n)] + x[ix(n + 1, 0, 1, n)]);
+    x[ix(n + 1, n + 1, 0, n)] =
+        0.33 * (x[ix(n, n + 1, 0, n)] + x[ix(n + 1, n, 0, n)] + x[ix(n + 1, n + 1, 1, n)]);
+    x[ix(n + 1, 0, n + 1, n)] =
+        0.33 * (x[ix(n, 0, n + 1, n)] + x[ix(n + 1, 1, n + 1, n)] + x[ix(n + 1, 0, n, n)]);
+    x[ix(n + 1, n + 1, n + 1, n)] =
+        0.33 * (x[ix(n, n + 1, n + 1, n)] + x[ix(n + 1, n, n + 1, n)] + x[ix(n + 1, n + 1, n, n)]);
 }
 
 /// Stam Stable Fluids 3D 求解器
@@ -86,7 +93,7 @@ pub struct StamFluidSolver3D {
     pub temperature: Vec<f32>,
     pub temperature_prev: Vec<f32>,
     /// 物理参数
-    pub visc: f32,           // 动力学粘度 (m^2/s)
+    pub visc: f32, // 动力学粘度 (m^2/s)
     pub diff: f32,           // 扩散系数 (m^2/s)
     pub buoyancy_alpha: f32, // 浮力系数 α
     pub ambient_temp: f32,   // 环境温度 T_amb (K)
@@ -146,11 +153,45 @@ impl StamFluidSolver3D {
         self.project(20);
         // 7. 密度扩散+对流
         let n = self.n;
-        Self::diffuse_scalar_field(n, 0, &mut self.density, &mut self.density_prev, self.diff, dt, 20);
-        Self::advect_scalar_field(n, 0, &mut self.density, &mut self.density_prev, dt, &self.u, &self.v, &self.w);
+        Self::diffuse_scalar_field(
+            n,
+            0,
+            &mut self.density,
+            &mut self.density_prev,
+            self.diff,
+            dt,
+            20,
+        );
+        Self::advect_scalar_field(
+            n,
+            0,
+            &mut self.density,
+            &mut self.density_prev,
+            dt,
+            &self.u,
+            &self.v,
+            &self.w,
+        );
         // 8. 温度扩散+对流
-        Self::diffuse_scalar_field(n, 0, &mut self.temperature, &mut self.temperature_prev, self.diff, dt, 20);
-        Self::advect_scalar_field(n, 0, &mut self.temperature, &mut self.temperature_prev, dt, &self.u, &self.v, &self.w);
+        Self::diffuse_scalar_field(
+            n,
+            0,
+            &mut self.temperature,
+            &mut self.temperature_prev,
+            self.diff,
+            dt,
+            20,
+        );
+        Self::advect_scalar_field(
+            n,
+            0,
+            &mut self.temperature,
+            &mut self.temperature_prev,
+            dt,
+            &self.u,
+            &self.v,
+            &self.w,
+        );
         // 9. 清零源
         self.clear_sources();
     }
@@ -183,16 +224,34 @@ impl StamFluidSolver3D {
 
     /// 清零源缓冲
     fn clear_sources(&mut self) {
-        for x in &mut self.u_prev { *x = 0.0; }
-        for x in &mut self.v_prev { *x = 0.0; }
-        for x in &mut self.w_prev { *x = 0.0; }
-        for x in &mut self.density_prev { *x = 0.0; }
-        for x in &mut self.temperature_prev { *x = 0.0; }
+        for x in &mut self.u_prev {
+            *x = 0.0;
+        }
+        for x in &mut self.v_prev {
+            *x = 0.0;
+        }
+        for x in &mut self.w_prev {
+            *x = 0.0;
+        }
+        for x in &mut self.density_prev {
+            *x = 0.0;
+        }
+        for x in &mut self.temperature_prev {
+            *x = 0.0;
+        }
     }
 
     /// 隐式扩散（Gauss-Seidel 迭代）
     /// 求解 x - dt*diff*∇^2 x = x0
-    fn diffuse_scalar_field(n: usize, b: i32, x: &mut [f32], x0: &mut [f32], diff: f32, dt: f32, iters: usize) {
+    fn diffuse_scalar_field(
+        n: usize,
+        b: i32,
+        x: &mut [f32],
+        x0: &mut [f32],
+        diff: f32,
+        dt: f32,
+        iters: usize,
+    ) {
         let a = dt * diff * (n * n) as f32;
         x.swap_with_slice(x0);
         for _ in 0..iters {
@@ -200,9 +259,12 @@ impl StamFluidSolver3D {
                 for j in 1..=n {
                     for i in 1..=n {
                         x[ix(i, j, k, n)] = (x0[ix(i, j, k, n)]
-                            + a * (x[ix(i - 1, j, k, n)] + x[ix(i + 1, j, k, n)]
-                                + x[ix(i, j - 1, k, n)] + x[ix(i, j + 1, k, n)]
-                                + x[ix(i, j, k - 1, n)] + x[ix(i, j, k + 1, n)]))
+                            + a * (x[ix(i - 1, j, k, n)]
+                                + x[ix(i + 1, j, k, n)]
+                                + x[ix(i, j - 1, k, n)]
+                                + x[ix(i, j + 1, k, n)]
+                                + x[ix(i, j, k - 1, n)]
+                                + x[ix(i, j, k + 1, n)]))
                             / (1.0 + 6.0 * a);
                     }
                 }
@@ -222,9 +284,12 @@ impl StamFluidSolver3D {
                 for j in 1..=n {
                     for i in 1..=n {
                         self.u[ix(i, j, k, n)] = (self.u_prev[ix(i, j, k, n)]
-                            + a * (self.u[ix(i - 1, j, k, n)] + self.u[ix(i + 1, j, k, n)]
-                                + self.u[ix(i, j - 1, k, n)] + self.u[ix(i, j + 1, k, n)]
-                                + self.u[ix(i, j, k - 1, n)] + self.u[ix(i, j, k + 1, n)]))
+                            + a * (self.u[ix(i - 1, j, k, n)]
+                                + self.u[ix(i + 1, j, k, n)]
+                                + self.u[ix(i, j - 1, k, n)]
+                                + self.u[ix(i, j + 1, k, n)]
+                                + self.u[ix(i, j, k - 1, n)]
+                                + self.u[ix(i, j, k + 1, n)]))
                             / (1.0 + 6.0 * a);
                     }
                 }
@@ -238,9 +303,12 @@ impl StamFluidSolver3D {
                 for j in 1..=n {
                     for i in 1..=n {
                         self.v[ix(i, j, k, n)] = (self.v_prev[ix(i, j, k, n)]
-                            + a * (self.v[ix(i - 1, j, k, n)] + self.v[ix(i + 1, j, k, n)]
-                                + self.v[ix(i, j - 1, k, n)] + self.v[ix(i, j + 1, k, n)]
-                                + self.v[ix(i, j, k - 1, n)] + self.v[ix(i, j, k + 1, n)]))
+                            + a * (self.v[ix(i - 1, j, k, n)]
+                                + self.v[ix(i + 1, j, k, n)]
+                                + self.v[ix(i, j - 1, k, n)]
+                                + self.v[ix(i, j + 1, k, n)]
+                                + self.v[ix(i, j, k - 1, n)]
+                                + self.v[ix(i, j, k + 1, n)]))
                             / (1.0 + 6.0 * a);
                     }
                 }
@@ -254,9 +322,12 @@ impl StamFluidSolver3D {
                 for j in 1..=n {
                     for i in 1..=n {
                         self.w[ix(i, j, k, n)] = (self.w_prev[ix(i, j, k, n)]
-                            + a * (self.w[ix(i - 1, j, k, n)] + self.w[ix(i + 1, j, k, n)]
-                                + self.w[ix(i, j - 1, k, n)] + self.w[ix(i, j + 1, k, n)]
-                                + self.w[ix(i, j, k - 1, n)] + self.w[ix(i, j, k + 1, n)]))
+                            + a * (self.w[ix(i - 1, j, k, n)]
+                                + self.w[ix(i + 1, j, k, n)]
+                                + self.w[ix(i, j - 1, k, n)]
+                                + self.w[ix(i, j + 1, k, n)]
+                                + self.w[ix(i, j, k - 1, n)]
+                                + self.w[ix(i, j, k + 1, n)]))
                             / (1.0 + 6.0 * a);
                     }
                 }
@@ -266,7 +337,16 @@ impl StamFluidSolver3D {
     }
 
     /// 半拉格朗日对流（标量场）
-    fn advect_scalar_field(n: usize, b: i32, d: &mut [f32], d0: &mut [f32], dt: f32, u: &[f32], v: &[f32], w: &[f32]) {
+    fn advect_scalar_field(
+        n: usize,
+        b: i32,
+        d: &mut [f32],
+        d0: &mut [f32],
+        dt: f32,
+        u: &[f32],
+        v: &[f32],
+        w: &[f32],
+    ) {
         let dt0 = dt * n as f32;
         d.swap_with_slice(d0);
         for k in 1..=n {
@@ -277,12 +357,24 @@ impl StamFluidSolver3D {
                     let mut y = j as f32 - dt0 * v[ix(i, j, k, n)];
                     let mut z = k as f32 - dt0 * w[ix(i, j, k, n)];
                     // 钳制到边界
-                    if x < 0.5 { x = 0.5; }
-                    if x > n as f32 + 0.5 { x = n as f32 + 0.5; }
-                    if y < 0.5 { y = 0.5; }
-                    if y > n as f32 + 0.5 { y = n as f32 + 0.5; }
-                    if z < 0.5 { z = 0.5; }
-                    if z > n as f32 + 0.5 { z = n as f32 + 0.5; }
+                    if x < 0.5 {
+                        x = 0.5;
+                    }
+                    if x > n as f32 + 0.5 {
+                        x = n as f32 + 0.5;
+                    }
+                    if y < 0.5 {
+                        y = 0.5;
+                    }
+                    if y > n as f32 + 0.5 {
+                        y = n as f32 + 0.5;
+                    }
+                    if z < 0.5 {
+                        z = 0.5;
+                    }
+                    if z > n as f32 + 0.5 {
+                        z = n as f32 + 0.5;
+                    }
                     // 三线性插值
                     let i0 = x.floor() as usize;
                     let i1 = i0 + 1;
@@ -296,10 +388,11 @@ impl StamFluidSolver3D {
                     let t0 = 1.0 - t1;
                     let u1 = z - k0 as f32;
                     let u0 = 1.0 - u1;
-                    d[ix(i, j, k, n)] = s0 * (t0 * (u0 * d0[ix(i0, j0, k0, n)] + u1 * d0[ix(i0, j0, k1, n)])
-                                        + t1 * (u0 * d0[ix(i0, j1, k0, n)] + u1 * d0[ix(i0, j1, k1, n)]))
-                                      + s1 * (t0 * (u0 * d0[ix(i1, j0, k0, n)] + u1 * d0[ix(i1, j0, k1, n)])
-                                        + t1 * (u0 * d0[ix(i1, j1, k0, n)] + u1 * d0[ix(i1, j1, k1, n)]));
+                    d[ix(i, j, k, n)] = s0
+                        * (t0 * (u0 * d0[ix(i0, j0, k0, n)] + u1 * d0[ix(i0, j0, k1, n)])
+                            + t1 * (u0 * d0[ix(i0, j1, k0, n)] + u1 * d0[ix(i0, j1, k1, n)]))
+                        + s1 * (t0 * (u0 * d0[ix(i1, j0, k0, n)] + u1 * d0[ix(i1, j0, k1, n)])
+                            + t1 * (u0 * d0[ix(i1, j1, k0, n)] + u1 * d0[ix(i1, j1, k1, n)]));
                 }
             }
         }
@@ -324,7 +417,16 @@ impl StamFluidSolver3D {
     }
 
     /// 单分量对流（内部辅助）
-    fn advect_component(n: usize, b: i32, d: &mut [f32], d0: &mut [f32], dt: f32, u: &[f32], v: &[f32], w: &[f32]) {
+    fn advect_component(
+        n: usize,
+        b: i32,
+        d: &mut [f32],
+        d0: &mut [f32],
+        dt: f32,
+        u: &[f32],
+        v: &[f32],
+        w: &[f32],
+    ) {
         let dt0 = dt * n as f32;
         for k in 1..=n {
             for j in 1..=n {
@@ -332,12 +434,24 @@ impl StamFluidSolver3D {
                     let mut x = i as f32 - dt0 * u[ix(i, j, k, n)];
                     let mut y = j as f32 - dt0 * v[ix(i, j, k, n)];
                     let mut z = k as f32 - dt0 * w[ix(i, j, k, n)];
-                    if x < 0.5 { x = 0.5; }
-                    if x > n as f32 + 0.5 { x = n as f32 + 0.5; }
-                    if y < 0.5 { y = 0.5; }
-                    if y > n as f32 + 0.5 { y = n as f32 + 0.5; }
-                    if z < 0.5 { z = 0.5; }
-                    if z > n as f32 + 0.5 { z = n as f32 + 0.5; }
+                    if x < 0.5 {
+                        x = 0.5;
+                    }
+                    if x > n as f32 + 0.5 {
+                        x = n as f32 + 0.5;
+                    }
+                    if y < 0.5 {
+                        y = 0.5;
+                    }
+                    if y > n as f32 + 0.5 {
+                        y = n as f32 + 0.5;
+                    }
+                    if z < 0.5 {
+                        z = 0.5;
+                    }
+                    if z > n as f32 + 0.5 {
+                        z = n as f32 + 0.5;
+                    }
                     let i0 = x.floor() as usize;
                     let i1 = i0 + 1;
                     let j0 = y.floor() as usize;
@@ -350,10 +464,11 @@ impl StamFluidSolver3D {
                     let t0 = 1.0 - t1;
                     let u1 = z - k0 as f32;
                     let u0 = 1.0 - u1;
-                    d[ix(i, j, k, n)] = s0 * (t0 * (u0 * d0[ix(i0, j0, k0, n)] + u1 * d0[ix(i0, j0, k1, n)])
-                                        + t1 * (u0 * d0[ix(i0, j1, k0, n)] + u1 * d0[ix(i0, j1, k1, n)]))
-                                      + s1 * (t0 * (u0 * d0[ix(i1, j0, k0, n)] + u1 * d0[ix(i1, j0, k1, n)])
-                                        + t1 * (u0 * d0[ix(i1, j1, k0, n)] + u1 * d0[ix(i1, j1, k1, n)]));
+                    d[ix(i, j, k, n)] = s0
+                        * (t0 * (u0 * d0[ix(i0, j0, k0, n)] + u1 * d0[ix(i0, j0, k1, n)])
+                            + t1 * (u0 * d0[ix(i0, j1, k0, n)] + u1 * d0[ix(i0, j1, k1, n)]))
+                        + s1 * (t0 * (u0 * d0[ix(i1, j0, k0, n)] + u1 * d0[ix(i1, j0, k1, n)])
+                            + t1 * (u0 * d0[ix(i1, j1, k0, n)] + u1 * d0[ix(i1, j1, k1, n)]));
                 }
             }
         }
@@ -370,10 +485,12 @@ impl StamFluidSolver3D {
         for k in 1..=n {
             for j in 1..=n {
                 for i in 1..=n {
-                    div[ix(i, j, k, n)] = -0.5 / n as f32 * (
-                        self.u[ix(i + 1, j, k, n)] - self.u[ix(i - 1, j, k, n)]
-                        + self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]
-                        + self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]);
+                    div[ix(i, j, k, n)] = -0.5 / n as f32
+                        * (self.u[ix(i + 1, j, k, n)] - self.u[ix(i - 1, j, k, n)]
+                            + self.v[ix(i, j + 1, k, n)]
+                            - self.v[ix(i, j - 1, k, n)]
+                            + self.w[ix(i, j, k + 1, n)]
+                            - self.w[ix(i, j, k - 1, n)]);
                     p[ix(i, j, k, n)] = 0.0;
                 }
             }
@@ -386,9 +503,13 @@ impl StamFluidSolver3D {
                 for j in 1..=n {
                     for i in 1..=n {
                         p[ix(i, j, k, n)] = (div[ix(i, j, k, n)]
-                            + p[ix(i - 1, j, k, n)] + p[ix(i + 1, j, k, n)]
-                            + p[ix(i, j - 1, k, n)] + p[ix(i, j + 1, k, n)]
-                            + p[ix(i, j, k - 1, n)] + p[ix(i, j, k + 1, n)]) / 6.0;
+                            + p[ix(i - 1, j, k, n)]
+                            + p[ix(i + 1, j, k, n)]
+                            + p[ix(i, j - 1, k, n)]
+                            + p[ix(i, j + 1, k, n)]
+                            + p[ix(i, j, k - 1, n)]
+                            + p[ix(i, j, k + 1, n)])
+                            / 6.0;
                     }
                 }
             }
@@ -398,9 +519,12 @@ impl StamFluidSolver3D {
         for k in 1..=n {
             for j in 1..=n {
                 for i in 1..=n {
-                    self.u[ix(i, j, k, n)] -= 0.5 * n as f32 * (p[ix(i + 1, j, k, n)] - p[ix(i - 1, j, k, n)]);
-                    self.v[ix(i, j, k, n)] -= 0.5 * n as f32 * (p[ix(i, j + 1, k, n)] - p[ix(i, j - 1, k, n)]);
-                    self.w[ix(i, j, k, n)] -= 0.5 * n as f32 * (p[ix(i, j, k + 1, n)] - p[ix(i, j, k - 1, n)]);
+                    self.u[ix(i, j, k, n)] -=
+                        0.5 * n as f32 * (p[ix(i + 1, j, k, n)] - p[ix(i - 1, j, k, n)]);
+                    self.v[ix(i, j, k, n)] -=
+                        0.5 * n as f32 * (p[ix(i, j + 1, k, n)] - p[ix(i, j - 1, k, n)]);
+                    self.w[ix(i, j, k, n)] -=
+                        0.5 * n as f32 * (p[ix(i, j, k + 1, n)] - p[ix(i, j, k - 1, n)]);
                 }
             }
         }
@@ -446,10 +570,14 @@ impl StamFluidSolver3D {
             for j in 2..n {
                 for i in 2..n {
                     let idx = ix(i, j, k, n);
-                    let ngrad_x = 0.5 * (omega_mag[ix(i + 1, j, k, n)] - omega_mag[ix(i - 1, j, k, n)]);
-                    let ngrad_y = 0.5 * (omega_mag[ix(i, j + 1, k, n)] - omega_mag[ix(i, j - 1, k, n)]);
-                    let ngrad_z = 0.5 * (omega_mag[ix(i, j, k + 1, n)] - omega_mag[ix(i, j, k - 1, n)]);
-                    let ngrad_mag = (ngrad_x * ngrad_x + ngrad_y * ngrad_y + ngrad_z * ngrad_z).sqrt();
+                    let ngrad_x =
+                        0.5 * (omega_mag[ix(i + 1, j, k, n)] - omega_mag[ix(i - 1, j, k, n)]);
+                    let ngrad_y =
+                        0.5 * (omega_mag[ix(i, j + 1, k, n)] - omega_mag[ix(i, j - 1, k, n)]);
+                    let ngrad_z =
+                        0.5 * (omega_mag[ix(i, j, k + 1, n)] - omega_mag[ix(i, j, k - 1, n)]);
+                    let ngrad_mag =
+                        (ngrad_x * ngrad_x + ngrad_y * ngrad_y + ngrad_z * ngrad_z).sqrt();
                     if ngrad_mag > 1e-8 {
                         let nx = ngrad_x / ngrad_mag;
                         let ny = ngrad_y / ngrad_mag;
@@ -524,9 +652,7 @@ pub fn blackbody_rgb(t_kelvin: f32) -> (f32, f32, f32) {
     let t = t_kelvin / 100.0;
     let t = t.clamp(10.0, 400.0);
     // Red
-    let r = if t <= 66.0 { 255.0 } else {
-        329.698727446 * (t - 60.0).powf(-0.1332047592)
-    };
+    let r = if t <= 66.0 { 255.0 } else { 329.698727446 * (t - 60.0).powf(-0.1332047592) };
     // Green
     let g = if t <= 66.0 {
         99.4708025861 * t.ln() - 161.1195681661

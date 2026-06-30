@@ -28,8 +28,8 @@
 //!   拉格朗日乘子: lambda = -C / (Σ |∇C_i|^2 * w_i)
 //!   位置修正: Δx_i = lambda * ∇C_i * w_i
 
-use serde::{Deserialize, Serialize};
 use glam::{Mat3, Vec3};
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -93,13 +93,7 @@ impl SbdParticle {
     }
 
     pub fn pinned(position: Vec3) -> Self {
-        Self {
-            position,
-            velocity: Vec3::ZERO,
-            inv_mass: 0.0,
-            predicted: position,
-            pinned: true,
-        }
+        Self { position, velocity: Vec3::ZERO, inv_mass: 0.0, predicted: position, pinned: true }
     }
 
     #[inline]
@@ -135,13 +129,7 @@ impl Tet {
         let rest = Mat3::from_cols(e1, e2, e3);
         let rest_inv = rest.inverse();
         let rest_volume = (e1.dot(e2.cross(e3))).abs() / 6.0;
-        Self {
-            p: [p0, p1, p2, p3],
-            rest_inv,
-            rest_volume,
-            lambda_strain: 0.0,
-            lambda_volume: 0.0,
-        }
+        Self { p: [p0, p1, p2, p3], rest_inv, rest_volume, lambda_strain: 0.0, lambda_volume: 0.0 }
     }
 }
 
@@ -157,11 +145,7 @@ pub struct SbdSolver {
 
 impl SbdSolver {
     pub fn new(config: SbdConfig) -> Self {
-        Self {
-            config,
-            particles: Vec::new(),
-            tets: Vec::new(),
-        }
+        Self { config, particles: Vec::new(), tets: Vec::new() }
     }
 
     pub fn add_particle(&mut self, p: SbdParticle) -> usize {
@@ -171,7 +155,13 @@ impl SbdSolver {
     }
 
     pub fn add_tet(&mut self, p0: usize, p1: usize, p2: usize, p3: usize) -> usize {
-        let tet = Tet::new(p0, p1, p2, p3, &self.particles.iter().map(|p| p.position).collect::<Vec<_>>());
+        let tet = Tet::new(
+            p0,
+            p1,
+            p2,
+            p3,
+            &self.particles.iter().map(|p| p.position).collect::<Vec<_>>(),
+        );
         let idx = self.tets.len();
         self.tets.push(tet);
         idx
@@ -188,7 +178,8 @@ impl SbdSolver {
         // 1. 预测位置 (外力 + 速度)
         for p in &mut self.particles {
             if p.is_dynamic() {
-                p.predicted = p.position + p.velocity * dt * self.config.damping
+                p.predicted = p.position
+                    + p.velocity * dt * self.config.damping
                     + self.config.gravity * dt * dt;
             } else {
                 p.predicted = p.position;
@@ -197,7 +188,10 @@ impl SbdSolver {
 
         // 1.5 检测 NaN (退化 tet 导致), 重置预测位置
         for p in &mut self.particles {
-            if !p.predicted.x.is_finite() || !p.predicted.y.is_finite() || !p.predicted.z.is_finite() {
+            if !p.predicted.x.is_finite()
+                || !p.predicted.y.is_finite()
+                || !p.predicted.z.is_finite()
+            {
                 p.predicted = p.position;
             }
         }
@@ -248,9 +242,8 @@ impl SbdSolver {
         let k = stiffness.powf(1.0 / self.config.iterations as f32);
 
         // 避免借用冲突: 先提取需要的 tet 数据
-        let tet_data: Vec<(Mat3, [usize; 4], f32)> = self.tets.iter()
-            .map(|t| (t.rest_inv, t.p, t.rest_volume))
-            .collect();
+        let tet_data: Vec<(Mat3, [usize; 4], f32)> =
+            self.tets.iter().map(|t| (t.rest_inv, t.p, t.rest_volume)).collect();
 
         for (rest_inv, p_idx, _rest_vol) in &tet_data {
             // 检测退化 tet (rest_inv 奇异 = 共面粒子)
@@ -318,9 +311,8 @@ impl SbdSolver {
                 (p_idx[2], p_idx[3]),
             ];
             // rest 长度
-            let rest_edges = [
-                (self.particles[p_idx[0]].position - self.particles[p_idx[1]].position).length(),
-            ];
+            let rest_edges =
+                [(self.particles[p_idx[0]].position - self.particles[p_idx[1]].position).length()];
             let _ = rest_edges;
 
             // 用 rest_inv 重算 rest 边长度 (避免依赖初始 position, 因为粒子会移动)
@@ -328,12 +320,7 @@ impl SbdSolver {
             // 用当前粒子 position 不对, 应该用 rest 形态
             // 这里我们用 rest_inv 的逆 (即 rest) 重算
             let rest_mat = rest_inv.inverse();
-            let rest_pts = [
-                Vec3::ZERO,
-                rest_mat.x_axis,
-                rest_mat.y_axis,
-                rest_mat.z_axis,
-            ];
+            let rest_pts = [Vec3::ZERO, rest_mat.x_axis, rest_mat.y_axis, rest_mat.z_axis];
             let rest_lengths: [f32; 6] = [
                 (rest_pts[0] - rest_pts[1]).length(),
                 (rest_pts[0] - rest_pts[2]).length(),
@@ -377,9 +364,8 @@ impl SbdSolver {
     fn solve_volume_constraints(&mut self) {
         let k = self.config.volume_stiffness.powf(1.0 / self.config.iterations as f32);
 
-        let tet_data: Vec<(Mat3, [usize; 4], f32)> = self.tets.iter()
-            .map(|t| (t.rest_inv, t.p, t.rest_volume))
-            .collect();
+        let tet_data: Vec<(Mat3, [usize; 4], f32)> =
+            self.tets.iter().map(|t| (t.rest_inv, t.p, t.rest_volume)).collect();
 
         for (rest_inv, p_idx, rest_vol) in &tet_data {
             let x0 = self.particles[p_idx[0]].predicted;
@@ -548,8 +534,13 @@ mod tests {
             solver.step();
         }
         let final_vol = solver.total_volume();
-        assert!((final_vol - rest_vol).abs() < 0.05 * rest_vol.abs(),
-            "volume preserved: rest={}, final={}, diff={}", rest_vol, final_vol, (final_vol - rest_vol).abs());
+        assert!(
+            (final_vol - rest_vol).abs() < 0.05 * rest_vol.abs(),
+            "volume preserved: rest={}, final={}, diff={}",
+            rest_vol,
+            final_vol,
+            (final_vol - rest_vol).abs()
+        );
     }
 
     #[test]
@@ -569,13 +560,18 @@ mod tests {
         let p3 = solver.add_particle(SbdParticle::new(Vec3::new(0.0, 0.0, 1.0), 1.0));
         solver.add_tet(p0, p1, p2, p3);
 
-        let initial_edge_len = (solver.particles[1].position - solver.particles[0].position).length();
+        let initial_edge_len =
+            (solver.particles[1].position - solver.particles[0].position).length();
         for _ in 0..10 {
             solver.step();
         }
         let final_edge_len = (solver.particles[1].position - solver.particles[0].position).length();
-        assert!((final_edge_len - initial_edge_len).abs() < 0.01,
-            "rigid tet edge preserved: initial={}, final={}", initial_edge_len, final_edge_len);
+        assert!(
+            (final_edge_len - initial_edge_len).abs() < 0.01,
+            "rigid tet edge preserved: initial={}, final={}",
+            initial_edge_len,
+            final_edge_len
+        );
     }
 
     #[test]
@@ -601,7 +597,8 @@ mod tests {
         // 应保持悬挂, 不无限下落
         let avg_y = (solver.particles[1].position.y
             + solver.particles[2].position.y
-            + solver.particles[3].position.y) / 3.0;
+            + solver.particles[3].position.y)
+            / 3.0;
         assert!(avg_y > 0.0, "tet hangs: avg_y={}", avg_y);
     }
 
@@ -611,7 +608,7 @@ mod tests {
         let mut solver = SbdSolver::new(SbdConfig {
             dt: 0.005,
             gravity: Vec3::new(0.0, -9.81, 0.0),
-            stiffness: 0.1, // 软
+            stiffness: 0.1,        // 软
             volume_stiffness: 0.3, // 软体积
             iterations: 4,
             ..SbdConfig::default()
@@ -628,8 +625,12 @@ mod tests {
         }
         let final_height = solver.particles[2].position.y;
         // 软体应下垂 (高度下降)
-        assert!(final_height < initial_height,
-            "soft body deforms: initial={}, final={}", initial_height, final_height);
+        assert!(
+            final_height < initial_height,
+            "soft body deforms: initial={}, final={}",
+            initial_height,
+            final_height
+        );
     }
 
     #[test]
@@ -647,10 +648,7 @@ mod tests {
 
     #[test]
     fn test_sbd_kinetic_energy() {
-        let solver = SbdSolver::new(SbdConfig {
-            gravity: Vec3::ZERO,
-            ..SbdConfig::default()
-        });
+        let solver = SbdSolver::new(SbdConfig { gravity: Vec3::ZERO, ..SbdConfig::default() });
         let p = SbdParticle::new(Vec3::ZERO, 2.0);
         let mut solver_p = solver;
         solver_p.particles.push(p);
@@ -686,8 +684,12 @@ mod tests {
             solver.step();
         }
         let final_vol = solver.total_volume();
-        assert!((final_vol - rest_vol).abs() < 0.1 * rest_vol.abs(),
-            "multi-tet volume: rest={}, final={}", rest_vol, final_vol);
+        assert!(
+            (final_vol - rest_vol).abs() < 0.1 * rest_vol.abs(),
+            "multi-tet volume: rest={}, final={}",
+            rest_vol,
+            final_vol
+        );
     }
 
     #[test]

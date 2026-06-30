@@ -20,8 +20,8 @@
 //!
 //! 本实现为 CPU 参考版本 (算法验证)，GPU 版本通过 WGSL shader 源码提供。
 
-use serde::{Deserialize, Serialize};
 use glam::Vec3;
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -30,17 +30,17 @@ use glam::Vec3;
 /// Leapfrog Flow Maps 求解器配置
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct LfmConfig {
-    pub n: usize,            // 内部分辨率 (实际网格 (n+2)^3)
-    pub dt: f32,             // 时间步长
-    pub dx: f32,             // 网格间距
-    pub density: f32,        // 流体密度 ρ
-    pub gravity: f32,        // 重力加速度 (y 方向)
-    pub vorticity_confinement: f32,  // 涡量约束强度 ε
-    pub mg_levels: usize,    // 多重网格层数 (典型 3-4)
-    pub mg_pre_relax: usize, // V-cycle 前光滑次数
-    pub mg_post_relax: usize,// V-cycle 后光滑次数
-    pub cg_max_iter: usize,  // CG 最大迭代次数
-    pub cg_tolerance: f32,   // CG 收敛阈值
+    pub n: usize,                   // 内部分辨率 (实际网格 (n+2)^3)
+    pub dt: f32,                    // 时间步长
+    pub dx: f32,                    // 网格间距
+    pub density: f32,               // 流体密度 ρ
+    pub gravity: f32,               // 重力加速度 (y 方向)
+    pub vorticity_confinement: f32, // 涡量约束强度 ε
+    pub mg_levels: usize,           // 多重网格层数 (典型 3-4)
+    pub mg_pre_relax: usize,        // V-cycle 前光滑次数
+    pub mg_post_relax: usize,       // V-cycle 后光滑次数
+    pub cg_max_iter: usize,         // CG 最大迭代次数
+    pub cg_tolerance: f32,          // CG 收敛阈值
 }
 
 impl Default for LfmConfig {
@@ -255,11 +255,25 @@ impl LfmSolver3D {
             for j in 2..n {
                 for i in 2..n {
                     let idx = ix(i, j, k, n);
-                    let wx = (w[ix(i,j+1,k,n)] - w[ix(i,j-1,k,n)] - v[ix(i,j,k+1,n)] + v[ix(i,j,k-1,n)]) * 0.5 / dx;
-                    let wy = (u[ix(i,j,k+1,n)] - u[ix(i,j,k-1,n)] - w[ix(i+1,j,k,n)] + w[ix(i-1,j,k,n)]) * 0.5 / dx;
-                    let wz = (v[ix(i+1,j,k,n)] - v[ix(i-1,j,k,n)] - u[ix(i,j+1,k,n)] + u[ix(i,j-1,k,n)]) * 0.5 / dx;
-                    ox[idx] = wx; oy[idx] = wy; oz[idx] = wz;
-                    olen[idx] = (wx*wx + wy*wy + wz*wz).sqrt();
+                    let wx =
+                        (w[ix(i, j + 1, k, n)] - w[ix(i, j - 1, k, n)] - v[ix(i, j, k + 1, n)]
+                            + v[ix(i, j, k - 1, n)])
+                            * 0.5
+                            / dx;
+                    let wy =
+                        (u[ix(i, j, k + 1, n)] - u[ix(i, j, k - 1, n)] - w[ix(i + 1, j, k, n)]
+                            + w[ix(i - 1, j, k, n)])
+                            * 0.5
+                            / dx;
+                    let wz =
+                        (v[ix(i + 1, j, k, n)] - v[ix(i - 1, j, k, n)] - u[ix(i, j + 1, k, n)]
+                            + u[ix(i, j - 1, k, n)])
+                            * 0.5
+                            / dx;
+                    ox[idx] = wx;
+                    oy[idx] = wy;
+                    oz[idx] = wz;
+                    olen[idx] = (wx * wx + wy * wy + wz * wz).sqrt();
                 }
             }
         }
@@ -267,11 +281,13 @@ impl LfmSolver3D {
             for j in 2..n {
                 for i in 2..n {
                     let idx = ix(i, j, k, n);
-                    let dlx = (olen[ix(i+1,j,k,n)] - olen[ix(i-1,j,k,n)]) * 0.5 / dx;
-                    let dly = (olen[ix(i,j+1,k,n)] - olen[ix(i,j-1,k,n)]) * 0.5 / dx;
-                    let dlz = (olen[ix(i,j,k+1,n)] - olen[ix(i,j,k-1,n)]) * 0.5 / dx;
-                    let nl = (dlx*dlx + dly*dly + dlz*dlz).sqrt();
-                    if nl < 1e-10 { continue; }
+                    let dlx = (olen[ix(i + 1, j, k, n)] - olen[ix(i - 1, j, k, n)]) * 0.5 / dx;
+                    let dly = (olen[ix(i, j + 1, k, n)] - olen[ix(i, j - 1, k, n)]) * 0.5 / dx;
+                    let dlz = (olen[ix(i, j, k + 1, n)] - olen[ix(i, j, k - 1, n)]) * 0.5 / dx;
+                    let nl = (dlx * dlx + dly * dly + dlz * dlz).sqrt();
+                    if nl < 1e-10 {
+                        continue;
+                    }
                     let nx = dlx / nl;
                     let ny = dly / nl;
                     let nz = dlz / nl;
@@ -299,26 +315,34 @@ impl LfmSolver3D {
             for j in 1..=n {
                 for i in 1..=n {
                     let idx = ix(i, j, k, n);
-                    let div = (self.mx[ix(i+1, j, k, n)] - self.mx[ix(i-1, j, k, n)]) * 0.5 / dx
-                            + (self.my[ix(i, j+1, k, n)] - self.my[ix(i, j-1, k, n)]) * 0.5 / dx
-                            + (self.mz[ix(i, j, k+1, n)] - self.mz[ix(i, j, k-1, n)]) * 0.5 / dx;
+                    let div = (self.mx[ix(i + 1, j, k, n)] - self.mx[ix(i - 1, j, k, n)]) * 0.5
+                        / dx
+                        + (self.my[ix(i, j + 1, k, n)] - self.my[ix(i, j - 1, k, n)]) * 0.5 / dx
+                        + (self.mz[ix(i, j, k + 1, n)] - self.mz[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     rhs[idx] = div;
                 }
             }
         }
         // 2. MGPCG 求解 ∇²p = rhs
-        let p = mgpcg_solve_poisson(&rhs, n, dx, self.config.mg_levels,
-            self.config.mg_pre_relax, self.config.mg_post_relax,
-            self.config.cg_max_iter, self.config.cg_tolerance);
+        let p = mgpcg_solve_poisson(
+            &rhs,
+            n,
+            dx,
+            self.config.mg_levels,
+            self.config.mg_pre_relax,
+            self.config.mg_post_relax,
+            self.config.cg_max_iter,
+            self.config.cg_tolerance,
+        );
         self.pressure = p.clone();
         // 3. u = m - ∇p
         for k in 1..=n {
             for j in 1..=n {
                 for i in 1..=n {
                     let idx = ix(i, j, k, n);
-                    let grad_px = (p[ix(i+1, j, k, n)] - p[ix(i-1, j, k, n)]) * 0.5 / dx;
-                    let grad_py = (p[ix(i, j+1, k, n)] - p[ix(i, j-1, k, n)]) * 0.5 / dx;
-                    let grad_pz = (p[ix(i, j, k+1, n)] - p[ix(i, j, k-1, n)]) * 0.5 / dx;
+                    let grad_px = (p[ix(i + 1, j, k, n)] - p[ix(i - 1, j, k, n)]) * 0.5 / dx;
+                    let grad_py = (p[ix(i, j + 1, k, n)] - p[ix(i, j - 1, k, n)]) * 0.5 / dx;
+                    let grad_pz = (p[ix(i, j, k + 1, n)] - p[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     self.u[idx] = self.mx[idx] - grad_px;
                     self.v[idx] = self.my[idx] - grad_py;
                     self.w[idx] = self.mz[idx] - grad_pz;
@@ -380,15 +404,22 @@ impl LfmSolver3D {
 
     /// 速度场总动能 (稳定性监测)
     pub fn kinetic_energy(&self) -> f32 {
-        self.u.iter().zip(&self.v).zip(&self.w)
-            .map(|((&u, &v), &w)| u*u + v*v + w*w)
-            .sum::<f32>() * 0.5
+        self.u
+            .iter()
+            .zip(&self.v)
+            .zip(&self.w)
+            .map(|((&u, &v), &w)| u * u + v * v + w * w)
+            .sum::<f32>()
+            * 0.5
     }
 
     /// 最大速度幅值
     pub fn max_velocity(&self) -> f32 {
-        self.u.iter().zip(&self.v).zip(&self.w)
-            .fold(0.0f32, |m, ((&u, &v), &w)| m.max((u*u + v*v + w*w).sqrt()))
+        self.u
+            .iter()
+            .zip(&self.v)
+            .zip(&self.w)
+            .fold(0.0f32, |m, ((&u, &v), &w)| m.max((u * u + v * v + w * w).sqrt()))
     }
 
     /// 散度残差 (投影质量)
@@ -400,9 +431,9 @@ impl LfmSolver3D {
             for j in 1..=n {
                 for i in 1..=n {
                     let idx = ix(i, j, k, n);
-                    let div = (self.u[ix(i+1, j, k, n)] - self.u[ix(i-1, j, k, n)]) * 0.5 / dx
-                            + (self.v[ix(i, j+1, k, n)] - self.v[ix(i, j-1, k, n)]) * 0.5 / dx
-                            + (self.w[ix(i, j, k+1, n)] - self.w[ix(i, j, k-1, n)]) * 0.5 / dx;
+                    let div = (self.u[ix(i + 1, j, k, n)] - self.u[ix(i - 1, j, k, n)]) * 0.5 / dx
+                        + (self.v[ix(i, j + 1, k, n)] - self.v[ix(i, j - 1, k, n)]) * 0.5 / dx
+                        + (self.w[ix(i, j, k + 1, n)] - self.w[ix(i, j, k - 1, n)]) * 0.5 / dx;
                     max_div = max_div.max(div.abs());
                 }
             }
@@ -410,7 +441,6 @@ impl LfmSolver3D {
         max_div
     }
 }
-
 
 // ============================================================
 // 辅助函数
@@ -452,8 +482,8 @@ fn sample_scalar(field: &[f32], pos: Vec3, n: usize, dx: f32) -> f32 {
                 let j = (j0 + dj).max(0).min(n_bnd) as usize;
                 let k = (k0 + dk).max(0).min(n_bnd) as usize;
                 let w = (if di == 0 { 1.0 - tx } else { tx })
-                      * (if dj == 0 { 1.0 - ty } else { ty })
-                      * (if dk == 0 { 1.0 - tz } else { tz });
+                    * (if dj == 0 { 1.0 - ty } else { ty })
+                    * (if dk == 0 { 1.0 - tz } else { tz });
                 result += field[ix(i, j, k, n)] * w;
             }
         }
@@ -475,7 +505,7 @@ fn set_bnd_velocity(u: &mut [f32], v: &mut [f32], w: &mut [f32], n: usize) {
     for k in 0..n2 {
         for j in 0..n2 {
             for i in 0..n2 {
-                if i == 0 || j == 0 || k == 0 || i == n+1 || j == n+1 || k == n+1 {
+                if i == 0 || j == 0 || k == 0 || i == n + 1 || j == n + 1 || k == n + 1 {
                     let idx = ix(i, j, k, n);
                     u[idx] = 0.0;
                     v[idx] = 0.0;
@@ -485,7 +515,6 @@ fn set_bnd_velocity(u: &mut [f32], v: &mut [f32], w: &mut [f32], n: usize) {
         }
     }
 }
-
 
 // ============================================================
 // 矩阵无关多重网格预条件 CG (MGPCG)
@@ -501,10 +530,14 @@ fn apply_poisson(x: &[f32], n: usize, dx: f32) -> Vec<f32> {
         for j in 1..=n {
             for i in 1..=n {
                 let idx = ix(i, j, k, n);
-                ax[idx] = (x[ix(i+1, j, k, n)] + x[ix(i-1, j, k, n)]
-                         + x[ix(i, j+1, k, n)] + x[ix(i, j-1, k, n)]
-                         + x[ix(i, j, k+1, n)] + x[ix(i, j, k-1, n)]
-                         - 6.0 * x[idx]) * inv_dx2;
+                ax[idx] = (x[ix(i + 1, j, k, n)]
+                    + x[ix(i - 1, j, k, n)]
+                    + x[ix(i, j + 1, k, n)]
+                    + x[ix(i, j - 1, k, n)]
+                    + x[ix(i, j, k + 1, n)]
+                    + x[ix(i, j, k - 1, n)]
+                    - 6.0 * x[idx])
+                    * inv_dx2;
             }
         }
     }
@@ -520,11 +553,17 @@ fn gauss_seidel_red_black(x: &mut [f32], rhs: &[f32], n: usize, dx: f32, iters: 
             for k in 1..=n {
                 for j in 1..=n {
                     for i in 1..=n {
-                        if (i + j + k + iter + color) % 2 != 0 { continue; }
+                        if (i + j + k + iter + color) % 2 != 0 {
+                            continue;
+                        }
                         let idx = ix(i, j, k, n);
-                        let off = (x[ix(i+1,j,k,n)] + x[ix(i-1,j,k,n)]
-                                 + x[ix(i,j+1,k,n)] + x[ix(i,j-1,k,n)]
-                                 + x[ix(i,j,k+1,n)] + x[ix(i,j,k-1,n)]) * inv_dx2;
+                        let off = (x[ix(i + 1, j, k, n)]
+                            + x[ix(i - 1, j, k, n)]
+                            + x[ix(i, j + 1, k, n)]
+                            + x[ix(i, j - 1, k, n)]
+                            + x[ix(i, j, k + 1, n)]
+                            + x[ix(i, j, k - 1, n)])
+                            * inv_dx2;
                         x[idx] = (rhs[idx] - off) / diag;
                     }
                 }
@@ -552,9 +591,13 @@ fn restrict(fine: &[f32], n_fine: usize) -> Vec<f32> {
                             let ci = (fi as i32 + di).max(0).min(n_fine as i32) as usize;
                             let cj = (fj as i32 + dj).max(0).min(n_fine as i32) as usize;
                             let ck = (fk as i32 + dk).max(0).min(n_fine as i32) as usize;
-                            let weight = if di == 0 && dj == 0 && dk == 0 { 8.0 }
-                                else if di == 0 || dj == 0 || dk == 0 { 4.0 }
-                                else { 1.0 };
+                            let weight = if di == 0 && dj == 0 && dk == 0 {
+                                8.0
+                            } else if di == 0 || dj == 0 || dk == 0 {
+                                4.0
+                            } else {
+                                1.0
+                            };
                             sum += fine[ix(ci, cj, ck, n_fine)] * weight;
                             wsum += weight;
                         }
@@ -592,9 +635,9 @@ fn prolongate(coarse: &[f32], n_coarse: usize) -> Vec<f32> {
                             let ii = (i0 + di).max(0).min(nc_bnd) as usize;
                             let jj = (j0 + dj).max(0).min(nc_bnd) as usize;
                             let kk = (k0 + dk).max(0).min(nc_bnd) as usize;
-                            let w = (if di == 0 { 1.0-tx } else { tx })
-                                  * (if dj == 0 { 1.0-ty } else { ty })
-                                  * (if dk == 0 { 1.0-tz } else { tz });
+                            let w = (if di == 0 { 1.0 - tx } else { tx })
+                                * (if dj == 0 { 1.0 - ty } else { ty })
+                                * (if dk == 0 { 1.0 - tz } else { tz });
                             sum += coarse[ix(ii, jj, kk, n_coarse)] * w;
                         }
                     }
@@ -629,9 +672,14 @@ fn v_cycle(x: &mut [f32], rhs: &[f32], n: usize, dx: f32, levels: usize, pre: us
 
 /// MGPCG 求解 Poisson: A*x = rhs (矩阵无关)
 pub fn mgpcg_solve_poisson(
-    rhs: &[f32], n: usize, dx: f32,
-    levels: usize, pre: usize, post: usize,
-    max_iter: usize, tol: f32,
+    rhs: &[f32],
+    n: usize,
+    dx: f32,
+    levels: usize,
+    pre: usize,
+    post: usize,
+    max_iter: usize,
+    tol: f32,
 ) -> Vec<f32> {
     let size = (n + 2).pow(3);
     let mut x = vec![0.0f32; size];
@@ -641,14 +689,16 @@ pub fn mgpcg_solve_poisson(
     for k in 0..n2 {
         for j in 0..n2 {
             for i in 0..n2 {
-                if i == 0 || j == 0 || k == 0 || i == n+1 || j == n+1 || k == n+1 {
+                if i == 0 || j == 0 || k == 0 || i == n + 1 || j == n + 1 || k == n + 1 {
                     r[ix(i, j, k, n)] = 0.0;
                 }
             }
         }
     }
-    let r0_norm = r.iter().map(|v| v*v).sum::<f32>().sqrt();
-    if r0_norm < 1e-15 { return x; }
+    let r0_norm = r.iter().map(|v| v * v).sum::<f32>().sqrt();
+    if r0_norm < 1e-15 {
+        return x;
+    }
     let mut z = r.clone();
     v_cycle(&mut z, &r, n, dx, levels, pre, post);
     let mut p = z.clone();
@@ -656,14 +706,18 @@ pub fn mgpcg_solve_poisson(
     for _ in 0..max_iter {
         let ap = apply_poisson(&p, n, dx);
         let pap = dot(&p, &ap);
-        if pap.abs() < 1e-20 { break; }
+        if pap.abs() < 1e-20 {
+            break;
+        }
         let alpha = rz / pap;
         for i in 0..size {
             x[i] += alpha * p[i];
             r[i] -= alpha * ap[i];
         }
-        let r_norm = r.iter().map(|v| v*v).sum::<f32>().sqrt();
-        if r_norm < tol * r0_norm { break; }
+        let r_norm = r.iter().map(|v| v * v).sum::<f32>().sqrt();
+        if r_norm < tol * r0_norm {
+            break;
+        }
         let mut z_new = r.clone();
         v_cycle(&mut z_new, &r, n, dx, levels, pre, post);
         let rz_new = dot(&r, &z_new);
@@ -792,14 +846,23 @@ mod tests {
     fn test_lfm_projection_divergence() {
         // 投影后速度场散度应接近 0
         // 用平滑 impulse 分布 (3x3x3 高斯) 避免 delta-like 高频成分
-        let config = LfmConfig { n: 16, cg_max_iter: 300, cg_tolerance: 1e-6, gravity: 0.0, ..Default::default() };
+        let config = LfmConfig {
+            n: 16,
+            cg_max_iter: 300,
+            cg_tolerance: 1e-6,
+            gravity: 0.0,
+            ..Default::default()
+        };
         let mut solver = LfmSolver3D::new(config);
         // 在 3x3x3 区域注入平滑 impulse
         for k in 7..=9 {
             for j in 7..=9 {
                 for i in 7..=9 {
-                    let d2 = ((i as f32 - 8.0).powi(2) + (j as f32 - 8.0).powi(2) + (k as f32 - 8.0).powi(2)).sqrt();
-                    let w = (-d2 * 0.5).exp();  // 高斯权重
+                    let d2 = ((i as f32 - 8.0).powi(2)
+                        + (j as f32 - 8.0).powi(2)
+                        + (k as f32 - 8.0).powi(2))
+                    .sqrt();
+                    let w = (-d2 * 0.5).exp(); // 高斯权重
                     solver.mx[ix(i, j, k, 16)] = 5.0 * w;
                     solver.my[ix(i, j, k, 16)] = 2.0 * w;
                 }
@@ -869,7 +932,13 @@ mod tests {
         // 检查多个 cell 的 flow map 初始化
         for &(i, j, k) in &[(1, 1, 1), (4, 4, 4), (8, 8, 8)] {
             let idx = ix(i, j, k, 8);
-            assert!((solver.back_x[idx] - i as f32 * dx).abs() < 1e-5, "back_x mismatch at ({},{},{})", i, j, k);
+            assert!(
+                (solver.back_x[idx] - i as f32 * dx).abs() < 1e-5,
+                "back_x mismatch at ({},{},{})",
+                i,
+                j,
+                k
+            );
             assert!((solver.back_y[idx] - j as f32 * dx).abs() < 1e-5);
             assert!((solver.back_z[idx] - k as f32 * dx).abs() < 1e-5);
         }

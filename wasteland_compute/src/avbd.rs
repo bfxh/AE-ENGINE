@@ -38,12 +38,20 @@ pub struct AvbdParticle {
 
 impl AvbdParticle {
     pub fn new(position: Vec3, mass: f32) -> Self {
-        Self { position, velocity: Vec3::ZERO, predicted: position, inv_mass: if mass > 0.0 { 1.0 / mass } else { 0.0 } }
+        Self {
+            position,
+            velocity: Vec3::ZERO,
+            predicted: position,
+            inv_mass: if mass > 0.0 { 1.0 / mass } else { 0.0 },
+        }
     }
     pub fn fixed(position: Vec3) -> Self {
         Self { position, velocity: Vec3::ZERO, predicted: position, inv_mass: 0.0 }
     }
-    #[inline] pub fn is_fixed(&self) -> bool { self.inv_mass == 0.0 }
+    #[inline]
+    pub fn is_fixed(&self) -> bool {
+        self.inv_mass == 0.0
+    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -59,10 +67,12 @@ impl DistanceConstraint {
     pub fn new(p0: usize, p1: usize, rest_length: f32, stiffness: f32) -> Self {
         Self { p0, p1, rest_length, stiffness, lambda: 0.0 }
     }
-    #[inline] pub fn constraint(&self, x0: Vec3, x1: Vec3) -> f32 {
+    #[inline]
+    pub fn constraint(&self, x0: Vec3, x1: Vec3) -> f32 {
         (x1 - x0).length() - self.rest_length
     }
-    #[inline] pub fn gradient(&self, x0: Vec3, x1: Vec3) -> (Vec3, Vec3) {
+    #[inline]
+    pub fn gradient(&self, x0: Vec3, x1: Vec3) -> (Vec3, Vec3) {
         let d = x1 - x0;
         let len = d.length().max(1e-10);
         let n_hat = d / len;
@@ -82,7 +92,14 @@ pub struct ContactConstraint {
 
 impl ContactConstraint {
     pub fn new(particle: usize, normal: Vec3, penetration: f32, friction: f32) -> Self {
-        Self { particle, normal: normal.normalize_or_zero(), penetration, friction, lambda_n: 0.0, lambda_t: Vec3::ZERO }
+        Self {
+            particle,
+            normal: normal.normalize_or_zero(),
+            penetration,
+            friction,
+            lambda_n: 0.0,
+            lambda_t: Vec3::ZERO,
+        }
     }
 }
 
@@ -108,7 +125,14 @@ pub struct AvbdSolver {
 
 impl AvbdSolver {
     pub fn new(config: AvbdConfig) -> Self {
-        Self { config, particles: Vec::new(), distance_constraints: Vec::new(), contact_constraints: Vec::new(), bending_constraints: Vec::new(), prev_positions: Vec::new() }
+        Self {
+            config,
+            particles: Vec::new(),
+            distance_constraints: Vec::new(),
+            contact_constraints: Vec::new(),
+            bending_constraints: Vec::new(),
+            prev_positions: Vec::new(),
+        }
     }
 
     pub fn add_particle(&mut self, position: Vec3, mass: f32) -> usize {
@@ -130,14 +154,25 @@ impl AvbdSolver {
         self.distance_constraints.push(DistanceConstraint::new(p0, p1, rest, stiffness));
     }
 
-    pub fn add_distance_with_length(&mut self, p0: usize, p1: usize, rest_length: f32, stiffness: f32) {
+    pub fn add_distance_with_length(
+        &mut self,
+        p0: usize,
+        p1: usize,
+        rest_length: f32,
+        stiffness: f32,
+    ) {
         self.distance_constraints.push(DistanceConstraint::new(p0, p1, rest_length, stiffness));
     }
 
     pub fn detect_ground_contacts(&mut self, ground_y: f32, friction: f32) {
         for i in 0..self.particles.len() {
             if self.particles[i].position.y < ground_y {
-                self.contact_constraints.push(ContactConstraint::new(i, Vec3::new(0.0, 1.0, 0.0), ground_y, friction));
+                self.contact_constraints.push(ContactConstraint::new(
+                    i,
+                    Vec3::new(0.0, 1.0, 0.0),
+                    ground_y,
+                    friction,
+                ));
             }
         }
     }
@@ -151,9 +186,16 @@ impl AvbdSolver {
         // 1. 预测
         self.predict(dt);
         // 2. 重置乘子
-        for c in &mut self.distance_constraints { c.lambda = 0.0; }
-        for c in &mut self.contact_constraints { c.lambda_n = 0.0; c.lambda_t = Vec3::ZERO; }
-        for c in &mut self.bending_constraints { c.lambda = 0.0; }
+        for c in &mut self.distance_constraints {
+            c.lambda = 0.0;
+        }
+        for c in &mut self.contact_constraints {
+            c.lambda_n = 0.0;
+            c.lambda_t = Vec3::ZERO;
+        }
+        for c in &mut self.bending_constraints {
+            c.lambda = 0.0;
+        }
         // 3. 增广拉格朗日迭代
         for _ in 0..self.config.num_iters {
             self.solve_distance_constraints(dt);
@@ -187,7 +229,9 @@ impl AvbdSolver {
             let w0 = self.particles[i0].inv_mass;
             let w1 = self.particles[i1].inv_mass;
             let w_sum = w0 + w1;
-            if w_sum == 0.0 { continue; }
+            if w_sum == 0.0 {
+                continue;
+            }
             let d = x1 - x0;
             let len = d.length().max(1e-10);
             let n_hat = d / len;
@@ -204,7 +248,9 @@ impl AvbdSolver {
             let i = c.particle;
             let x = self.particles[i].predicted;
             let w = self.particles[i].inv_mass;
-            if w == 0.0 { continue; }
+            if w == 0.0 {
+                continue;
+            }
             let n_hat = c.normal;
             // 法向约束: C_n = dot(n, x) - penetration (穿透时 < 0)
             let c_n = n_hat.dot(x) - c.penetration;
@@ -231,7 +277,8 @@ impl AvbdSolver {
         let restitution = self.config.restitution;
         for i in 0..self.particles.len() {
             if self.particles[i].inv_mass > 0.0 {
-                self.particles[i].velocity = (self.particles[i].predicted - self.prev_positions[i]) * dt_inv;
+                self.particles[i].velocity =
+                    (self.particles[i].predicted - self.prev_positions[i]) * dt_inv;
                 if self.particles[i].position.y < 0.01 && self.particles[i].velocity.y < 0.0 {
                     self.particles[i].velocity.y = -self.particles[i].velocity.y * restitution;
                 }
@@ -260,14 +307,24 @@ impl AvbdSolver {
     pub fn detect_particle_contacts(&mut self, radius: f32, friction: f32) {
         let n = self.particles.len();
         for i in 0..n {
-            for j in (i+1)..n {
+            for j in (i + 1)..n {
                 let d = self.particles[j].position - self.particles[i].position;
                 let dist = d.length();
                 if dist < 2.0 * radius && dist > 1e-10 {
                     let n_hat = d / dist;
                     let penetration = 2.0 * radius - dist;
-                    self.contact_constraints.push(ContactConstraint::new(i, -n_hat, penetration * 0.5, friction));
-                    self.contact_constraints.push(ContactConstraint::new(j, n_hat, penetration * 0.5, friction));
+                    self.contact_constraints.push(ContactConstraint::new(
+                        i,
+                        -n_hat,
+                        penetration * 0.5,
+                        friction,
+                    ));
+                    self.contact_constraints.push(ContactConstraint::new(
+                        j,
+                        n_hat,
+                        penetration * 0.5,
+                        friction,
+                    ));
                 }
             }
         }
@@ -295,12 +352,16 @@ pub struct AvbdRigidBody {
 impl AvbdRigidBody {
     pub fn new(position: Vec3, mass: f32, inertia: Vec3) -> Self {
         Self {
-            position, rotation: Quat::IDENTITY,
-            linear_vel: Vec3::ZERO, angular_vel: Vec3::ZERO,
-            mass, inv_mass: if mass > 0.0 { 1.0 / mass } else { 0.0 },
+            position,
+            rotation: Quat::IDENTITY,
+            linear_vel: Vec3::ZERO,
+            angular_vel: Vec3::ZERO,
+            mass,
+            inv_mass: if mass > 0.0 { 1.0 / mass } else { 0.0 },
             local_inertia: inertia,
             inv_inertia_world: Mat3::IDENTITY,
-            predicted_pos: position, predicted_rot: Quat::IDENTITY,
+            predicted_pos: position,
+            predicted_rot: Quat::IDENTITY,
         }
     }
 
@@ -329,7 +390,8 @@ impl AvbdRigidBody {
             return;
         }
         self.predicted_pos = self.position + dt * self.linear_vel * damping + dt * dt * gravity;
-        let omega_quat = Quat::from_xyzw(self.angular_vel.x, self.angular_vel.y, self.angular_vel.z, 0.0);
+        let omega_quat =
+            Quat::from_xyzw(self.angular_vel.x, self.angular_vel.y, self.angular_vel.z, 0.0);
         let dq = omega_quat * self.rotation;
         let q_new = Quat::from_xyzw(
             self.rotation.x + dq.x * 0.5 * dt,
@@ -337,7 +399,8 @@ impl AvbdRigidBody {
             self.rotation.z + dq.z * 0.5 * dt,
             self.rotation.w + dq.w * 0.5 * dt,
         );
-        self.predicted_rot = if q_new.length_squared() < 1e-10 { Quat::IDENTITY } else { q_new.normalize() };
+        self.predicted_rot =
+            if q_new.length_squared() < 1e-10 { Quat::IDENTITY } else { q_new.normalize() };
     }
 
     pub fn commit(&mut self, dt: f32) {
@@ -407,7 +470,9 @@ mod tests {
         let pivot = solver.add_fixed_particle(Vec3::new(0.0, 10.0, 0.0));
         let bob = solver.add_particle(Vec3::new(1.0, 10.0, 0.0), 1.0);
         solver.add_distance(pivot, bob, 1.0);
-        for _ in 0..60 { solver.step(); }
+        for _ in 0..60 {
+            solver.step();
+        }
         assert!(solver.particles[bob].position.y < 10.0, "pendulum should swing down");
         let dist = (solver.particles[bob].position - solver.particles[pivot].position).length();
         assert!((dist - 1.0).abs() < 0.5, "distance constraint violated: {}", dist);
@@ -442,14 +507,20 @@ mod tests {
         }
         for j in 0..size {
             for i in 0..size {
-                if i + 1 < size { solver.add_distance(grid[j*size+i], grid[j*size+i+1], 0.8); }
-                if j + 1 < size { solver.add_distance(grid[j*size+i], grid[(j+1)*size+i], 0.8); }
+                if i + 1 < size {
+                    solver.add_distance(grid[j * size + i], grid[j * size + i + 1], 0.8);
+                }
+                if j + 1 < size {
+                    solver.add_distance(grid[j * size + i], grid[(j + 1) * size + i], 0.8);
+                }
             }
         }
-        for _ in 0..60 { solver.step(); }
+        for _ in 0..60 {
+            solver.step();
+        }
         let max_v = solver.max_velocity();
         assert!(max_v.is_finite(), "diverged");
-        let center = solver.particles[grid[2*size+2]].position;
+        let center = solver.particles[grid[2 * size + 2]].position;
         assert!(center.y < 5.0, "cloth should sag");
     }
 

@@ -17,10 +17,10 @@
 //!
 //! 约定: Contact.normal 从 A 指向 B (即把 B 推开的方向), A 沿 -normal 方向被推开
 
-use glam::{Vec3, Quat, Mat3};
+use glam::{Mat3, Quat, Vec3};
 
-const PERCENT: f32 = 0.2;  // 位置修正比例 (Baumgarte)
-const SLOP: f32 = 0.01;    // 穿透容差 (避免抖动)
+const PERCENT: f32 = 0.2; // 位置修正比例 (Baumgarte)
+const SLOP: f32 = 0.01; // 穿透容差 (避免抖动)
 
 // ============================================================
 // 接触信息
@@ -130,24 +130,32 @@ impl RigidBody {
     }
 
     pub fn apply_force(&mut self, force: Vec3) {
-        if self.is_static { return; }
+        if self.is_static {
+            return;
+        }
         self.force_accum += force;
     }
 
     pub fn apply_force_at_point(&mut self, force: Vec3, point: Vec3) {
-        if self.is_static { return; }
+        if self.is_static {
+            return;
+        }
         self.force_accum += force;
         let torque = (point - self.position).cross(force);
         self.torque_accum += torque;
     }
 
     pub fn apply_impulse(&mut self, impulse: Vec3) {
-        if self.is_static { return; }
+        if self.is_static {
+            return;
+        }
         self.linear_velocity += impulse * self.inv_mass;
     }
 
     pub fn apply_impulse_at_point(&mut self, impulse: Vec3, point: Vec3) {
-        if self.is_static { return; }
+        if self.is_static {
+            return;
+        }
         self.linear_velocity += impulse * self.inv_mass;
         let r = point - self.position;
         let angular_impulse = r.cross(impulse);
@@ -220,7 +228,9 @@ fn relative_velocity(a: &RigidBody, b: &RigidBody, contact: &Contact) -> Vec3 {
 /// 法向有效逆质量: 1/m + (r × n)·I⁻¹·(r × n)
 #[inline]
 fn effective_mass_normal(body: &RigidBody, r: Vec3, n: Vec3) -> f32 {
-    if body.is_static { return 0.0; }
+    if body.is_static {
+        return 0.0;
+    }
     let r_cross_n = r.cross(n);
     let inv_i = body.world_inv_inertia();
     body.inv_mass + r_cross_n.dot(inv_i * r_cross_n)
@@ -229,7 +239,9 @@ fn effective_mass_normal(body: &RigidBody, r: Vec3, n: Vec3) -> f32 {
 /// 切向有效逆质量
 #[inline]
 fn effective_mass_tangent(body: &RigidBody, r: Vec3, t: Vec3) -> f32 {
-    if body.is_static { return 0.0; }
+    if body.is_static {
+        return 0.0;
+    }
     let r_cross_t = r.cross(t);
     let inv_i = body.world_inv_inertia();
     body.inv_mass + r_cross_t.dot(inv_i * r_cross_t)
@@ -240,7 +252,9 @@ fn effective_mass_tangent(body: &RigidBody, r: Vec3, t: Vec3) -> f32 {
 /// 输入: A, B 两个刚体 (至少一个非静态), 接触信息
 /// 输出: 修改 A, B 的线速度和角速度
 pub fn resolve_contact(a: &mut RigidBody, b: &mut RigidBody, contact: &Contact) {
-    if a.is_static && b.is_static { return; }
+    if a.is_static && b.is_static {
+        return;
+    }
 
     let r_a = contact.point - a.position;
     let r_b = contact.point - b.position;
@@ -249,18 +263,24 @@ pub fn resolve_contact(a: &mut RigidBody, b: &mut RigidBody, contact: &Contact) 
     let vn = v_rel.dot(contact.normal);
 
     // vn > 0 表示分离中, 无需施加脉冲
-    if vn > 0.0 { return; }
+    if vn > 0.0 {
+        return;
+    }
 
     // 法向有效质量
     let inv_mass_sum = effective_mass_normal(a, r_a, contact.normal)
-                     + effective_mass_normal(b, r_b, contact.normal);
-    if inv_mass_sum < 1e-12 { return; }
+        + effective_mass_normal(b, r_b, contact.normal);
+    if inv_mass_sum < 1e-12 {
+        return;
+    }
 
     // 法向脉冲大小 j_n (>=0)
     // 用 max 混合 restitution (Box2D 约定): 弹性大的材料主导, 对静态体更直观
     let e = a.restitution.max(b.restitution);
     let j_n = -(1.0 + e) * vn / inv_mass_sum;
-    if j_n <= 0.0 { return; }
+    if j_n <= 0.0 {
+        return;
+    }
 
     // 法向脉冲向量 (沿 +normal 方向, 作用在 B 上; -normal 作用在 A 上)
     let impulse_n = contact.normal * j_n;
@@ -272,12 +292,16 @@ pub fn resolve_contact(a: &mut RigidBody, b: &mut RigidBody, contact: &Contact) 
     let v_rel_new = relative_velocity(a, b, contact);
     let v_tangent = v_rel_new - contact.normal * v_rel_new.dot(contact.normal);
     let t_len = v_tangent.length();
-    if t_len < 1e-6 { return; }
+    if t_len < 1e-6 {
+        return;
+    }
     let tangent = v_tangent / t_len;
 
-    let inv_mass_t = effective_mass_tangent(a, r_a, tangent)
-                   + effective_mass_tangent(b, r_b, tangent);
-    if inv_mass_t < 1e-12 { return; }
+    let inv_mass_t =
+        effective_mass_tangent(a, r_a, tangent) + effective_mass_tangent(b, r_b, tangent);
+    if inv_mass_t < 1e-12 {
+        return;
+    }
 
     // 切向脉冲大小
     let j_t = -v_rel_new.dot(tangent) / inv_mass_t;
@@ -302,7 +326,9 @@ pub fn resolve_contact(a: &mut RigidBody, b: &mut RigidBody, contact: &Contact) 
 /// 直接调整位置以解决穿透, 防止穿透累积导致物体"陷入"彼此
 pub fn position_correction(a: &mut RigidBody, b: &mut RigidBody, contact: &Contact) {
     let inv_mass_sum = a.inv_mass + b.inv_mass;
-    if inv_mass_sum < 1e-12 { return; }
+    if inv_mass_sum < 1e-12 {
+        return;
+    }
     let correction_mag = (contact.penetration - SLOP).max(0.0) / inv_mass_sum * PERCENT;
     let correction = contact.normal * correction_mag;
     // normal 从 A 指向 B: B 沿 +normal 移开, A 沿 -normal 移开
@@ -360,11 +386,17 @@ mod tests {
         body.apply_force(Vec3::new(0.0, -9.8, 0.0));
         body.integrate(1.0);
         // v = -9.8·1·(1-0.01·1) ≈ -9.702
-        assert!(body.linear_velocity.y > -10.0 && body.linear_velocity.y < -9.0,
-            "velocity y: {}", body.linear_velocity.y);
+        assert!(
+            body.linear_velocity.y > -10.0 && body.linear_velocity.y < -9.0,
+            "velocity y: {}",
+            body.linear_velocity.y
+        );
         // position = v·dt ≈ -9.7
-        assert!(body.position.y < -5.0 && body.position.y > -10.5,
-            "position y: {}", body.position.y);
+        assert!(
+            body.position.y < -5.0 && body.position.y > -10.5,
+            "position y: {}",
+            body.position.y
+        );
     }
 
     #[test]
@@ -427,7 +459,11 @@ mod tests {
         resolve_contact(&mut ground, &mut ball, &contact);
 
         // 球完全反弹 (vy 从 -5 → +5)
-        assert!((ball.linear_velocity.y - 5.0).abs() < 0.1, "bounce velocity y: {}", ball.linear_velocity.y);
+        assert!(
+            (ball.linear_velocity.y - 5.0).abs() < 0.1,
+            "bounce velocity y: {}",
+            ball.linear_velocity.y
+        );
         // 地面不动
         assert_eq!(ground.linear_velocity, Vec3::ZERO);
     }
@@ -443,11 +479,8 @@ mod tests {
         b.linear_velocity = Vec3::new(-1.0, 0.0, 0.0);
         b.restitution = 0.0;
 
-        let contact = Contact {
-            point: Vec3::ZERO,
-            normal: Vec3::new(1.0, 0.0, 0.0),
-            penetration: 0.1,
-        };
+        let contact =
+            Contact { point: Vec3::ZERO, normal: Vec3::new(1.0, 0.0, 0.0), penetration: 0.1 };
         resolve_contact(&mut a, &mut b, &contact);
 
         // 两球速度都接近 0
@@ -484,7 +517,7 @@ mod tests {
         let mut ground = RigidBody::new_static();
         ground.position = Vec3::new(0.0, -1.0, 0.0);
         ground.friction = 0.5;
-        ground.restitution = 0.0;  // 避免反弹干扰
+        ground.restitution = 0.0; // 避免反弹干扰
 
         let mut block = RigidBody::box_body(1.0, Vec3::new(1.0, 1.0, 1.0));
         block.position = Vec3::new(0.0, 1.0, 0.0);
@@ -507,8 +540,12 @@ mod tests {
             resolve_contact(&mut ground, &mut block, &contact);
         }
 
-        assert!(block.linear_velocity.x < v_before,
-            "friction should slow down: {} vs {}", block.linear_velocity.x, v_before);
+        assert!(
+            block.linear_velocity.x < v_before,
+            "friction should slow down: {} vs {}",
+            block.linear_velocity.x,
+            v_before
+        );
     }
 
     #[test]
@@ -518,8 +555,11 @@ mod tests {
         body.apply_impulse_at_point(Vec3::new(0.0, 0.0, 10.0), Vec3::new(1.0, 0.0, 0.0));
         // r × J = (1,0,0) × (0,0,10) = (0, -10, 0)
         // ω = I⁻¹·(r × J) = 0.625·(0, -10, 0) = (0, -6.25, 0)
-        assert!((body.angular_velocity.y + 6.25).abs() < 0.1,
-            "angular vel y: {}", body.angular_velocity.y);
+        assert!(
+            (body.angular_velocity.y + 6.25).abs() < 0.1,
+            "angular vel y: {}",
+            body.angular_velocity.y
+        );
     }
 
     #[test]
@@ -531,8 +571,12 @@ mod tests {
         body.integrate(0.1);
         let q_after = body.rotation;
         // 四元数的 y 分量应有变化 (绕 Y 旋转)
-        assert!((q_after.y - q_before.y).abs() > 1e-4,
-            "rotation should change: q_before={:?} q_after={:?}", q_before, q_after);
+        assert!(
+            (q_after.y - q_before.y).abs() > 1e-4,
+            "rotation should change: q_before={:?} q_after={:?}",
+            q_before,
+            q_after
+        );
         // 四元数应保持单位长度
         assert!((q_after.length() - 1.0).abs() < 1e-4, "quat should be normalized");
     }
@@ -565,11 +609,8 @@ mod tests {
     fn test_static_body_no_response() {
         let mut a = RigidBody::new_static();
         let mut b = RigidBody::new_static();
-        let contact = Contact {
-            point: Vec3::ZERO,
-            normal: Vec3::new(1.0, 0.0, 0.0),
-            penetration: 1.0,
-        };
+        let contact =
+            Contact { point: Vec3::ZERO, normal: Vec3::new(1.0, 0.0, 0.0), penetration: 1.0 };
         resolve_contact(&mut a, &mut b, &contact);
         assert_eq!(a.linear_velocity, Vec3::ZERO);
         assert_eq!(b.linear_velocity, Vec3::ZERO);

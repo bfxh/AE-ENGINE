@@ -22,8 +22,8 @@
 //!    Δx_b = +w_b · dir · Δλ   (C>0 时 Δλ<0, b 朝 a 移动)
 //! 4. 时间积分: 预测位置 -> XPBD 迭代 -> 速度+位置更新
 
-use serde::{Deserialize, Serialize};
 use glam::Vec3;
+use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ClothConfig {
@@ -81,13 +81,7 @@ impl ClothParticle {
     }
 
     pub fn pinned(position: Vec3) -> Self {
-        Self {
-            position,
-            velocity: Vec3::ZERO,
-            inv_mass: 0.0,
-            predicted: position,
-            pinned: true,
-        }
+        Self { position, velocity: Vec3::ZERO, inv_mass: 0.0, predicted: position, pinned: true }
     }
 
     #[inline]
@@ -148,12 +142,20 @@ impl ClothMesh {
                 let idx = i + j * n_u;
                 if i + 1 < n_u {
                     stretch.push(DistanceConstraint {
-                        a: idx, b: idx + 1, rest_length: seg_u, stiffness: 1.0, lambda: 0.0,
+                        a: idx,
+                        b: idx + 1,
+                        rest_length: seg_u,
+                        stiffness: 1.0,
+                        lambda: 0.0,
                     });
                 }
                 if j + 1 < n_v {
                     stretch.push(DistanceConstraint {
-                        a: idx, b: idx + n_u, rest_length: seg_v, stiffness: 1.0, lambda: 0.0,
+                        a: idx,
+                        b: idx + n_u,
+                        rest_length: seg_v,
+                        stiffness: 1.0,
+                        lambda: 0.0,
                     });
                 }
             }
@@ -164,10 +166,18 @@ impl ClothMesh {
             for i in 0..(n_u.saturating_sub(1)) {
                 let idx = i + j * n_u;
                 shear.push(DistanceConstraint {
-                    a: idx, b: idx + n_u + 1, rest_length: diag, stiffness: 1.0, lambda: 0.0,
+                    a: idx,
+                    b: idx + n_u + 1,
+                    rest_length: diag,
+                    stiffness: 1.0,
+                    lambda: 0.0,
                 });
                 shear.push(DistanceConstraint {
-                    a: idx + 1, b: idx + n_u, rest_length: diag, stiffness: 1.0, lambda: 0.0,
+                    a: idx + 1,
+                    b: idx + n_u,
+                    rest_length: diag,
+                    stiffness: 1.0,
+                    lambda: 0.0,
                 });
             }
         }
@@ -179,7 +189,11 @@ impl ClothMesh {
                 let p_left = (i - 1) + j * n_u;
                 let p_right = (i + 1) + j * n_u;
                 bend.push(DistanceConstraint {
-                    a: p_left, b: p_right, rest_length: bend_h, stiffness: 1.0, lambda: 0.0,
+                    a: p_left,
+                    b: p_right,
+                    rest_length: bend_h,
+                    stiffness: 1.0,
+                    lambda: 0.0,
                 });
             }
         }
@@ -189,7 +203,11 @@ impl ClothMesh {
                 let p_up = i + (j - 1) * n_u;
                 let p_down = i + (j + 1) * n_u;
                 bend.push(DistanceConstraint {
-                    a: p_up, b: p_down, rest_length: bend_v, stiffness: 1.0, lambda: 0.0,
+                    a: p_up,
+                    b: p_down,
+                    rest_length: bend_v,
+                    stiffness: 1.0,
+                    lambda: 0.0,
                 });
             }
         }
@@ -203,9 +221,15 @@ impl ClothMesh {
     }
 
     pub fn set_stiffness(&mut self, stretch: f32, shear: f32, bend: f32) {
-        for c in &mut self.stretch_constraints { c.stiffness = stretch; }
-        for c in &mut self.shear_constraints { c.stiffness = shear; }
-        for c in &mut self.bend_constraints { c.stiffness = bend; }
+        for c in &mut self.stretch_constraints {
+            c.stiffness = stretch;
+        }
+        for c in &mut self.shear_constraints {
+            c.stiffness = shear;
+        }
+        for c in &mut self.bend_constraints {
+            c.stiffness = bend;
+        }
     }
 
     pub fn pin(&mut self, idx: usize) {
@@ -261,9 +285,15 @@ impl ClothSolver {
 
         // 2. 重置 XPBD 乘子
         for mesh in &mut self.meshes {
-            for c in &mut mesh.stretch_constraints { c.lambda = 0.0; }
-            for c in &mut mesh.shear_constraints { c.lambda = 0.0; }
-            for c in &mut mesh.bend_constraints { c.lambda = 0.0; }
+            for c in &mut mesh.stretch_constraints {
+                c.lambda = 0.0;
+            }
+            for c in &mut mesh.shear_constraints {
+                c.lambda = 0.0;
+            }
+            for c in &mut mesh.bend_constraints {
+                c.lambda = 0.0;
+            }
         }
 
         // 3. XPBD 迭代
@@ -276,7 +306,9 @@ impl ClothSolver {
         // 4. 边界约束
         for mesh in &mut self.meshes {
             for p in &mut mesh.particles {
-                if !p.is_dynamic() { continue; }
+                if !p.is_dynamic() {
+                    continue;
+                }
                 for axis in 0..3 {
                     if p.predicted[axis] < self.config.bounds_min[axis] {
                         p.predicted[axis] = self.config.bounds_min[axis];
@@ -299,9 +331,13 @@ impl ClothSolver {
             for p in &mut mesh.particles {
                 if p.is_dynamic() {
                     p.velocity = (p.predicted - p.position) * dt_inv;
-                    if !p.velocity.is_finite() { p.velocity = Vec3::ZERO; }
+                    if !p.velocity.is_finite() {
+                        p.velocity = Vec3::ZERO;
+                    }
                     p.position = p.predicted;
-                    if !p.position.is_finite() { p.position = Vec3::ZERO; }
+                    if !p.position.is_finite() {
+                        p.position = Vec3::ZERO;
+                    }
                 }
             }
         }
@@ -319,12 +355,21 @@ impl ClothSolver {
 
         for mesh in &mut self.meshes {
             let constraints: Vec<(usize, usize, f32, f32)> = match kind {
-                ConstraintKind::Stretch => mesh.stretch_constraints.iter()
-                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness)).collect(),
-                ConstraintKind::Shear => mesh.shear_constraints.iter()
-                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness)).collect(),
-                ConstraintKind::Bend => mesh.bend_constraints.iter()
-                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness)).collect(),
+                ConstraintKind::Stretch => mesh
+                    .stretch_constraints
+                    .iter()
+                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness))
+                    .collect(),
+                ConstraintKind::Shear => mesh
+                    .shear_constraints
+                    .iter()
+                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness))
+                    .collect(),
+                ConstraintKind::Bend => mesh
+                    .bend_constraints
+                    .iter()
+                    .map(|c| (c.a, c.b, c.rest_length, c.stiffness))
+                    .collect(),
             };
 
             for (ci, &(a, b, rest_len, k)) in constraints.iter().enumerate() {
@@ -332,12 +377,16 @@ impl ClothSolver {
                 let pb = mesh.particles[b].predicted;
                 let diff = pb - pa;
                 let dist = diff.length();
-                if dist < 1e-10 { continue; }
+                if dist < 1e-10 {
+                    continue;
+                }
                 let c_val = dist - rest_len;
                 let wa = mesh.particles[a].inv_mass;
                 let wb = mesh.particles[b].inv_mass;
                 let w_sum = wa + wb;
-                if w_sum < 1e-10 { continue; }
+                if w_sum < 1e-10 {
+                    continue;
+                }
 
                 let alpha_scaled = alpha / dt2 / k.max(1e-6);
                 let lambda_old = match kind {
@@ -384,8 +433,11 @@ impl ClothSolver {
     }
 
     pub fn constraint_count(&self) -> usize {
-        self.meshes.iter()
-            .map(|m| m.stretch_constraints.len() + m.shear_constraints.len() + m.bend_constraints.len())
+        self.meshes
+            .iter()
+            .map(|m| {
+                m.stretch_constraints.len() + m.shear_constraints.len() + m.bend_constraints.len()
+            })
             .sum()
     }
 }
@@ -429,7 +481,9 @@ mod tests {
             Vec3::new(-1.0, 0.0, -1.0),
             Vec3::new(2.0, 0.0, 0.0),
             Vec3::new(0.0, 0.0, 2.0),
-            5, 5, 0.01,
+            5,
+            5,
+            0.01,
         );
         assert_eq!(mesh.particles.len(), 25);
         assert_eq!(mesh.stretch_constraints.len(), 40);
@@ -440,8 +494,12 @@ mod tests {
     #[test]
     fn test_cloth_mesh_plane_3x3() {
         let mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         assert_eq!(mesh.particles.len(), 9);
         assert_eq!(mesh.stretch_constraints.len(), 12);
@@ -452,8 +510,12 @@ mod tests {
     #[test]
     fn test_cloth_pin_unpin() {
         let mut mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         mesh.pin(0);
         assert!(!mesh.particles[0].is_dynamic());
@@ -464,8 +526,12 @@ mod tests {
     #[test]
     fn test_cloth_set_stiffness() {
         let mut mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         mesh.set_stiffness(100.0, 50.0, 10.0);
         assert!((mesh.stretch_constraints[0].stiffness - 100.0).abs() < 1e-4);
@@ -490,10 +556,15 @@ mod tests {
         });
         let mut mesh = ClothMesh::plane(
             Vec3::new(-0.5, 4.0, -0.5),
-            Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
-        for i in 0..mesh.particles.len() { mesh.unpin(i, 0.01); }
+        for i in 0..mesh.particles.len() {
+            mesh.unpin(i, 0.01);
+        }
         solver.add_mesh(mesh);
         let y0 = solver.meshes[0].particles[0].position.y;
         solver.step();
@@ -514,15 +585,20 @@ mod tests {
         });
         let mut mesh = ClothMesh::plane(
             Vec3::new(-1.0, 3.0, -1.0),
-            Vec3::new(2.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 2.0),
-            5, 5, 0.01,
+            Vec3::new(2.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 2.0),
+            5,
+            5,
+            0.01,
         );
         mesh.pin(0);
         mesh.pin(4);
         mesh.pin(20);
         mesh.pin(24);
         solver.add_mesh(mesh);
-        for _ in 0..60 { solver.step(); }
+        for _ in 0..60 {
+            solver.step();
+        }
         let center = solver.meshes[0].particles[12].position.y;
         assert!(center > 0.0, "cloth hangs: center_y={}", center);
     }
@@ -537,19 +613,29 @@ mod tests {
             ..ClothConfig::default()
         });
         let mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         let rest_len = mesh.stretch_constraints[0].rest_length;
         solver.add_mesh(mesh);
         solver.meshes[0].particles[4].position = Vec3::new(1.5, 0.5, 1.5);
-        for _ in 0..20 { solver.step(); }
+        for _ in 0..20 {
+            solver.step();
+        }
         for c in &solver.meshes[0].stretch_constraints {
             let pa = solver.meshes[0].particles[c.a].position;
             let pb = solver.meshes[0].particles[c.b].position;
             let len = (pb - pa).length();
-            assert!((len - rest_len).abs() < 0.1 * rest_len,
-                "stretch preserved: rest={}, cur={}", rest_len, len);
+            assert!(
+                (len - rest_len).abs() < 0.1 * rest_len,
+                "stretch preserved: rest={}, cur={}",
+                rest_len,
+                len
+            );
         }
     }
 
@@ -564,8 +650,11 @@ mod tests {
         });
         let mut mesh = ClothMesh::plane(
             Vec3::new(-0.5, 1.5, -0.5),
-            Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            5, 5, 0.01,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            5,
+            5,
+            0.01,
         );
         mesh.pin(0);
         mesh.pin(4);
@@ -595,12 +684,19 @@ mod tests {
         });
         let mut mesh = ClothMesh::plane(
             Vec3::new(-0.3, 0.8, -0.3),
-            Vec3::new(0.6, 0.0, 0.0), Vec3::new(0.0, 0.0, 0.6),
-            3, 3, 0.01,
+            Vec3::new(0.6, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 0.6),
+            3,
+            3,
+            0.01,
         );
-        for i in 0..mesh.particles.len() { mesh.unpin(i, 0.01); }
+        for i in 0..mesh.particles.len() {
+            mesh.unpin(i, 0.01);
+        }
         solver.add_mesh(mesh);
-        for _ in 0..100 { solver.step(); }
+        for _ in 0..100 {
+            solver.step();
+        }
         for p in &solver.meshes[0].particles {
             assert!(p.position.y >= -1.01, "boundary: y={}", p.position.y);
         }
@@ -621,12 +717,20 @@ mod tests {
             ..ClothConfig::default()
         });
         let mesh1 = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         let mesh2 = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         solver1.add_mesh(mesh1);
         solver2.add_mesh(mesh2);
@@ -641,12 +745,20 @@ mod tests {
     fn test_cloth_multiple_meshes() {
         let mut solver = ClothSolver::new(ClothConfig::default());
         let m1 = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            3, 3, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            3,
+            3,
+            0.01,
         );
         let m2 = ClothMesh::plane(
-            Vec3::new(5.0, 0.0, 0.0), Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            4, 4, 0.01,
+            Vec3::new(5.0, 0.0, 0.0),
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            4,
+            4,
+            0.01,
         );
         solver.add_mesh(m1);
         solver.add_mesh(m2);
@@ -657,15 +769,19 @@ mod tests {
 
     #[test]
     fn test_cloth_kinetic_energy() {
-        let mut solver = ClothSolver::new(ClothConfig {
-            gravity: Vec3::ZERO,
-            ..ClothConfig::default()
-        });
+        let mut solver =
+            ClothSolver::new(ClothConfig { gravity: Vec3::ZERO, ..ClothConfig::default() });
         let mut mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            2, 2, 2.0,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            2,
+            2,
+            2.0,
         );
-        for i in 0..mesh.particles.len() { mesh.unpin(i, 2.0); }
+        for i in 0..mesh.particles.len() {
+            mesh.unpin(i, 2.0);
+        }
         mesh.particles[0].velocity = Vec3::new(1.0, 0.0, 0.0);
         solver.add_mesh(mesh);
         let ke = solver.kinetic_energy();
@@ -677,8 +793,12 @@ mod tests {
         let _ = ClothSolver::new(ClothConfig::default());
         let mut s = ClothSolver::new(ClothConfig::default());
         let mesh = ClothMesh::plane(
-            Vec3::ZERO, Vec3::new(1.0, 0.0, 0.0), Vec3::new(0.0, 0.0, 1.0),
-            4, 4, 0.01,
+            Vec3::ZERO,
+            Vec3::new(1.0, 0.0, 0.0),
+            Vec3::new(0.0, 0.0, 1.0),
+            4,
+            4,
+            0.01,
         );
         let expected = mesh.stretch_constraints.len()
             + mesh.shear_constraints.len()

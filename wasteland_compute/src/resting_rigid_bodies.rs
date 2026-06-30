@@ -18,8 +18,8 @@
 //! 6. 逆设计: 调整顶点位置使目标面达到目标概率
 
 use glam::Vec3;
-use rand::{Rng, SeedableRng};
 use rand::rngs::StdRng;
+use rand::{Rng, SeedableRng};
 
 const GRADIENT_STEP: f32 = 0.15;
 const GRADIENT_MAX_ITER: usize = 200;
@@ -39,19 +39,29 @@ pub struct ConvexPolyhedron {
 impl ConvexPolyhedron {
     pub fn cube(h: f32) -> Self {
         let vertices = vec![
-            Vec3::new(-h, -h, -h), Vec3::new(h, -h, -h),
-            Vec3::new(h, h, -h),   Vec3::new(-h, h, -h),
-            Vec3::new(-h, -h, h),  Vec3::new(h, -h, h),
-            Vec3::new(h, h, h),    Vec3::new(-h, h, h),
+            Vec3::new(-h, -h, -h),
+            Vec3::new(h, -h, -h),
+            Vec3::new(h, h, -h),
+            Vec3::new(-h, h, -h),
+            Vec3::new(-h, -h, h),
+            Vec3::new(h, -h, h),
+            Vec3::new(h, h, h),
+            Vec3::new(-h, h, h),
         ];
         // 面绕序: 从外侧看逆时针 (右手定则给出外法线)
         let faces = vec![
-            [0, 3, 2], [0, 2, 1],  // -z
-            [4, 5, 6], [4, 6, 7],  // +z
-            [0, 4, 7], [0, 7, 3],  // -x
-            [1, 2, 6], [1, 6, 5],  // +x
-            [0, 1, 5], [0, 5, 4],  // -y
-            [3, 7, 6], [3, 6, 2],  // +y
+            [0, 3, 2],
+            [0, 2, 1], // -z
+            [4, 5, 6],
+            [4, 6, 7], // +z
+            [0, 4, 7],
+            [0, 7, 3], // -x
+            [1, 2, 6],
+            [1, 6, 5], // +x
+            [0, 1, 5],
+            [0, 5, 4], // -y
+            [3, 7, 6],
+            [3, 6, 2], // +y
         ];
         Self { vertices, faces }
     }
@@ -63,33 +73,35 @@ impl ConvexPolyhedron {
             Vec3::new(-a, a, -a),
             Vec3::new(-a, -a, a),
         ];
-        let faces = vec![
-            [0, 1, 2],
-            [0, 2, 3],
-            [0, 3, 1],
-            [1, 3, 2],
-        ];
+        let faces = vec![[0, 1, 2], [0, 2, 3], [0, 3, 1], [1, 3, 2]];
         Self { vertices, faces }
     }
 
     pub fn octahedron(r: f32) -> Self {
         let vertices = vec![
-            Vec3::new(r, 0.0, 0.0), Vec3::new(-r, 0.0, 0.0),
-            Vec3::new(0.0, r, 0.0), Vec3::new(0.0, -r, 0.0),
-            Vec3::new(0.0, 0.0, r), Vec3::new(0.0, 0.0, -r),
+            Vec3::new(r, 0.0, 0.0),
+            Vec3::new(-r, 0.0, 0.0),
+            Vec3::new(0.0, r, 0.0),
+            Vec3::new(0.0, -r, 0.0),
+            Vec3::new(0.0, 0.0, r),
+            Vec3::new(0.0, 0.0, -r),
         ];
         let faces = vec![
-            [0, 2, 4], [2, 1, 4], [1, 3, 4], [3, 0, 4],
-            [2, 0, 5], [1, 2, 5], [3, 1, 5], [0, 3, 5],
+            [0, 2, 4],
+            [2, 1, 4],
+            [1, 3, 4],
+            [3, 0, 4],
+            [2, 0, 5],
+            [1, 2, 5],
+            [3, 1, 5],
+            [0, 3, 5],
         ];
         Self { vertices, faces }
     }
 
     /// 支撑函数 h(u) = max_{v∈V} (v·u)
     pub fn support(&self, u: Vec3) -> f32 {
-        self.vertices.iter()
-            .map(|&v| v.dot(u))
-            .fold(f32::NEG_INFINITY, f32::max)
+        self.vertices.iter().map(|&v| v.dot(u)).fold(f32::NEG_INFINITY, f32::max)
     }
 
     /// 返回达到支撑函数最大值的顶点
@@ -274,8 +286,7 @@ pub fn is_stable_face_group(poly: &ConvexPolyhedron, n: Vec3, face_indices: &[us
 
     // 在面平面内按角度排序顶点, 构成凸多边形
     let center = face_verts.iter().sum::<Vec3>() / face_verts.len() as f32;
-    let t1 = if n.x.abs() < 0.9 { Vec3::X } else { Vec3::Y }
-        .cross(n).normalize_or_zero();
+    let t1 = if n.x.abs() < 0.9 { Vec3::X } else { Vec3::Y }.cross(n).normalize_or_zero();
     let t2 = n.cross(t1).normalize_or_zero();
 
     let mut verts = face_verts.clone();
@@ -303,10 +314,14 @@ pub fn point_in_convex_polygon(p: Vec3, polygon: &[Vec3], n: Vec3) -> bool {
         let cross = edge.cross(to_p);
         let d = cross.dot(n);
         if d > 1e-6 {
-            if sign == -1 { return false; }
+            if sign == -1 {
+                return false;
+            }
             sign = 1;
         } else if d < -1e-6 {
-            if sign == 1 { return false; }
+            if sign == 1 {
+                return false;
+            }
             sign = -1;
         }
     }
@@ -354,15 +369,14 @@ pub fn find_rest_states_with_rng<R: Rng>(
 ) -> Vec<RestState> {
     let groups = poly.unique_face_groups();
 
-    let stable: Vec<(usize, Vec3)> = groups.iter()
+    let stable: Vec<(usize, Vec3)> = groups
+        .iter()
         .enumerate()
-        .filter_map(|(gi, (n, idxs))| {
-            if is_stable_face_group(poly, *n, idxs) {
-                Some((gi, *n))
-            } else {
-                None
-            }
-        })
+        .filter_map(
+            |(gi, (n, idxs))| {
+                if is_stable_face_group(poly, *n, idxs) { Some((gi, *n)) } else { None }
+            },
+        )
         .collect();
 
     if stable.is_empty() {
@@ -385,16 +399,20 @@ pub fn find_rest_states_with_rng<R: Rng>(
         counts[best_i] += 1;
     }
 
-    stable.iter().enumerate().map(|(i, (gi, n))| {
-        let prob = counts[i] as f32 / n_samples as f32;
-        let stability = compute_stability(poly, *n, &groups[*gi].1);
-        RestState {
-            up_direction: -*n,
-            face_index: groups[*gi].1[0],
-            probability: prob,
-            stability,
-        }
-    }).collect()
+    stable
+        .iter()
+        .enumerate()
+        .map(|(i, (gi, n))| {
+            let prob = counts[i] as f32 / n_samples as f32;
+            let stability = compute_stability(poly, *n, &groups[*gi].1);
+            RestState {
+                up_direction: -*n,
+                face_index: groups[*gi].1[0],
+                probability: prob,
+                stability,
+            }
+        })
+        .collect()
 }
 
 /// 别名 (兼容外部命名)
@@ -436,9 +454,7 @@ pub fn compute_stability(poly: &ConvexPolyhedron, n: Vec3, face_indices: &[usize
     let d_plane = n.dot(face_vertex);
     let dist = d_plane - n.dot(centroid);
 
-    let total_area: f32 = face_indices.iter()
-        .map(|&fi| poly.face_area(&poly.faces[fi]))
-        .sum();
+    let total_area: f32 = face_indices.iter().map(|&fi| poly.face_area(&poly.faces[fi])).sum();
     let char_size = total_area.sqrt();
 
     if dist < 1e-9 { 0.0 } else { dist / char_size }
@@ -461,10 +477,8 @@ pub fn inverse_design(
 
     for _ in 0..iterations {
         let rest = find_rest_states_with_rng(poly, n_samples, &mut rng);
-        let current_prob = rest.iter()
-            .find(|r| r.face_index == target_face)
-            .map(|r| r.probability)
-            .unwrap_or(0.0);
+        let current_prob =
+            rest.iter().find(|r| r.face_index == target_face).map(|r| r.probability).unwrap_or(0.0);
 
         let err = target_prob - current_prob;
         if err.abs() < 0.02 {
@@ -480,10 +494,7 @@ pub fn inverse_design(
     }
 
     let rest = find_rest_states_with_rng(poly, n_samples, &mut rng);
-    rest.iter()
-        .find(|r| r.face_index == target_face)
-        .map(|r| r.probability)
-        .unwrap_or(0.0)
+    rest.iter().find(|r| r.face_index == target_face).map(|r| r.probability).unwrap_or(0.0)
 }
 
 // ============================================================
@@ -519,10 +530,16 @@ pub fn convex_hull(points: &[Vec3]) -> ConvexPolyhedron {
                     }
                     let d = (points[l] - a).dot(normal);
                     if d > 1e-9 {
-                        if side == -1 { consistent = false; break; }
+                        if side == -1 {
+                            consistent = false;
+                            break;
+                        }
                         side = 1;
                     } else if d < -1e-9 {
-                        if side == 1 { consistent = false; break; }
+                        if side == 1 {
+                            consistent = false;
+                            break;
+                        }
                         side = -1;
                     }
                 }
@@ -538,10 +555,7 @@ pub fn convex_hull(points: &[Vec3]) -> ConvexPolyhedron {
         }
     }
 
-    ConvexPolyhedron {
-        vertices: points.to_vec(),
-        faces,
-    }
+    ConvexPolyhedron { vertices: points.to_vec(), faces }
 }
 
 // ============================================================
@@ -641,8 +655,12 @@ mod tests {
         let rests = find_rest_states(&cube, 1000);
         assert_eq!(rests.len(), 6, "cube rest states = {}, expected 6", rests.len());
         for r in &rests {
-            assert!((r.probability - 1.0 / 6.0).abs() < 0.05,
-                "cube face {} prob = {}, expected ~1/6", r.face_index, r.probability);
+            assert!(
+                (r.probability - 1.0 / 6.0).abs() < 0.05,
+                "cube face {} prob = {}, expected ~1/6",
+                r.face_index,
+                r.probability
+            );
         }
     }
 
@@ -717,8 +735,12 @@ mod tests {
         let rests = find_rest_states(&tet, 1000);
         assert_eq!(rests.len(), 4, "tet rest states = {}, expected 4", rests.len());
         for r in &rests {
-            assert!((r.probability - 0.25).abs() < 0.08,
-                "tet face {} prob = {}, expected ~0.25", r.face_index, r.probability);
+            assert!(
+                (r.probability - 0.25).abs() < 0.08,
+                "tet face {} prob = {}, expected ~0.25",
+                r.face_index,
+                r.probability
+            );
         }
     }
 
@@ -733,7 +755,12 @@ mod tests {
     fn test_face_groups_merge_coplanar() {
         let cube = ConvexPolyhedron::cube(1.0);
         let groups = cube.unique_face_groups();
-        assert_eq!(groups.len(), 6, "should merge 12 triangles into 6 groups, got {}", groups.len());
+        assert_eq!(
+            groups.len(),
+            6,
+            "should merge 12 triangles into 6 groups, got {}",
+            groups.len()
+        );
         for (_, idxs) in &groups {
             assert_eq!(idxs.len(), 2, "each cube face group should have 2 triangles");
         }

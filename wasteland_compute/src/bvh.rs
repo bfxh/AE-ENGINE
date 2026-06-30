@@ -21,7 +21,7 @@
 //! - 栈式遍历: 射线/AABB/点查询
 //! - Refit: 自底向上更新 AABB (运动物体)
 
-use glam::{Vec3, Quat};
+use glam::{Quat, Vec3};
 
 // ============================================================
 // AABB (Axis-Aligned Bounding Box)
@@ -34,11 +34,17 @@ pub struct Aabb {
 }
 
 impl Aabb {
-    pub fn new(min: Vec3, max: Vec3) -> Self { Self { min, max } }
-    pub fn from_point(p: Vec3) -> Self { Self { min: p, max: p } }
+    pub fn new(min: Vec3, max: Vec3) -> Self {
+        Self { min, max }
+    }
+    pub fn from_point(p: Vec3) -> Self {
+        Self { min: p, max: p }
+    }
 
     pub fn from_points(points: &[Vec3]) -> Self {
-        if points.is_empty() { return Self::default(); }
+        if points.is_empty() {
+            return Self::default();
+        }
         let mut min = points[0];
         let mut max = points[0];
         for &p in &points[1..] {
@@ -48,9 +54,18 @@ impl Aabb {
         Self { min, max }
     }
 
-    #[inline] pub fn center(&self) -> Vec3 { (self.min + self.max) * 0.5 }
-    #[inline] pub fn half_extents(&self) -> Vec3 { (self.max - self.min) * 0.5 }
-    #[inline] pub fn size(&self) -> Vec3 { self.max - self.min }
+    #[inline]
+    pub fn center(&self) -> Vec3 {
+        (self.min + self.max) * 0.5
+    }
+    #[inline]
+    pub fn half_extents(&self) -> Vec3 {
+        (self.max - self.min) * 0.5
+    }
+    #[inline]
+    pub fn size(&self) -> Vec3 {
+        self.max - self.min
+    }
 
     #[inline]
     pub fn union(&self, other: &Aabb) -> Aabb {
@@ -76,16 +91,22 @@ impl Aabb {
 
     #[inline]
     pub fn contains(&self, p: Vec3) -> bool {
-        p.x >= self.min.x && p.x <= self.max.x &&
-        p.y >= self.min.y && p.y <= self.max.y &&
-        p.z >= self.min.z && p.z <= self.max.z
+        p.x >= self.min.x
+            && p.x <= self.max.x
+            && p.y >= self.min.y
+            && p.y <= self.max.y
+            && p.z >= self.min.z
+            && p.z <= self.max.z
     }
 
     #[inline]
     pub fn intersects(&self, other: &Aabb) -> bool {
-        self.min.x <= other.max.x && self.max.x >= other.min.x &&
-        self.min.y <= other.max.y && self.max.y >= other.min.y &&
-        self.min.z <= other.max.z && self.max.z >= other.min.z
+        self.min.x <= other.max.x
+            && self.max.x >= other.min.x
+            && self.min.y <= other.max.y
+            && self.max.y >= other.min.y
+            && self.min.z <= other.max.z
+            && self.max.z >= other.min.z
     }
 
     /// 射线与 AABB 相交 (slab method)
@@ -103,7 +124,9 @@ impl Aabb {
 
             if d.abs() < 1e-12 {
                 // 射线与轴平行, 检查原点是否在 slab 内
-                if o < mn || o > mx { return None; }
+                if o < mn || o > mx {
+                    return None;
+                }
             } else {
                 let inv = 1.0 / d;
                 let t1 = (mn - o) * inv;
@@ -111,19 +134,20 @@ impl Aabb {
                 let (t1, t2) = if t1 < t2 { (t1, t2) } else { (t2, t1) };
                 t_enter = t_enter.max(t1);
                 t_exit = t_exit.min(t2);
-                if t_enter > t_exit { return None; }
+                if t_enter > t_exit {
+                    return None;
+                }
             }
         }
 
-        if t_exit < 0.0 { return None; }
+        if t_exit < 0.0 {
+            return None;
+        }
         Some((t_enter.max(0.0), t_exit))
     }
 
     pub fn expanded(&self, amount: f32) -> Aabb {
-        Aabb {
-            min: self.min - Vec3::splat(amount),
-            max: self.max + Vec3::splat(amount),
-        }
+        Aabb { min: self.min - Vec3::splat(amount), max: self.max + Vec3::splat(amount) }
     }
 
     /// 变换后的 AABB (取 8 角点变换后的 AABB, 保守估计)
@@ -169,7 +193,10 @@ pub struct BvhNode {
 }
 
 impl BvhNode {
-    #[inline] pub fn is_leaf(&self) -> bool { self.count > 0 }
+    #[inline]
+    pub fn is_leaf(&self) -> bool {
+        self.count > 0
+    }
 }
 
 // ============================================================
@@ -212,7 +239,12 @@ impl Bvh {
     pub fn build(aabbs: &[Aabb]) -> Self {
         let n = aabbs.len();
         if n == 0 {
-            return Self { nodes: vec![], primitive_aabbs: vec![], primitive_indices: vec![], root: 0 };
+            return Self {
+                nodes: vec![],
+                primitive_aabbs: vec![],
+                primitive_indices: vec![],
+                root: 0,
+            };
         }
 
         let mut indices: Vec<u32> = (0..n as u32).collect();
@@ -220,12 +252,7 @@ impl Bvh {
 
         let root = Self::build_recursive(&mut nodes, aabbs, &mut indices, 0, n as u32);
 
-        Self {
-            nodes,
-            primitive_aabbs: aabbs.to_vec(),
-            primitive_indices: indices,
-            root,
-        }
+        Self { nodes, primitive_aabbs: aabbs.to_vec(), primitive_indices: indices, root }
     }
 
     fn build_recursive(
@@ -265,7 +292,9 @@ impl Bvh {
         let mut best_split = 0u32;
 
         for axis in 0..3 {
-            if centroid_size[axis] < 1e-12 { continue; }
+            if centroid_size[axis] < 1e-12 {
+                continue;
+            }
 
             let mut bins = [Bin::default(); NUM_BINS];
             let axis_min = centroid_min[axis];
@@ -310,12 +339,15 @@ impl Bvh {
             for split in 1..NUM_BINS {
                 let lc = left_counts[split - 1];
                 let rc = right_counts[split];
-                if lc == 0 || rc == 0 { continue; }
+                if lc == 0 || rc == 0 {
+                    continue;
+                }
 
-                let cost = SAH_TRAVERSAL_COST +
-                    (lc as f32 * left_aabbs[split - 1].surface_area() +
-                     rc as f32 * right_aabbs[split].surface_area()) / node_aabb.surface_area().max(1e-12)
-                    * SAH_INTERSECTION_COST;
+                let cost = SAH_TRAVERSAL_COST
+                    + (lc as f32 * left_aabbs[split - 1].surface_area()
+                        + rc as f32 * right_aabbs[split].surface_area())
+                        / node_aabb.surface_area().max(1e-12)
+                        * SAH_INTERSECTION_COST;
 
                 if cost < best_cost {
                     best_cost = cost;
@@ -364,7 +396,8 @@ impl Bvh {
         }
 
         let left_child = Self::build_recursive(nodes, prim_aabbs, indices, start, left);
-        let right_child = Self::build_recursive(nodes, prim_aabbs, indices, start + left, count - left);
+        let right_child =
+            Self::build_recursive(nodes, prim_aabbs, indices, start + left, count - left);
 
         nodes[node_idx as usize].left = left_child;
         nodes[node_idx as usize].right = right_child;
@@ -374,12 +407,16 @@ impl Bvh {
     /// 射线查询: 返回所有 AABB 命中的 primitive 索引
     pub fn ray_query(&self, origin: Vec3, dir: Vec3, max_dist: f32) -> Vec<u32> {
         let mut hits = Vec::new();
-        if self.nodes.is_empty() { return hits; }
+        if self.nodes.is_empty() {
+            return hits;
+        }
         let mut stack = vec![self.root];
         while let Some(idx) = stack.pop() {
             let node = &self.nodes[idx as usize];
             if let Some((t_enter, _)) = node.aabb.ray_intersect(origin, dir) {
-                if t_enter > max_dist { continue; }
+                if t_enter > max_dist {
+                    continue;
+                }
                 if node.is_leaf() {
                     let first = node.left;
                     for i in 0..node.count {
@@ -396,16 +433,24 @@ impl Bvh {
 
     /// 最近命中查询 (需要 primitive 相交回调)
     pub fn ray_closest<F: Fn(u32, Vec3, Vec3) -> Option<f32>>(
-        &self, origin: Vec3, dir: Vec3, max_dist: f32, intersect_prim: F,
+        &self,
+        origin: Vec3,
+        dir: Vec3,
+        max_dist: f32,
+        intersect_prim: F,
     ) -> Option<(u32, f32)> {
-        if self.nodes.is_empty() { return None; }
+        if self.nodes.is_empty() {
+            return None;
+        }
         let mut best_t = max_dist;
         let mut best_prim: Option<u32> = None;
         let mut stack = vec![self.root];
         while let Some(idx) = stack.pop() {
             let node = &self.nodes[idx as usize];
             if let Some((t_enter, _)) = node.aabb.ray_intersect(origin, dir) {
-                if t_enter > best_t { continue; }
+                if t_enter > best_t {
+                    continue;
+                }
                 if node.is_leaf() {
                     let first = node.left;
                     for i in 0..node.count {
@@ -429,7 +474,9 @@ impl Bvh {
     /// AABB 查询: 返回所有与 query AABB 相交的 primitive
     pub fn aabb_query(&self, query: &Aabb) -> Vec<u32> {
         let mut hits = Vec::new();
-        if self.nodes.is_empty() { return hits; }
+        if self.nodes.is_empty() {
+            return hits;
+        }
         let mut stack = vec![self.root];
         while let Some(idx) = stack.pop() {
             let node = &self.nodes[idx as usize];
@@ -454,7 +501,9 @@ impl Bvh {
     /// 点查询: 返回所有包含 p 的 primitive
     pub fn point_query(&self, p: Vec3) -> Vec<u32> {
         let mut hits = Vec::new();
-        if self.nodes.is_empty() { return hits; }
+        if self.nodes.is_empty() {
+            return hits;
+        }
         let mut stack = vec![self.root];
         while let Some(idx) = stack.pop() {
             let node = &self.nodes[idx as usize];
@@ -478,14 +527,18 @@ impl Bvh {
 
     /// 最近邻查询: 返回距离 p 最近的 primitive (按 AABB 中心距离)
     pub fn nearest_neighbor(&self, p: Vec3) -> Option<u32> {
-        if self.nodes.is_empty() { return None; }
+        if self.nodes.is_empty() {
+            return None;
+        }
         let mut best_dist = f32::INFINITY;
         let mut best_prim: Option<u32> = None;
         let mut stack = vec![self.root];
         while let Some(idx) = stack.pop() {
             let node = &self.nodes[idx as usize];
             let dist = node.aabb.distance_sq_to_point(p);
-            if dist > best_dist { continue; }
+            if dist > best_dist {
+                continue;
+            }
             if node.is_leaf() {
                 let first = node.left;
                 for i in 0..node.count {
@@ -508,7 +561,9 @@ impl Bvh {
     /// 动态 refit: 物体移动后更新 AABB, 自底向上 refit (不改变拓扑)
     /// 比 rebuild 快, 适合小幅运动 (Wald 2007)
     pub fn refit(&mut self, new_aabbs: &[Aabb]) {
-        if self.nodes.is_empty() { return; }
+        if self.nodes.is_empty() {
+            return;
+        }
         // primitive_aabbs 按原始索引存, 直接更新
         for i in 0..self.primitive_aabbs.len() {
             self.primitive_aabbs[i] = new_aabbs[i];
@@ -525,7 +580,9 @@ impl Bvh {
             let new_aabb = if is_leaf {
                 let first = left as usize;
                 let cnt = count as usize;
-                if cnt == 0 { continue; }
+                if cnt == 0 {
+                    continue;
+                }
                 let mut aabb = self.primitive_aabbs[self.primitive_indices[first] as usize];
                 for j in 1..cnt {
                     let prim_idx = self.primitive_indices[first + j] as usize;
@@ -542,17 +599,23 @@ impl Bvh {
         }
     }
 
-    pub fn node_count(&self) -> usize { self.nodes.len() }
+    pub fn node_count(&self) -> usize {
+        self.nodes.len()
+    }
 
     pub fn leaf_count(&self) -> usize {
         self.nodes.iter().filter(|n| n.is_leaf()).count()
     }
 
     pub fn depth(&self) -> usize {
-        if self.nodes.is_empty() { return 0; }
+        if self.nodes.is_empty() {
+            return 0;
+        }
         fn depth_rec(nodes: &[BvhNode], idx: u32) -> usize {
             let node = &nodes[idx as usize];
-            if node.is_leaf() { 1 } else {
+            if node.is_leaf() {
+                1
+            } else {
                 1 + depth_rec(nodes, node.left).max(depth_rec(nodes, node.right))
             }
         }
@@ -589,14 +652,26 @@ fn part1_by2(n: u32) -> u64 {
 #[allow(dead_code)]
 fn longest_common_prefix(codes: &[u64], i: usize) -> i32 {
     let n = codes.len();
-    if i >= n { return -1; }
+    if i >= n {
+        return -1;
+    }
     let ci = codes[i];
     // 找与 i 不同的最近邻居
-    let j = if i + 1 < n { i + 1 } else if i > 0 { i - 1 } else { return 64; };
-    if codes[j] == ci { return 64; }
+    let j = if i + 1 < n {
+        i + 1
+    } else if i > 0 {
+        i - 1
+    } else {
+        return 64;
+    };
+    if codes[j] == ci {
+        return 64;
+    }
     let cj = codes[j];
     let diff = ci ^ cj;
-    if diff == 0 { return 64; }
+    if diff == 0 {
+        return 64;
+    }
     diff.leading_zeros() as i32
 }
 
@@ -718,7 +793,8 @@ mod tests {
         assert!(bvh.node_count() > 1);
         assert!(bvh.depth() > 1);
         // 所有 primitive 都在 BVH 中
-        let all_prims: std::collections::HashSet<u32> = bvh.primitive_indices.iter().copied().collect();
+        let all_prims: std::collections::HashSet<u32> =
+            bvh.primitive_indices.iter().copied().collect();
         assert_eq!(all_prims.len(), 100);
     }
 
@@ -787,12 +863,9 @@ mod tests {
         let origin = Vec3::new(-1.0, 1.0, 1.0);
         let dir = Vec3::new(1.0, 0.0, 0.0);
         let aabbs_ref = &aabbs;
-        let result = bvh.ray_closest(
-            origin, dir, 100.0,
-            |prim_idx, o, d| {
-                aabbs_ref[prim_idx as usize].ray_intersect(o, d).map(|(t, _)| t)
-            }
-        );
+        let result = bvh.ray_closest(origin, dir, 100.0, |prim_idx, o, d| {
+            aabbs_ref[prim_idx as usize].ray_intersect(o, d).map(|(t, _)| t)
+        });
         assert!(result.is_some());
         let (prim, t) = result.unwrap();
         assert_eq!(prim, 0);
@@ -835,8 +908,9 @@ mod tests {
         assert!(new_root_aabb.contains(Vec3::new(10.0, 0.0, 0.0)));
         assert!(new_root_aabb.contains(Vec3::new(3.0, 1.0, 1.0)));
         // 与旧的不同
-        assert!(new_root_aabb.min.x > old_root_aabb.min.x ||
-                new_root_aabb.max.x > old_root_aabb.max.x);
+        assert!(
+            new_root_aabb.min.x > old_root_aabb.min.x || new_root_aabb.max.x > old_root_aabb.max.x
+        );
     }
 
     #[test]

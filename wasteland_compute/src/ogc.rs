@@ -192,11 +192,11 @@ impl OgcBody {
 pub struct OgcContact {
     pub body_a: usize,
     pub body_b: usize,
-    pub point: Vec3,     // 世界坐标接触点
-    pub normal: Vec3,    // 从 A 指向 B
-    pub depth: f32,      // 穿透深度 (>0 表示穿透)
-    pub lambda_n: f32,   // 法向冲量累积
-    pub lambda_t: Vec3,  // 切向冲量累积
+    pub point: Vec3,    // 世界坐标接触点
+    pub normal: Vec3,   // 从 A 指向 B
+    pub depth: f32,     // 穿透深度 (>0 表示穿透)
+    pub lambda_n: f32,  // 法向冲量累积
+    pub lambda_t: Vec3, // 切向冲量累积
 }
 
 impl OgcContact {
@@ -223,12 +223,12 @@ pub struct OgcConfig {
     pub dt: f32,
     pub gravity: Vec3,
     pub num_solver_iters: usize,
-    pub contact_offset: f32,    // 接触偏移 (SDF < contact_offset 视为接触)
-    pub max_penetration: f32,   // 最大穿透 (Baumgarte 稳定化)
-    pub baumgarte: f32,         // Baumgarte 系数 (0-1)
+    pub contact_offset: f32,  // 接触偏移 (SDF < contact_offset 视为接触)
+    pub max_penetration: f32, // 最大穿透 (Baumgarte 稳定化)
+    pub baumgarte: f32,       // Baumgarte 系数 (0-1)
     pub restitution_threshold: f32, // 速度小于此值时无恢复
-    pub sample_count: usize,    // 每对形状的采样点数
-    pub sdf_eps: f32,           // SDF 梯度差分步长
+    pub sample_count: usize,  // 每对形状的采样点数
+    pub sdf_eps: f32,         // SDF 梯度差分步长
 }
 
 impl Default for OgcConfig {
@@ -257,12 +257,7 @@ pub struct OgcSolver {
 
 impl OgcSolver {
     pub fn new(config: OgcConfig) -> Self {
-        Self {
-            config,
-            shapes: Vec::new(),
-            bodies: Vec::new(),
-            contacts: Vec::new(),
-        }
+        Self { config, shapes: Vec::new(), bodies: Vec::new(), contacts: Vec::new() }
     }
 
     pub fn add_shape(&mut self, shape: Box<dyn OgcShape>) -> usize {
@@ -346,11 +341,8 @@ impl OgcSolver {
                 if depth > 0.0 && depth < self.config.max_penetration {
                     // 法向: i 的 SDF 在该点的梯度 (指向 i 外部 = A->B 方向)
                     let n = bi.sdf_gradient_world(si.as_ref(), *p, self.config.sdf_eps);
-                    let n = if n.length() > 1e-6 {
-                        n.normalize()
-                    } else {
-                        d_center / dist.max(1e-10)
-                    };
+                    let n =
+                        if n.length() > 1e-6 { n.normalize() } else { d_center / dist.max(1e-10) };
                     // 接触点: 在两表面之间
                     let contact_point = *p;
                     // normal 从 A(i) 指向 B(j)
@@ -368,11 +360,8 @@ impl OgcSolver {
                 if depth > 0.0 && depth < self.config.max_penetration {
                     // j 的 SDF 梯度指向 j 外部 = B->A 方向, 取负得 A->B
                     let n = bj.sdf_gradient_world(sj.as_ref(), *p, self.config.sdf_eps);
-                    let n = if n.length() > 1e-6 {
-                        -n.normalize()
-                    } else {
-                        d_center / dist.max(1e-10)
-                    };
+                    let n =
+                        if n.length() > 1e-6 { -n.normalize() } else { d_center / dist.max(1e-10) };
                     self.contacts.push(OgcContact::new(i, j, *p, n, depth));
                 }
             }
@@ -389,11 +378,7 @@ impl OgcSolver {
             let phi = (1.0 + 5.0f32.sqrt()) * std::f32::consts::PI * k as f32;
             let cos_theta = 1.0 - 2.0 * (k as f32 + 0.5) / n as f32;
             let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
-            let dir = Vec3::new(
-                sin_theta * phi.cos(),
-                cos_theta,
-                sin_theta * phi.sin(),
-            );
+            let dir = Vec3::new(sin_theta * phi.cos(), cos_theta, sin_theta * phi.sin());
             // 沿方向 dir 找表面点 (从中心射线, sphere trace)
             let p_local = dir * r;
             let p_world = body.position + body.rotation * p_local;
@@ -441,9 +426,8 @@ impl OgcSolver {
             let inv_j = bj.inv_inertia_world();
             let rn_i = ri.cross(c.normal);
             let rn_j = rj.cross(c.normal);
-            let w_n = bi.inv_mass + bj.inv_mass
-                + (inv_i * rn_i).dot(rn_i)
-                + (inv_j * rn_j).dot(rn_j);
+            let w_n =
+                bi.inv_mass + bj.inv_mass + (inv_i * rn_i).dot(rn_i) + (inv_j * rn_j).dot(rn_j);
             if w_n < 1e-10 {
                 continue;
             }
@@ -478,9 +462,8 @@ impl OgcSolver {
                 let t = v_t / t_len;
                 let rt_i = ri.cross(t);
                 let rt_j = rj.cross(t);
-                let w_t = bi.inv_mass + bj.inv_mass
-                    + (inv_i * rt_i).dot(rt_i)
-                    + (inv_j * rt_j).dot(rt_j);
+                let w_t =
+                    bi.inv_mass + bj.inv_mass + (inv_i * rt_i).dot(rt_i) + (inv_j * rt_j).dot(rt_j);
                 if w_t < 1e-10 {
                     continue;
                 }
@@ -596,9 +579,8 @@ mod tests {
             sample_count: 64,
             sdf_eps: 1e-3,
         });
-        let ground_id = solver.add_shape(Box::new(OgcBox {
-            half_extents: Vec3::new(10.0, 1.0, 10.0),
-        }));
+        let ground_id =
+            solver.add_shape(Box::new(OgcBox { half_extents: Vec3::new(10.0, 1.0, 10.0) }));
         let sphere_id = solver.add_shape(Box::new(OgcSphere { radius: 0.5 }));
         // 球在 y=0.4 (略低于 0.5, 已穿透地面 0.1)
         let _ground_body = solver.add_body(OgcBody::fixed(Vec3::new(0.0, -1.0, 0.0), ground_id));
@@ -661,9 +643,8 @@ mod tests {
             sample_count: 64,
             sdf_eps: 1e-3,
         });
-        let ground_id = solver.add_shape(Box::new(OgcBox {
-            half_extents: Vec3::new(10.0, 1.0, 10.0),
-        }));
+        let ground_id =
+            solver.add_shape(Box::new(OgcBox { half_extents: Vec3::new(10.0, 1.0, 10.0) }));
         let sphere_id = solver.add_shape(Box::new(OgcSphere { radius: 0.5 }));
         let _ground = solver.add_body(OgcBody::fixed(Vec3::new(0.0, -1.0, 0.0), ground_id));
         let _sphere = solver.add_body(OgcBody::new(Vec3::new(0.0, 0.5, 0.0), sphere_id));
@@ -713,9 +694,7 @@ mod tests {
             sample_count: 96,
             sdf_eps: 1e-3,
         });
-        let box_id = solver.add_shape(Box::new(OgcBox {
-            half_extents: Vec3::new(0.5, 0.5, 0.5),
-        }));
+        let box_id = solver.add_shape(Box::new(OgcBox { half_extents: Vec3::new(0.5, 0.5, 0.5) }));
         let _b0 = solver.add_body({
             let mut b = OgcBody::new(Vec3::new(-0.4, 0.0, 0.0), box_id);
             b.linear_vel = Vec3::new(1.0, 0.0, 0.0);

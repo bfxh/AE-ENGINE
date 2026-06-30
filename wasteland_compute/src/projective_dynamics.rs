@@ -1,4 +1,4 @@
-﻿//! Projective Dynamics — 域分解并行布料/软体模拟
+//! Projective Dynamics — 域分解并行布料/软体模拟
 //!
 //! 基于:
 //! - Bouaziz, Martin, Liu, Pauly, Bao. "Projective Dynamics: Fusing Physical
@@ -15,9 +15,9 @@
 //! 3. 比 PBD 更稳定 (隐式积分), 比牛顿法更快 (线性化)
 //! 4. 域分解: rayon 并行局部步, 全局步用 Jacobi (域内 GS + 域间 Jacobi)
 
-use serde::{Deserialize, Serialize};
 use glam::Vec3;
 use rayon::prelude::*;
+use serde::{Deserialize, Serialize};
 
 // ============================================================
 // 配置
@@ -198,7 +198,8 @@ impl PdSolver {
         // 1. 预测: x_pred = x + dt*v*damping + dt^2*g
         for p in &mut self.particles {
             if p.inv_mass > 0.0 {
-                p.predicted = p.position + p.velocity * dt * self.config.damping
+                p.predicted = p.position
+                    + p.velocity * dt * self.config.damping
                     + Vec3::new(0.0, -g, 0.0) * dt * dt;
             } else {
                 p.predicted = p.position;
@@ -235,17 +236,21 @@ impl PdSolver {
             }
         }
         // 弹簧约束局部最优 (rayon 并行)
-        let spring_contrib: Vec<(usize, Vec3, usize, Vec3)> = self.springs.par_iter().map(|s| {
-            let x0 = x[s.p0];
-            let x1 = x[s.p1];
-            let d = x1 - x0;
-            let len = d.length().max(1e-10);
-            let n_hat = d / len;
-            // 局部最优投影: p_j = rest_length * n_hat (从 p0 指向 p1)
-            // S^T p_j: 对 p0 = -p_j, 对 p1 = +p_j
-            let p_j = n_hat * s.rest_length;
-            (s.p0, -s.weight * p_j, s.p1, s.weight * p_j)
-        }).collect();
+        let spring_contrib: Vec<(usize, Vec3, usize, Vec3)> = self
+            .springs
+            .par_iter()
+            .map(|s| {
+                let x0 = x[s.p0];
+                let x1 = x[s.p1];
+                let d = x1 - x0;
+                let len = d.length().max(1e-10);
+                let n_hat = d / len;
+                // 局部最优投影: p_j = rest_length * n_hat (从 p0 指向 p1)
+                // S^T p_j: 对 p0 = -p_j, 对 p1 = +p_j
+                let p_j = n_hat * s.rest_length;
+                (s.p0, -s.weight * p_j, s.p1, s.weight * p_j)
+            })
+            .collect();
         for (p0, b0, p1, b1) in spring_contrib {
             b[p0] += b0;
             b[p1] += b1;
@@ -261,7 +266,9 @@ impl PdSolver {
         for _ in 0..self.config.global_iters {
             let x_old = x.clone();
             for i in 0..n {
-                if self.particles[i].inv_mass == 0.0 { continue; } // 固定点
+                if self.particles[i].inv_mass == 0.0 {
+                    continue;
+                } // 固定点
                 let mut sum = b[i];
                 for (j, w) in &self.adj[i] {
                     sum += *w * x_old[*j];
@@ -274,7 +281,8 @@ impl PdSolver {
 
     /// 动能 (稳定性监测)
     pub fn kinetic_energy(&self) -> f32 {
-        self.particles.iter()
+        self.particles
+            .iter()
             .map(|p| 0.5 * (1.0 / p.inv_mass.max(1e-10)) * p.velocity.length_squared())
             .sum()
     }
@@ -300,7 +308,7 @@ mod tests {
     #[test]
     fn test_pd_config_default() {
         let c = PdConfig::default();
-        assert!((c.dt - 1.0/60.0).abs() < 1e-6);
+        assert!((c.dt - 1.0 / 60.0).abs() < 1e-6);
         assert_eq!(c.global_iters, 10);
         assert_eq!(c.local_iters, 4);
     }
@@ -343,41 +351,55 @@ mod tests {
     #[test]
     fn test_pd_cloth_grid() {
         let mut solver = PdSolver::new(PdConfig {
-            dt: 1.0/60.0, gravity: 9.81, damping: 0.99,
-            global_iters: 20, local_iters: 4, domain_size: 0,
+            dt: 1.0 / 60.0,
+            gravity: 9.81,
+            damping: 0.99,
+            global_iters: 20,
+            local_iters: 4,
+            domain_size: 0,
         });
         // 5x5 布料网格
         let n = 5;
-        let mut idx = vec![0usize; n*n];
+        let mut idx = vec![0usize; n * n];
         for j in 0..n {
             for i in 0..n {
-                let inv = if i == 0 && (j == 0 || j == n-1) { 0.0 } else { 1.0 };
-                idx[j*n+i] = solver.add_particle(Vec3::new(i as f32, 5.0, j as f32), inv);
+                let inv = if i == 0 && (j == 0 || j == n - 1) { 0.0 } else { 1.0 };
+                idx[j * n + i] = solver.add_particle(Vec3::new(i as f32, 5.0, j as f32), inv);
             }
         }
         // 结构弹簧
         for j in 0..n {
             for i in 0..n {
-                if i+1 < n { solver.add_spring(idx[j*n+i], idx[j*n+i+1], 1.0, 100.0); }
-                if j+1 < n { solver.add_spring(idx[j*n+i], idx[idx_idx(i,j+1,n)], 1.0, 100.0); }
+                if i + 1 < n {
+                    solver.add_spring(idx[j * n + i], idx[j * n + i + 1], 1.0, 100.0);
+                }
+                if j + 1 < n {
+                    solver.add_spring(idx[j * n + i], idx[idx_idx(i, j + 1, n)], 1.0, 100.0);
+                }
             }
         }
         solver.precompute();
-        let y0 = solver.particles[idx[2*n+2]].position.y;
+        let y0 = solver.particles[idx[2 * n + 2]].position.y;
         for _ in 0..60 {
             solver.step();
         }
-        let y1 = solver.particles[idx[2*n+2]].position.y;
+        let y1 = solver.particles[idx[2 * n + 2]].position.y;
         assert!(y1 < y0 - 0.1, "cloth should sag: y0={} y1={}", y0, y1);
     }
 
-    fn idx_idx(i: usize, j: usize, n: usize) -> usize { j*n + i }
+    fn idx_idx(i: usize, j: usize, n: usize) -> usize {
+        j * n + i
+    }
 
     #[test]
     fn test_pd_domain_decomposition() {
         let mut solver = PdSolver::new(PdConfig {
-            dt: 1.0/60.0, gravity: 0.0, damping: 1.0,
-            global_iters: 5, local_iters: 2, domain_size: 3,
+            dt: 1.0 / 60.0,
+            gravity: 0.0,
+            damping: 1.0,
+            global_iters: 5,
+            local_iters: 2,
+            domain_size: 3,
         });
         for i in 0..10 {
             solver.add_particle(Vec3::new(i as f32, 0.0, 0.0), 1.0);
@@ -406,8 +428,12 @@ mod tests {
     #[test]
     fn test_pd_pendulum() {
         let mut solver = PdSolver::new(PdConfig {
-            dt: 1.0/120.0, gravity: 9.81, damping: 1.0,
-            global_iters: 20, local_iters: 4, domain_size: 0,
+            dt: 1.0 / 120.0,
+            gravity: 9.81,
+            damping: 1.0,
+            global_iters: 20,
+            local_iters: 4,
+            domain_size: 0,
         });
         let p0 = solver.add_particle(Vec3::new(0.0, 5.0, 0.0), 0.0); // 固定
         let p1 = solver.add_particle(Vec3::new(2.0, 5.0, 0.0), 1.0);

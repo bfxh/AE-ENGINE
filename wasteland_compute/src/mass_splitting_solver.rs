@@ -56,19 +56,11 @@ impl Default for MassSplittingSolver {
 
 impl MassSplittingSolver {
     pub fn new() -> Self {
-        Self {
-            velocity_iterations: 10,
-            position_iterations: 4,
-            manifolds: Vec::new(),
-        }
+        Self { velocity_iterations: 10, position_iterations: 4, manifolds: Vec::new() }
     }
 
     pub fn with_iterations(velocity: usize, position: usize) -> Self {
-        Self {
-            velocity_iterations: velocity,
-            position_iterations: position,
-            manifolds: Vec::new(),
-        }
+        Self { velocity_iterations: velocity, position_iterations: position, manifolds: Vec::new() }
     }
 
     pub fn add_manifold(&mut self, manifold: ContactManifold) {
@@ -134,19 +126,12 @@ impl MassSplittingSolver {
         let inv_mass_a = if a.is_static { 0.0 } else { a.inv_mass * na };
         let inv_mass_b = if b.is_static { 0.0 } else { b.inv_mass * nb };
         // 旋转项: 逆惯性张量同理乘以 n
-        let inv_i_a = if a.is_static {
-            glam::Mat3::ZERO
-        } else {
-            a.world_inv_inertia() * na
-        };
-        let inv_i_b = if b.is_static {
-            glam::Mat3::ZERO
-        } else {
-            b.world_inv_inertia() * nb
-        };
+        let inv_i_a = if a.is_static { glam::Mat3::ZERO } else { a.world_inv_inertia() * na };
+        let inv_i_b = if b.is_static { glam::Mat3::ZERO } else { b.world_inv_inertia() * nb };
         let r_cross_n_a = r_a.cross(axis);
         let r_cross_n_b = r_b.cross(axis);
-        inv_mass_a + inv_mass_b
+        inv_mass_a
+            + inv_mass_b
             + r_cross_n_a.dot(inv_i_a * r_cross_n_a)
             + r_cross_n_b.dot(inv_i_b * r_cross_n_b)
     }
@@ -265,11 +250,8 @@ impl MassSplittingSolver {
                 let r_b = cp.point - b.position;
                 let v_rel = Self::relative_velocity(a, b, r_a, r_b);
                 let vn = v_rel.dot(m.normal);
-                let restitution = if vn < -REST_SLOP {
-                    a.restitution.min(b.restitution)
-                } else {
-                    0.0
-                };
+                let restitution =
+                    if vn < -REST_SLOP { a.restitution.min(b.restitution) } else { 0.0 };
                 let position_bias = if cp.penetration > MAX_SLOP {
                     BAUMGARTE_BETA * (cp.penetration - MAX_SLOP) / dt
                 } else {
@@ -462,7 +444,7 @@ mod tests {
     use super::*;
     use crate::contact_manifold::{ContactManifold, ContactPoint};
     use crate::rigid_body::RigidBody;
-    use glam::{Vec3, Mat3};
+    use glam::{Mat3, Vec3};
 
     fn make_floor() -> RigidBody {
         let mut floor = RigidBody::new_static();
@@ -477,7 +459,13 @@ mod tests {
     }
 
     /// 构造一个简化的接触流形 (单点, 法线指向 +Y)
-    fn make_manifold(a_idx: usize, b_idx: usize, point: Vec3, normal: Vec3, penetration: f32) -> ContactManifold {
+    fn make_manifold(
+        a_idx: usize,
+        b_idx: usize,
+        point: Vec3,
+        normal: Vec3,
+        penetration: f32,
+    ) -> ContactManifold {
         let mut m = ContactManifold::new(a_idx, b_idx);
         m.normal = normal;
         m.compute_tangents();
@@ -523,7 +511,11 @@ mod tests {
     fn test_falling_box_stops_on_floor() {
         let mut solver = MassSplittingSolver::with_iterations(20, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(0.0, -5.0, 0.0); b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(0.0, -5.0, 0.0);
+                b
+            },
             make_floor(),
         ];
         // 接触: box 底面在 y=-0.5, floor 顶面在 y=-0.5 (floor at y=-1, half=0.5)
@@ -534,7 +526,11 @@ mod tests {
         solver.solve(&mut bodies, 0.016);
 
         // 求解后 box 不应继续向下穿透
-        assert!(bodies[0].linear_velocity.y > -0.1, "box vy after solve: {}", bodies[0].linear_velocity.y);
+        assert!(
+            bodies[0].linear_velocity.y > -0.1,
+            "box vy after solve: {}",
+            bodies[0].linear_velocity.y
+        );
     }
 
     #[test]
@@ -567,16 +563,22 @@ mod tests {
         let k_split = MassSplittingSolver::effective_mass_split(&a, &b, r, r, n, 4, 4);
 
         assert!(k_split > k_normal, "k_split={} should > k_normal={}", k_split, k_normal);
-        assert!((k_split - k_normal * 4.0).abs() < 1e-4, "k_split should be ~4x of k_normal, got {} vs {}", k_split, k_normal * 4.0);
+        assert!(
+            (k_split - k_normal * 4.0).abs() < 1e-4,
+            "k_split should be ~4x of k_normal, got {} vs {}",
+            k_split,
+            k_normal * 4.0
+        );
     }
 
     #[test]
     fn test_static_body_unaffected() {
         let mut solver = MassSplittingSolver::new();
-        let mut bodies = vec![
-            make_floor(),
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(0.0, -5.0, 0.0); b },
-        ];
+        let mut bodies = vec![make_floor(), {
+            let mut b = make_box_at(0.0, 0.0, 0.0);
+            b.linear_velocity = Vec3::new(0.0, -5.0, 0.0);
+            b
+        }];
         let m = make_manifold(0, 1, Vec3::new(0.0, 0.0, 0.0), Vec3::Y, 0.1);
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
@@ -589,8 +591,16 @@ mod tests {
     fn test_two_dynamic_bodies_separate() {
         let mut solver = MassSplittingSolver::with_iterations(20, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(1.0, 0.0, 0.0); b },
-            { let mut b = make_box_at(0.5, 0.0, 0.0); b.linear_velocity = Vec3::new(-1.0, 0.0, 0.0); b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(1.0, 0.0, 0.0);
+                b
+            },
+            {
+                let mut b = make_box_at(0.5, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(-1.0, 0.0, 0.0);
+                b
+            },
         ];
         // 接触: 法线从 A 指向 B (+X), 穿透 0.5
         let m = make_manifold(0, 1, Vec3::new(0.25, 0.0, 0.0), Vec3::X, 0.5);
@@ -606,30 +616,44 @@ mod tests {
     #[test]
     fn test_position_correction_resolves_penetration() {
         let mut solver = MassSplittingSolver::with_iterations(10, 10);
-        let mut bodies = vec![
-            make_box_at(0.0, 0.0, 0.0),
-            make_floor(),
-        ];
+        let mut bodies = vec![make_box_at(0.0, 0.0, 0.0), make_floor()];
         // 深穿透
         let m = make_manifold(1, 0, Vec3::new(0.0, -0.5, 0.0), Vec3::Y, 0.5);
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
         // 多次位置修正后穿透应减小
-        assert!(bodies[0].position.y > -0.1, "box y after position correction: {}", bodies[0].position.y);
+        assert!(
+            bodies[0].position.y > -0.1,
+            "box y after position correction: {}",
+            bodies[0].position.y
+        );
     }
 
     #[test]
     fn test_friction_slows_sliding() {
         let mut solver = MassSplittingSolver::with_iterations(20, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(10.0, 0.0, 0.0); b.friction = 0.5; b },
-            { let mut b = make_floor(); b.friction = 0.5; b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(10.0, 0.0, 0.0);
+                b.friction = 0.5;
+                b
+            },
+            {
+                let mut b = make_floor();
+                b.friction = 0.5;
+                b
+            },
         ];
         let m = make_manifold(1, 0, Vec3::new(0.0, -0.5, 0.0), Vec3::Y, 0.01);
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
         // 摩擦应减慢水平速度
-        assert!(bodies[0].linear_velocity.x < 10.0, "vx after friction: {} (should be < 10)", bodies[0].linear_velocity.x);
+        assert!(
+            bodies[0].linear_velocity.x < 10.0,
+            "vx after friction: {} (should be < 10)",
+            bodies[0].linear_velocity.x
+        );
     }
 
     #[test]
@@ -641,36 +665,67 @@ mod tests {
         //   接触点 v_x = v_x + 0.5*ω_z ≈ 0
         let mut solver = MassSplittingSolver::with_iterations(30, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(5.0, 0.0, 0.0); b.friction = 1.0; b },
-            { let mut b = make_floor(); b.friction = 1.0; b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(5.0, 0.0, 0.0);
+                b.friction = 1.0;
+                b
+            },
+            {
+                let mut b = make_floor();
+                b.friction = 1.0;
+                b
+            },
         ];
         let m = make_manifold(1, 0, Vec3::new(0.0, -0.5, 0.0), Vec3::Y, 0.5);
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
         // 接触点切向速度 (应趋近 0 — 摩擦消除了滑动)
         let contact_vx = bodies[0].linear_velocity.x + 0.5 * bodies[0].angular_velocity.z;
-        assert!(contact_vx.abs() < 0.5,
-            "contact point vx: {} (should be near 0, rolling achieved)", contact_vx);
+        assert!(
+            contact_vx.abs() < 0.5,
+            "contact point vx: {} (should be near 0, rolling achieved)",
+            contact_vx
+        );
         // CoM 速度应减小 (摩擦做了功, 但转化为滚动而非完全停止)
-        assert!(bodies[0].linear_velocity.x < 4.5,
-            "vx after high friction: {} (should be < 4.5, reduced by friction)", bodies[0].linear_velocity.x);
+        assert!(
+            bodies[0].linear_velocity.x < 4.5,
+            "vx after high friction: {} (should be < 4.5, reduced by friction)",
+            bodies[0].linear_velocity.x
+        );
         // 应产生反向角速度 (滚动)
-        assert!(bodies[0].angular_velocity.z < -1.0,
-            "angular velocity z: {} (should be < -1, rolling induced)", bodies[0].angular_velocity.z);
+        assert!(
+            bodies[0].angular_velocity.z < -1.0,
+            "angular velocity z: {} (should be < -1, rolling induced)",
+            bodies[0].angular_velocity.z
+        );
     }
 
     #[test]
     fn test_restitution_bounce() {
         let mut solver = MassSplittingSolver::with_iterations(20, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(0.0, -5.0, 0.0); b.restitution = 0.5; b },
-            { let mut b = make_floor(); b.restitution = 0.5; b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(0.0, -5.0, 0.0);
+                b.restitution = 0.5;
+                b
+            },
+            {
+                let mut b = make_floor();
+                b.restitution = 0.5;
+                b
+            },
         ];
         let m = make_manifold(1, 0, Vec3::new(0.0, -0.5, 0.0), Vec3::Y, 0.1);
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
         // 弹性恢复应使 box 反弹 (vy > 0 或至少不继续下落)
-        assert!(bodies[0].linear_velocity.y > -1.0, "vy after bounce: {} (should be > -1)", bodies[0].linear_velocity.y);
+        assert!(
+            bodies[0].linear_velocity.y > -1.0,
+            "vy after bounce: {} (should be > -1)",
+            bodies[0].linear_velocity.y
+        );
     }
 
     #[test]
@@ -678,7 +733,11 @@ mod tests {
         // 质量分割应使多接触场景更稳定 (更小的速度变化)
         let mut solver_split = MassSplittingSolver::with_iterations(5, 0);
         let mut bodies_split = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(0.0, -5.0, 0.0); b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(0.0, -5.0, 0.0);
+                b
+            },
             make_floor(),
             make_floor(),
             make_floor(),
@@ -698,7 +757,11 @@ mod tests {
     fn test_multiple_contact_points() {
         let mut solver = MassSplittingSolver::with_iterations(20, 4);
         let mut bodies = vec![
-            { let mut b = make_box_at(0.0, 0.0, 0.0); b.linear_velocity = Vec3::new(0.0, -3.0, 0.0); b },
+            {
+                let mut b = make_box_at(0.0, 0.0, 0.0);
+                b.linear_velocity = Vec3::new(0.0, -3.0, 0.0);
+                b
+            },
             make_floor(),
         ];
         // 4 个接触点 (模拟流形)
@@ -706,15 +769,15 @@ mod tests {
         m.normal = Vec3::Y;
         m.compute_tangents();
         for offset in &[(-0.4_f32, -0.4), (0.4, -0.4), (-0.4, 0.4), (0.4, 0.4)] {
-            m.points.push(ContactPoint::new(
-                Vec3::new(offset.0, -0.5, offset.1),
-                Vec3::Y,
-                0.1,
-            ));
+            m.points.push(ContactPoint::new(Vec3::new(offset.0, -0.5, offset.1), Vec3::Y, 0.1));
         }
         solver.add_manifold(m);
         solver.solve(&mut bodies, 0.016);
-        assert!(bodies[0].linear_velocity.y > -0.5, "vy with 4 contacts: {}", bodies[0].linear_velocity.y);
+        assert!(
+            bodies[0].linear_velocity.y > -0.5,
+            "vy with 4 contacts: {}",
+            bodies[0].linear_velocity.y
+        );
     }
 
     #[test]
@@ -727,11 +790,11 @@ mod tests {
 
         // 顺序 1
         let mut solver1 = MassSplittingSolver::with_iterations(10, 0);
-        let mut bodies1: Vec<RigidBody> = vec![
-            make_box_at(0.0, 0.0, 0.0),
-            make_floor(),
-            { let mut b = make_floor(); b.position = Vec3::new(2.0, 0.0, 0.0); b },
-        ];
+        let mut bodies1: Vec<RigidBody> = vec![make_box_at(0.0, 0.0, 0.0), make_floor(), {
+            let mut b = make_floor();
+            b.position = Vec3::new(2.0, 0.0, 0.0);
+            b
+        }];
         for c in &contacts {
             solver1.add_manifold(make_manifold(c.0, c.1, c.2, c.3, c.4));
         }
@@ -739,11 +802,11 @@ mod tests {
 
         // 顺序 2 (反转)
         let mut solver2 = MassSplittingSolver::with_iterations(10, 0);
-        let mut bodies2: Vec<RigidBody> = vec![
-            make_box_at(0.0, 0.0, 0.0),
-            make_floor(),
-            { let mut b = make_floor(); b.position = Vec3::new(2.0, 0.0, 0.0); b },
-        ];
+        let mut bodies2: Vec<RigidBody> = vec![make_box_at(0.0, 0.0, 0.0), make_floor(), {
+            let mut b = make_floor();
+            b.position = Vec3::new(2.0, 0.0, 0.0);
+            b
+        }];
         for c in contacts.iter().rev() {
             solver2.add_manifold(make_manifold(c.0, c.1, c.2, c.3, c.4));
         }

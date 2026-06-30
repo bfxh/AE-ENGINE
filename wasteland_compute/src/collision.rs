@@ -22,7 +22,7 @@
 //!   triple_product 退化为零向量。不能直接返回 true (会让 EPA 初始 polytope 退化)。
 //!   应选垂直方向继续迭代,直到形成真正包含原点的四面体。
 
-use glam::{Vec3, Quat};
+use glam::{Quat, Vec3};
 
 const GJK_MAX_ITER: usize = 128;
 const EPA_MAX_ITER: usize = 256;
@@ -58,7 +58,9 @@ impl Collider for SphereCollider {
         self.center + dir * self.radius
     }
     #[inline]
-    fn center(&self) -> Vec3 { self.center }
+    fn center(&self) -> Vec3 {
+        self.center
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -90,7 +92,9 @@ impl Collider for BoxCollider {
         self.center + self.rotation * local_pt
     }
     #[inline]
-    fn center(&self) -> Vec3 { self.center }
+    fn center(&self) -> Vec3 {
+        self.center
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -114,7 +118,9 @@ impl Collider for CapsuleCollider {
         end + dir * self.radius
     }
     #[inline]
-    fn center(&self) -> Vec3 { (self.a + self.b) * 0.5 }
+    fn center(&self) -> Vec3 {
+        (self.a + self.b) * 0.5
+    }
 }
 
 #[derive(Debug, Clone)]
@@ -149,7 +155,9 @@ impl Collider for ConvexHullCollider {
         best
     }
     #[inline]
-    fn center(&self) -> Vec3 { self.centroid }
+    fn center(&self) -> Vec3 {
+        self.centroid
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -319,9 +327,15 @@ fn do_simplex_tetrahedron(simplex: &mut Vec<Vec3>, d: &mut Vec3) -> bool {
     let mut adb = ad.cross(ab);
 
     // 调整法线朝外 (远离对面顶点)
-    if abc.dot(ad) > 0.0 { abc = -abc; }
-    if acd.dot(ab) > 0.0 { acd = -acd; }
-    if adb.dot(ac) > 0.0 { adb = -adb; }
+    if abc.dot(ad) > 0.0 {
+        abc = -abc;
+    }
+    if acd.dot(ab) > 0.0 {
+        acd = -acd;
+    }
+    if adb.dot(ac) > 0.0 {
+        adb = -adb;
+    }
 
     // 用容差判断: dot > eps 表示原点在面外
     // dot 接近 0 表示原点在面上 (退化),也应降维处理
@@ -423,7 +437,10 @@ fn gjk<A: Collider, B: Collider>(a: &A, b: &B) -> Option<[Vec3; 4]> {
 // 确保 GJK 返回 4 点四面体 (处理原点在线/三角形上的退化情况)
 // 关键: 必须构造严格包含原点的四面体,否则 EPA 会退化
 fn ensure_tetrahedron<A: Collider, B: Collider>(
-    a: &A, b: &B, simplex: &[Vec3], d: Vec3
+    a: &A,
+    b: &B,
+    simplex: &[Vec3],
+    d: Vec3,
 ) -> [Vec3; 4] {
     if simplex.len() == 4 {
         return [simplex[0], simplex[1], simplex[2], simplex[3]];
@@ -478,19 +495,27 @@ fn ensure_tetrahedron<A: Collider, B: Collider>(
 fn is_degenerate(simplex: &[Vec3; 4]) -> bool {
     // 重复顶点
     for i in 0..4 {
-        for j in (i+1)..4 {
-            if (simplex[i] - simplex[j]).length_squared() < 1e-14 { return true; }
+        for j in (i + 1)..4 {
+            if (simplex[i] - simplex[j]).length_squared() < 1e-14 {
+                return true;
+            }
         }
     }
     // 原点在面上 (距离 ~0)
-    let faces = [(0,1,2), (0,3,1), (0,2,3), (1,3,2)];
+    let faces = [(0, 1, 2), (0, 3, 1), (0, 2, 3), (1, 3, 2)];
     for (i, j, k) in faces {
-        let a = simplex[i]; let b = simplex[j]; let c = simplex[k];
-        let normal = (b-a).cross(c-a);
+        let a = simplex[i];
+        let b = simplex[j];
+        let c = simplex[k];
+        let normal = (b - a).cross(c - a);
         let n_len = normal.length();
-        if n_len < 1e-12 { return true; }
+        if n_len < 1e-12 {
+            return true;
+        }
         let dist = (a.dot(normal) / n_len).abs();
-        if dist < 1e-6 { return true; }
+        if dist < 1e-6 {
+            return true;
+        }
     }
     false
 }
@@ -503,27 +528,28 @@ fn epa<A: Collider, B: Collider>(a: &A, b: &B, initial_simplex: [Vec3; 4]) -> Co
         // GJK 返回退化 simplex (原点在面/边/顶点上), 用 octahedron 替换
         // 6 轴方向 support 点确保原点严格在 polytope 内部
         polytope = vec![
-            md_support(a, b, Vec3::new(1.0, 0.0, 0.0)),   // 0: +x
-            md_support(a, b, Vec3::new(-1.0, 0.0, 0.0)),  // 1: -x
-            md_support(a, b, Vec3::new(0.0, 1.0, 0.0)),   // 2: +y
-            md_support(a, b, Vec3::new(0.0, -1.0, 0.0)),  // 3: -y
-            md_support(a, b, Vec3::new(0.0, 0.0, 1.0)),   // 4: +z
-            md_support(a, b, Vec3::new(0.0, 0.0, -1.0)),  // 5: -z
+            md_support(a, b, Vec3::new(1.0, 0.0, 0.0)),  // 0: +x
+            md_support(a, b, Vec3::new(-1.0, 0.0, 0.0)), // 1: -x
+            md_support(a, b, Vec3::new(0.0, 1.0, 0.0)),  // 2: +y
+            md_support(a, b, Vec3::new(0.0, -1.0, 0.0)), // 3: -y
+            md_support(a, b, Vec3::new(0.0, 0.0, 1.0)),  // 4: +z
+            md_support(a, b, Vec3::new(0.0, 0.0, -1.0)), // 5: -z
         ];
         faces = vec![
-            (0, 2, 4), (0, 4, 3), (0, 3, 5), (0, 5, 2),
-            (1, 4, 2), (1, 3, 4), (1, 5, 3), (1, 2, 5),
+            (0, 2, 4),
+            (0, 4, 3),
+            (0, 3, 5),
+            (0, 5, 2),
+            (1, 4, 2),
+            (1, 3, 4),
+            (1, 5, 3),
+            (1, 2, 5),
         ];
     } else {
         polytope = initial_simplex.to_vec();
         // 检查初始 polytope 是否有重复顶点, 若有则用不同方向重新取点
         dedup_and_fix_polytope(a, b, &mut polytope);
-        faces = vec![
-            (0, 1, 2),
-            (0, 3, 1),
-            (0, 2, 3),
-            (1, 3, 2),
-        ];
+        faces = vec![(0, 1, 2), (0, 3, 1), (0, 2, 3), (1, 3, 2)];
     }
 
     fix_face_outward(&polytope, &mut faces);
@@ -553,9 +579,15 @@ fn epa<A: Collider, B: Collider>(a: &A, b: &B, initial_simplex: [Vec3; 4]) -> Co
         let normal_unit = normal.normalize();
         let support_pt = md_support(a, b, normal_unit);
         let support_dist = support_pt.dot(normal_unit);
-        if !support_dist.is_finite() { break; }
+        if !support_dist.is_finite() {
+            break;
+        }
         if support_dist - distance < EPA_TOLERANCE {
-            return ContactInfo { intersecting: true, penetration_depth: distance, normal: normal_unit };
+            return ContactInfo {
+                intersecting: true,
+                penetration_depth: distance,
+                normal: normal_unit,
+            };
         }
         if polytope.iter().any(|&p| (p - support_pt).length_squared() < 1e-14) {
             break;
@@ -564,14 +596,20 @@ fn epa<A: Collider, B: Collider>(a: &A, b: &B, initial_simplex: [Vec3; 4]) -> Co
         polytope.push(support_pt);
         expand_polytope(&polytope, &mut faces, new_idx);
         faces.retain(|&f| {
-            let a = polytope[f.0]; let b = polytope[f.1]; let c = polytope[f.2];
+            let a = polytope[f.0];
+            let b = polytope[f.1];
+            let c = polytope[f.2];
             let n = (b - a).cross(c - a);
             let n_len = n.length();
-            if n_len < 1e-12 { return false; }
+            if n_len < 1e-12 {
+                return false;
+            }
             let d = a.dot(n).abs() / n_len;
             d > 1e-7
         });
-        if faces.is_empty() { break; }
+        if faces.is_empty() {
+            break;
+        }
     }
 
     // 超时, 返回当前最佳
@@ -589,22 +627,24 @@ fn epa<A: Collider, B: Collider>(a: &A, b: &B, initial_simplex: [Vec3; 4]) -> Co
 }
 
 /// 检查并修复 polytope 中的重复顶点
-fn dedup_and_fix_polytope<A: Collider, B: Collider>(
-    a: &A, b: &B, polytope: &mut Vec<Vec3>,
-) {
+fn dedup_and_fix_polytope<A: Collider, B: Collider>(a: &A, b: &B, polytope: &mut Vec<Vec3>) {
     // 检查是否有重复
     let mut has_dup = false;
     for i in 0..polytope.len() {
-        for j in (i+1)..polytope.len() {
+        for j in (i + 1)..polytope.len() {
             if (polytope[i] - polytope[j]).length_squared() < 1e-14 {
                 has_dup = true;
                 break;
             }
         }
-        if has_dup { break; }
+        if has_dup {
+            break;
+        }
     }
 
-    if !has_dup { return; }
+    if !has_dup {
+        return;
+    }
 
     // 用不同方向重新构造 4 个 support 点
     let dirs = [
@@ -643,7 +683,9 @@ fn find_closest_face(polytope: &[Vec3], faces: &[(usize, usize, usize)]) -> (Vec
         let c = polytope[face.2];
         let normal = (b - a).cross(c - a);
         let n_len = normal.length();
-        if n_len < 1e-12 { continue; }
+        if n_len < 1e-12 {
+            continue;
+        }
         let mut n_unit = normal / n_len;
         // 原点在 polytope 内部, 外法线满足 a·n > 0
         let mut dist = a.dot(n_unit);
@@ -661,11 +703,7 @@ fn find_closest_face(polytope: &[Vec3], faces: &[(usize, usize, usize)]) -> (Vec
     (best_normal, best_dist, best_idx)
 }
 
-fn expand_polytope(
-    polytope: &Vec<Vec3>,
-    faces: &mut Vec<(usize, usize, usize)>,
-    new_idx: usize,
-) {
+fn expand_polytope(polytope: &Vec<Vec3>, faces: &mut Vec<(usize, usize, usize)>, new_idx: usize) {
     let support_pt = polytope[new_idx];
 
     let mut edges: Vec<(usize, usize)> = Vec::new();
@@ -720,11 +758,7 @@ pub fn intersect<A: Collider, B: Collider>(a: &A, b: &B) -> bool {
 pub fn collide<A: Collider, B: Collider>(a: &A, b: &B) -> ContactInfo {
     match gjk(a, b) {
         Some(simplex) => epa(a, b, simplex),
-        None => ContactInfo {
-            intersecting: false,
-            penetration_depth: 0.0,
-            normal: Vec3::ZERO,
-        },
+        None => ContactInfo { intersecting: false, penetration_depth: 0.0, normal: Vec3::ZERO },
     }
 }
 
@@ -743,8 +777,11 @@ mod tests {
         let info = collide(&a, &b);
         assert!(info.intersecting);
         // 穿透深度 = 2*radius - distance = 2 - 1.5 = 0.5
-        assert!((info.penetration_depth - 0.5).abs() < 0.1,
-            "penetration_depth = {}", info.penetration_depth);
+        assert!(
+            (info.penetration_depth - 0.5).abs() < 0.1,
+            "penetration_depth = {}",
+            info.penetration_depth
+        );
         // 法线从 A 指向 B (正 x)
         assert!(info.normal.x > 0.0, "normal = {:?}", info.normal);
     }
@@ -764,8 +801,11 @@ mod tests {
         let info = collide(&a, &b);
         assert!(info.intersecting);
         // 穿透深度应该接近 0.5
-        assert!((info.penetration_depth - 0.5).abs() < 0.15,
-            "penetration_depth = {}", info.penetration_depth);
+        assert!(
+            (info.penetration_depth - 0.5).abs() < 0.15,
+            "penetration_depth = {}",
+            info.penetration_depth
+        );
         assert!(info.normal.x > 0.0);
     }
 
@@ -862,8 +902,7 @@ mod tests {
         let info = collide(&a, &b);
         assert!(info.intersecting);
         // 完全包含, 穿透深度应接近 1.0 (盒子半边长)
-        assert!(info.penetration_depth > 0.9,
-            "penetration = {}", info.penetration_depth);
+        assert!(info.penetration_depth > 0.9, "penetration = {}", info.penetration_depth);
     }
 
     #[test]
@@ -912,8 +951,7 @@ mod tests {
         let info = collide(&a, &b);
         assert!(info.intersecting);
         // 穿透深度 ≈ 2*radius - distance = 4 - 0.1 = 3.9
-        assert!(info.penetration_depth > 3.8,
-            "penetration = {}", info.penetration_depth);
+        assert!(info.penetration_depth > 3.8, "penetration = {}", info.penetration_depth);
     }
 
     #[test]

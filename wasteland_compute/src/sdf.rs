@@ -1,4 +1,4 @@
-﻿//! SDF — Analytic Signed Distance Fields (解析符号距离场)
+//! SDF — Analytic Signed Distance Fields (解析符号距离场)
 //!
 //! 基于:
 //! - Inigo Quilez. "Distance functions." https://iquilezles.org/articles/distfunctions/
@@ -12,7 +12,7 @@
 //!
 //! 所有函数返回带符号距离: <0 内部, =0 表面, >0 外部
 
-use glam::{Vec2, Vec3, Quat};
+use glam::{Quat, Vec2, Vec3};
 
 // ============================================================
 // 基本体 SDF
@@ -85,14 +85,20 @@ pub fn sdf_cone(p: Vec3, center: Vec3, r: f32, h: f32) -> f32 {
 // ============================================================
 
 #[inline]
-pub fn sdf_union(d1: f32, d2: f32) -> f32 { d1.min(d2) }
+pub fn sdf_union(d1: f32, d2: f32) -> f32 {
+    d1.min(d2)
+}
 
 #[inline]
-pub fn sdf_intersection(d1: f32, d2: f32) -> f32 { d1.max(d2) }
+pub fn sdf_intersection(d1: f32, d2: f32) -> f32 {
+    d1.max(d2)
+}
 
 /// d1 减去 d2
 #[inline]
-pub fn sdf_subtraction(d1: f32, d2: f32) -> f32 { d1.max(-d2) }
+pub fn sdf_subtraction(d1: f32, d2: f32) -> f32 {
+    d1.max(-d2)
+}
 
 // ============================================================
 // 平滑组合 (指数平滑, k = 平滑半径)
@@ -121,13 +127,19 @@ pub fn sdf_smooth_subtraction(d1: f32, d2: f32, k: f32) -> f32 {
 // ============================================================
 
 #[inline]
-pub fn sdf_translate(p: Vec3, offset: Vec3) -> Vec3 { p - offset }
+pub fn sdf_translate(p: Vec3, offset: Vec3) -> Vec3 {
+    p - offset
+}
 
 #[inline]
-pub fn sdf_rotate(p: Vec3, rotation: Quat) -> Vec3 { rotation.inverse() * p }
+pub fn sdf_rotate(p: Vec3, rotation: Quat) -> Vec3 {
+    rotation.inverse() * p
+}
 
 #[inline]
-pub fn sdf_scale(p: Vec3, scale: f32) -> Vec3 { p / scale }
+pub fn sdf_scale(p: Vec3, scale: f32) -> Vec3 {
+    p / scale
+}
 
 // ============================================================
 // 法向和曲率
@@ -139,7 +151,8 @@ pub fn sdf_normal<F: Fn(Vec3) -> f32>(sdf: &F, p: Vec3, eps: f32) -> Vec3 {
         sdf(Vec3::new(p.x + eps, p.y, p.z)) - sdf(Vec3::new(p.x - eps, p.y, p.z)),
         sdf(Vec3::new(p.x, p.y + eps, p.z)) - sdf(Vec3::new(p.x, p.y - eps, p.z)),
         sdf(Vec3::new(p.x, p.y, p.z + eps)) - sdf(Vec3::new(p.x, p.y, p.z - eps)),
-    ).normalize_or_zero()
+    )
+    .normalize_or_zero()
 }
 
 /// SDF 曲率 (Laplacian, 中心差分)
@@ -217,7 +230,8 @@ mod tests {
 
     #[test]
     fn test_sdf_capsule() {
-        let sdf = |p: Vec3| sdf_capsule(p, Vec3::new(0.0, -1.0, 0.0), Vec3::new(0.0, 1.0, 0.0), 0.5);
+        let sdf =
+            |p: Vec3| sdf_capsule(p, Vec3::new(0.0, -1.0, 0.0), Vec3::new(0.0, 1.0, 0.0), 0.5);
         assert!(sdf(Vec3::ZERO) < -0.4, "center inside");
         assert!((sdf(Vec3::new(0.0, 1.5, 0.0))).abs() < 1e-4, "on top cap");
         assert!(sdf(Vec3::new(2.0, 0.0, 0.0)) > 0.0, "outside");
@@ -289,7 +303,14 @@ mod tests {
     fn test_sphere_trace_hit() {
         let sdf = |p: Vec3| sdf_sphere(p, Vec3::ZERO, 1.0);
         // 射线从 (3,0,0) 朝 -x 方向, 应命中球
-        let hit = sphere_trace(&sdf, Vec3::new(3.0, 0.0, 0.0), Vec3::new(-1.0, 0.0, 0.0), 10.0, 100, 1e-4);
+        let hit = sphere_trace(
+            &sdf,
+            Vec3::new(3.0, 0.0, 0.0),
+            Vec3::new(-1.0, 0.0, 0.0),
+            10.0,
+            100,
+            1e-4,
+        );
         assert!(hit.is_some(), "should hit sphere");
         let t = hit.unwrap();
         assert!((t - 2.0).abs() < 0.01, "hit distance ~2: {}", t);
@@ -299,7 +320,14 @@ mod tests {
     fn test_sphere_trace_miss() {
         let sdf = |p: Vec3| sdf_sphere(p, Vec3::ZERO, 1.0);
         // 射线从 (3,3,0) 朝 -x, 应错过球
-        let hit = sphere_trace(&sdf, Vec3::new(3.0, 3.0, 0.0), Vec3::new(-1.0, 0.0, 0.0), 10.0, 100, 1e-4);
+        let hit = sphere_trace(
+            &sdf,
+            Vec3::new(3.0, 3.0, 0.0),
+            Vec3::new(-1.0, 0.0, 0.0),
+            10.0,
+            100,
+            1e-4,
+        );
         assert!(hit.is_none(), "should miss sphere");
     }
 

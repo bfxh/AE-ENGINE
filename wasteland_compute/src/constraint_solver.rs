@@ -21,12 +21,12 @@
 //! - 求解时通过 body.rotation 转到世界坐标系: r_a = R·anchor_a
 //! - 应用冲量符号约定: λ 为正表示对 B 的推力沿约束轴正方向
 
-use glam::{Vec3, Quat, Mat3};
+use glam::{Mat3, Quat, Vec3};
 
 use crate::rigid_body::RigidBody;
 
-const BAUMGARTE_BETA: f32 = 0.2;   // 位置修正强度 (0=关闭, 1=完全修正)
-const MAX_SLOP: f32 = 0.005;       // 误差容差 (避免过修正抖动)
+const BAUMGARTE_BETA: f32 = 0.2; // 位置修正强度 (0=关闭, 1=完全修正)
+const MAX_SLOP: f32 = 0.005; // 误差容差 (避免过修正抖动)
 const DEFAULT_ITERATIONS: usize = 15;
 
 // ============================================================
@@ -36,11 +36,7 @@ const DEFAULT_ITERATIONS: usize = 15;
 /// 反对称矩阵 skew(r): skew(r)·x = r × x
 #[inline]
 fn skew(r: Vec3) -> Mat3 {
-    Mat3::from_cols(
-        Vec3::new(0.0, r.z, -r.y),
-        Vec3::new(-r.z, 0.0, r.x),
-        Vec3::new(r.y, -r.x, 0.0),
-    )
+    Mat3::from_cols(Vec3::new(0.0, r.z, -r.y), Vec3::new(-r.z, 0.0, r.x), Vec3::new(r.y, -r.x, 0.0))
 }
 
 /// 3x3 对称正定矩阵求解 (Cholesky 分解或直接求逆)
@@ -87,7 +83,9 @@ pub trait Constraint: Send + Sync {
     fn warm_start(&mut self, a: &mut RigidBody, b: &mut RigidBody);
 
     /// 是否启用 (false 的约束在求解器中被跳过)
-    fn enabled(&self) -> bool { true }
+    fn enabled(&self) -> bool {
+        true
+    }
 }
 
 // ============================================================
@@ -101,18 +99,14 @@ pub trait Constraint: Send + Sync {
 /// 有效质量 K (3x3) = (1/m_a + 1/m_b)·I + skew(r_a)·I_a⁻¹·skew(r_a)ᵀ + skew(r_b)·I_b⁻¹·skew(r_b)ᵀ
 #[derive(Debug, Clone)]
 pub struct PointConstraint {
-    pub anchor_a: Vec3,  // A 局部坐标系下的锚点
-    pub anchor_b: Vec3,  // B 局部坐标系下的锚点
+    pub anchor_a: Vec3, // A 局部坐标系下的锚点
+    pub anchor_b: Vec3, // B 局部坐标系下的锚点
     accumulated_impulse: Vec3,
 }
 
 impl PointConstraint {
     pub fn new(anchor_a: Vec3, anchor_b: Vec3) -> Self {
-        Self {
-            anchor_a,
-            anchor_b,
-            accumulated_impulse: Vec3::ZERO,
-        }
+        Self { anchor_a, anchor_b, accumulated_impulse: Vec3::ZERO }
     }
 
     /// 计算当前误差 C = (p_a + r_a) - (p_b + r_b)
@@ -129,12 +123,14 @@ impl PointConstraint {
         let k_a = if a.is_static {
             Mat3::ZERO
         } else {
-            Mat3::from_diagonal(Vec3::splat(a.inv_mass)) + angular_effective_mass(a.world_inv_inertia(), r_a)
+            Mat3::from_diagonal(Vec3::splat(a.inv_mass))
+                + angular_effective_mass(a.world_inv_inertia(), r_a)
         };
         let k_b = if b.is_static {
             Mat3::ZERO
         } else {
-            Mat3::from_diagonal(Vec3::splat(b.inv_mass)) + angular_effective_mass(b.world_inv_inertia(), r_b)
+            Mat3::from_diagonal(Vec3::splat(b.inv_mass))
+                + angular_effective_mass(b.world_inv_inertia(), r_b)
         };
         k_a + k_b
     }
@@ -389,7 +385,12 @@ impl HingeConstraint {
 
     /// 计算 A 和 B 的铰链轴在世界坐标系下的垂直向量对 (用于约束 2 个旋转自由度)
     #[inline]
-    fn compute_angular_axes(a: &RigidBody, b: &RigidBody, axis_a: Vec3, axis_b: Vec3) -> (Vec3, Vec3, Vec3, Vec3) {
+    fn compute_angular_axes(
+        a: &RigidBody,
+        b: &RigidBody,
+        axis_a: Vec3,
+        axis_b: Vec3,
+    ) -> (Vec3, Vec3, Vec3, Vec3) {
         let aw = a.rotation * axis_a;
         let bw = b.rotation * axis_b;
         // 选一个不平行于 aw 的参考向量构造正交基
@@ -437,14 +438,20 @@ impl Constraint for HingeConstraint {
         // u 轴约束
         let k_u = u_a.dot(inv_ia * u_a) + u_b.dot(inv_ib * u_b);
         if k_u > 1e-9 {
-            let bias_u = BAUMGARTE_BETA * u_a.cross(u_b).dot(aw).signum() * u_a.dot(u_b.cross(aw).normalize_or_zero());
+            let bias_u = BAUMGARTE_BETA
+                * u_a.cross(u_b).dot(aw).signum()
+                * u_a.dot(u_b.cross(aw).normalize_or_zero());
             let _ = bias_u;
             // 速度约束: (ω_b - ω_a)·u_a = 0 (近似)
             let dvu = dw.dot(u_a);
             let lambda_u = -dvu / k_u;
             let impulse_u = u_a * lambda_u;
-            if !a.is_static { a.angular_velocity += inv_ia * (-impulse_u); }
-            if !b.is_static { b.angular_velocity += inv_ib * impulse_u; }
+            if !a.is_static {
+                a.angular_velocity += inv_ia * (-impulse_u);
+            }
+            if !b.is_static {
+                b.angular_velocity += inv_ib * impulse_u;
+            }
         }
 
         // v 轴约束
@@ -453,8 +460,12 @@ impl Constraint for HingeConstraint {
             let dvv = (b.angular_velocity - a.angular_velocity).dot(v_a);
             let lambda_v = -dvv / k_v;
             let impulse_v = v_a * lambda_v;
-            if !a.is_static { a.angular_velocity += inv_ia * (-impulse_v); }
-            if !b.is_static { b.angular_velocity += inv_ib * impulse_v; }
+            if !a.is_static {
+                a.angular_velocity += inv_ia * (-impulse_v);
+            }
+            if !b.is_static {
+                b.angular_velocity += inv_ib * impulse_v;
+            }
         }
 
         // 3) 角度限制 (如果配置了)
@@ -472,8 +483,12 @@ impl Constraint for HingeConstraint {
                 if k_axial > 1e-9 {
                     let lambda = -(dw_axial + bias) / k_axial;
                     let impulse = aw_cur * lambda;
-                    if !a.is_static { a.angular_velocity += inv_ia * (-impulse); }
-                    if !b.is_static { b.angular_velocity += inv_ib * impulse; }
+                    if !a.is_static {
+                        a.angular_velocity += inv_ia * (-impulse);
+                    }
+                    if !b.is_static {
+                        b.angular_velocity += inv_ib * impulse;
+                    }
                 }
             } else if self.current_angle > max {
                 let excess = self.current_angle - max;
@@ -483,8 +498,12 @@ impl Constraint for HingeConstraint {
                 if k_axial > 1e-9 {
                     let lambda = -(dw_axial + bias) / k_axial;
                     let impulse = aw_cur * lambda;
-                    if !a.is_static { a.angular_velocity += inv_ia * (-impulse); }
-                    if !b.is_static { b.angular_velocity += inv_ib * impulse; }
+                    if !a.is_static {
+                        a.angular_velocity += inv_ia * (-impulse);
+                    }
+                    if !b.is_static {
+                        b.angular_velocity += inv_ib * impulse;
+                    }
                 }
             }
         }
@@ -527,8 +546,8 @@ impl Constraint for HingeConstraint {
 pub struct SliderConstraint {
     pub anchor_a: Vec3,
     pub anchor_b: Vec3,
-    pub axis_a: Vec3,  // A 局部坐标系下的滑动轴
-    pub axis_b: Vec3,  // B 局部坐标系下的滑动轴
+    pub axis_a: Vec3, // A 局部坐标系下的滑动轴
+    pub axis_b: Vec3, // B 局部坐标系下的滑动轴
     accumulated_impulse: Vec3,
 }
 
@@ -590,8 +609,12 @@ impl Constraint for SliderConstraint {
             if k > 1e-9 {
                 let lambda = -dw_a / k;
                 let impulse = axis * lambda;
-                if !a.is_static { a.angular_velocity += inv_ia * (-impulse); }
-                if !b.is_static { b.angular_velocity += inv_ib * impulse; }
+                if !a.is_static {
+                    a.angular_velocity += inv_ia * (-impulse);
+                }
+                if !b.is_static {
+                    b.angular_velocity += inv_ib * impulse;
+                }
             }
         }
     }
@@ -689,8 +712,12 @@ impl Constraint for FixedConstraint {
         if k_ang.determinant().abs() > 1e-12 {
             let lambda_ang = -solve_symmetric_3x3(k_ang, dw);
             self.accumulated_impulse_ang += lambda_ang;
-            if !a.is_static { a.angular_velocity += inv_ia * (-lambda_ang); }
-            if !b.is_static { b.angular_velocity += inv_ib * lambda_ang; }
+            if !a.is_static {
+                a.angular_velocity += inv_ia * (-lambda_ang);
+            }
+            if !b.is_static {
+                b.angular_velocity += inv_ib * lambda_ang;
+            }
         }
     }
 
@@ -730,7 +757,9 @@ impl Constraint for FixedConstraint {
                         a.rotation.w + 0.5 * dq.w,
                     );
                     let len = new_q.length();
-                    if len > 1e-9 { a.rotation = new_q / len; }
+                    if len > 1e-9 {
+                        a.rotation = new_q / len;
+                    }
                 }
                 if !b.is_static {
                     let ang_corr = inv_ib * lambda;
@@ -743,7 +772,9 @@ impl Constraint for FixedConstraint {
                         b.rotation.w + 0.5 * dq.w,
                     );
                     let len = new_q.length();
-                    if len > 1e-9 { b.rotation = new_q / len; }
+                    if len > 1e-9 {
+                        b.rotation = new_q / len;
+                    }
                 }
             }
         }
@@ -758,7 +789,6 @@ impl Constraint for FixedConstraint {
     }
 }
 
-
 // ============================================================
 // 辅助函数: 位置修正 (不修改速度, 用于 position solver)
 // ============================================================
@@ -767,7 +797,9 @@ impl Constraint for FixedConstraint {
 /// impulse: 位置修正"冲量" (等效位移量)
 /// r: 锚点到质心的世界坐标偏移
 fn apply_position_correction(body: &mut RigidBody, impulse: Vec3, r: Vec3) {
-    if body.is_static { return; }
+    if body.is_static {
+        return;
+    }
     body.position += impulse * body.inv_mass;
     let angular_impulse = r.cross(impulse);
     if angular_impulse.length_squared() < 1e-12 {
@@ -844,7 +876,9 @@ impl ConstraintSolver {
         // 1) Warm starting
         if self.warm_starting {
             for (ia, ib, c) in constraints.iter_mut() {
-                if *ia == *ib { continue; }
+                if *ia == *ib {
+                    continue;
+                }
                 let (a, b) = get_two_mut(bodies, *ia, *ib);
                 c.warm_start(a, b);
             }
@@ -853,7 +887,9 @@ impl ConstraintSolver {
         // 2) Velocity iterations
         for _ in 0..self.velocity_iterations {
             for (ia, ib, c) in constraints.iter_mut() {
-                if *ia == *ib { continue; }
+                if *ia == *ib {
+                    continue;
+                }
                 let (a, b) = get_two_mut(bodies, *ia, *ib);
                 c.solve_velocity(a, b, dt);
             }
@@ -862,7 +898,9 @@ impl ConstraintSolver {
         // 3) Position iterations (使用 Baumgarte 修正)
         for _ in 0..self.position_iterations {
             for (ia, ib, c) in constraints.iter_mut() {
-                if *ia == *ib { continue; }
+                if *ia == *ib {
+                    continue;
+                }
                 let (a, b) = get_two_mut(bodies, *ia, *ib);
                 c.solve_position(a, b, dt);
             }
@@ -1010,7 +1048,7 @@ mod tests {
         let mut anchor = RigidBody::new_static();
         anchor.position = Vec3::new(0.0, 5.0, 0.0);
         let mut bob = RigidBody::sphere(1.0, 0.1);
-        bob.position = Vec3::new(1.0, 5.0, 0.0);  // 水平偏移 1m, 应形成单摆
+        bob.position = Vec3::new(1.0, 5.0, 0.0); // 水平偏移 1m, 应形成单摆
 
         let constraint = DistanceConstraint::new(Vec3::ZERO, Vec3::ZERO, 1.0);
         let dt = 0.01;
@@ -1024,9 +1062,8 @@ mod tests {
             b.apply_force(Vec3::new(0.0, -9.81, 0.0));
             b.integrate(dt);
             let mut bodies = [a.clone(), b.clone()];
-            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> = vec![
-                (0, 1, Box::new(c.clone())),
-            ];
+            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> =
+                vec![(0, 1, Box::new(c.clone()))];
             solver.solve(&mut bodies, &mut constraints, dt);
             a = bodies[0].clone();
             b = bodies[1].clone();
@@ -1045,10 +1082,10 @@ mod tests {
         let mut anchor = RigidBody::new_static();
         anchor.position = Vec3::new(0.0, 5.0, 0.0);
         let mut bob = RigidBody::sphere(1.0, 0.1);
-        bob.position = Vec3::new(0.0, 5.0, 0.0);  // 初始在锚点
+        bob.position = Vec3::new(0.0, 5.0, 0.0); // 初始在锚点
 
-        let constraint = DistanceConstraint::new(Vec3::ZERO, Vec3::ZERO, 1.0)
-            .with_spring(50.0, 5.0);  // 软弹簧
+        let constraint =
+            DistanceConstraint::new(Vec3::ZERO, Vec3::ZERO, 1.0).with_spring(50.0, 5.0); // 软弹簧
         let dt = 0.01;
         let solver = ConstraintSolver::new();
 
@@ -1060,9 +1097,8 @@ mod tests {
             b.apply_force(Vec3::new(0.0, -9.81, 0.0));
             b.integrate(dt);
             let mut bodies = [a.clone(), b.clone()];
-            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> = vec![
-                (0, 1, Box::new(c.clone())),
-            ];
+            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> =
+                vec![(0, 1, Box::new(c.clone()))];
             solver.solve(&mut bodies, &mut constraints, dt);
             a = bodies[0].clone();
             b = bodies[1].clone();
@@ -1110,8 +1146,12 @@ mod tests {
         }
 
         let final_dist = (a.position - b.position).length();
-        assert!((final_dist - initial_dist).abs() < 0.1,
-            "welded bodies drifted: initial={}, final={}", initial_dist, final_dist);
+        assert!(
+            (final_dist - initial_dist).abs() < 0.1,
+            "welded bodies drifted: initial={}, final={}",
+            initial_dist,
+            final_dist
+        );
     }
 
     #[test]
@@ -1137,20 +1177,25 @@ mod tests {
             b_curr.apply_force(Vec3::new(0.0, -5.0, 0.0));
             b_curr.integrate(dt);
             let mut bodies = [a_curr.clone(), b_curr.clone()];
-            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> = vec![
-                (0, 1, Box::new(c.clone())),
-            ];
+            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> =
+                vec![(0, 1, Box::new(c.clone()))];
             solver.solve(&mut bodies, &mut constraints, dt);
             a_curr = bodies[0].clone();
             b_curr = bodies[1].clone();
         }
 
         // Y 方向位移应很小 (被约束阻止)
-        assert!(b_curr.position.y.abs() < 0.1,
-            "Y movement should be locked: y={}", b_curr.position.y);
+        assert!(
+            b_curr.position.y.abs() < 0.1,
+            "Y movement should be locked: y={}",
+            b_curr.position.y
+        );
         // X 方向应有位移 (允许滑动)
-        assert!(b_curr.position.x.abs() > 0.1,
-            "X movement should be allowed: x={}", b_curr.position.x);
+        assert!(
+            b_curr.position.x.abs() > 0.1,
+            "X movement should be allowed: x={}",
+            b_curr.position.x
+        );
     }
 
     #[test]
@@ -1205,7 +1250,8 @@ mod tests {
             Vec3::new(-0.5, 0.0, 0.0),
             Vec3::Y,
             Vec3::Y,
-        ).with_angle_limit(-0.5, 0.5);  // ±28 度
+        )
+        .with_angle_limit(-0.5, 0.5); // ±28 度
 
         let dt = 0.01;
         let solver = ConstraintSolver::new();
@@ -1219,9 +1265,8 @@ mod tests {
             b_curr.apply_force(Vec3::new(0.0, -50.0, 0.0));
             b_curr.integrate(dt);
             let mut bodies = [a_curr.clone(), b_curr.clone()];
-            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> = vec![
-                (0, 1, Box::new(c.clone())),
-            ];
+            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> =
+                vec![(0, 1, Box::new(c.clone()))];
             solver.solve(&mut bodies, &mut constraints, dt);
             a_curr = bodies[0].clone();
             b_curr = bodies[1].clone();
@@ -1238,7 +1283,7 @@ mod tests {
         let mut a = RigidBody::new_static();
         a.position = Vec3::new(0.0, 5.0, 0.0);
         let mut b = RigidBody::sphere(1.0, 0.1);
-        b.position = Vec3::new(0.0, 4.0, 0.0);  // 距锚点 1m
+        b.position = Vec3::new(0.0, 4.0, 0.0); // 距锚点 1m
 
         let constraint = DistanceConstraint::new(Vec3::ZERO, Vec3::ZERO, 1.0);
         let dt = 0.016;
@@ -1252,9 +1297,8 @@ mod tests {
             b_curr.apply_force(Vec3::new(0.0, -9.81, 0.0));
             b_curr.integrate(dt);
             let mut bodies = [a_curr.clone(), b_curr.clone()];
-            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> = vec![
-                (0, 1, Box::new(c.clone())),
-            ];
+            let mut constraints: Vec<(usize, usize, Box<dyn Constraint>)> =
+                vec![(0, 1, Box::new(c.clone()))];
             solver.solve(&mut bodies, &mut constraints, dt);
             a_curr = bodies[0].clone();
             b_curr = bodies[1].clone();

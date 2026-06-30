@@ -1,3 +1,4 @@
+pub mod acoustic_fdtd;
 pub mod avbd;
 pub mod barnes_hut;
 pub mod broadphase_sap;

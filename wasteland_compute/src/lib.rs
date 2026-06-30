@@ -5,6 +5,7 @@ pub mod bvh;
 pub mod ccd;
 pub mod ck_mpm;
 pub mod clebsch_fluid;
+pub mod chaotic_dynamics;
 pub mod cloth;
 pub mod collision;
 pub mod constraint_solver;

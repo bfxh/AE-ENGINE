@@ -25,6 +25,7 @@ pub mod hardware;
 pub mod heat_diffusion;
 pub mod job;
 pub mod ising_model;
+pub mod kdv_soliton;
 pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
 pub mod mass_splitting_solver;

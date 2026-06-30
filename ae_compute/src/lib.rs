@@ -20,6 +20,7 @@ pub mod collision;
 pub mod corotational_fem;
 pub mod cosserat_rod;
 pub mod dispatcher;
+pub mod double_pendulum;
 pub mod drucker_prager;
 pub mod duffing;
 pub mod dynamic_aabb_tree;

@@ -23,6 +23,7 @@ pub mod eigenfluid;
 pub mod electromagnetic_fdtd;
 pub mod fluid;
 pub mod fms;
+pub mod fisher_kpp;
 pub mod fitzhugh_nagumo;
 pub mod hardware;
 pub mod heat_diffusion;

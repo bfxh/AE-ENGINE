@@ -1,4 +1,4 @@
-//! Corotational FEM — 共旋有限元 (软体/肌肉/组织)
+﻿//! Corotational FEM — 共旋有限元 (软体/肌肉/组织)
 //!
 //! 基于:
 //! - Müller, Gross. "Interactive Virtual Materials." GI 2004.
@@ -66,6 +66,7 @@ impl Default for CorotationalFemConfig {
 // ============================================================
 
 /// 四面体网格
+#[derive(Clone)]
 pub struct TetMesh {
     /// 顶点位置 (当前)
     pub vertices: Vec<Vec3>,

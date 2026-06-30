@@ -30,6 +30,7 @@ pub mod resting_rigid_bodies;
 pub mod rigid_body;
 pub mod sdf;
 pub mod shape_matching;
+pub mod stable_neo_hookean;
 pub mod strain_based_dynamics;
 pub mod vbd_solver;
 pub mod wavelet_turbulence;

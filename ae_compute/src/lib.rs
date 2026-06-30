@@ -79,6 +79,7 @@ pub mod shallow_water;
 pub mod shape_matching;
 pub mod sine_gordon;
 pub mod sir_model;
+pub mod sprott_attractor;
 pub mod stable_neo_hookean;
 pub mod standard_map;
 pub mod strain_based_dynamics;

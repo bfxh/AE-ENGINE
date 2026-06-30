@@ -1,4 +1,4 @@
-pub mod avbd;
+﻿pub mod avbd;
 pub mod broadphase_sap;
 pub mod bvh;
 pub mod ccd;
@@ -9,6 +9,7 @@ pub mod collision;
 pub mod constraint_solver;
 pub mod contact_manifold;
 pub mod contact_solver;
+pub mod corotational_fem;
 pub mod cosserat_rod;
 pub mod dispatcher;
 pub mod dynamic_aabb_tree;

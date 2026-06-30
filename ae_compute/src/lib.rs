@@ -36,6 +36,7 @@ pub mod ising_model;
 pub mod job;
 pub mod kdv_soliton;
 pub mod keller_segel;
+pub mod klein_gordon;
 pub mod kuramoto;
 pub mod kuramoto_sivashinsky;
 pub mod lattice_boltzmann;

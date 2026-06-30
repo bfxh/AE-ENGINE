@@ -34,6 +34,7 @@ pub mod ogc;
 pub mod parallel;
 pub mod pbf;
 pub mod phase_change;
+pub mod pic_plasma;
 pub mod plastic_fem;
 pub mod projective_dynamics;
 pub mod resting_rigid_bodies;

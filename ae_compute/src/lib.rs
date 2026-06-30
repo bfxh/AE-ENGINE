@@ -66,6 +66,7 @@ pub mod lu_attractor;
 pub mod ueda_attractor;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
 pub mod mackey_glass;
+pub mod moore_spiegel_attractor;
 pub mod molecular_dynamics;
 pub mod mpm_compute;
 pub mod navier_stokes_2d;

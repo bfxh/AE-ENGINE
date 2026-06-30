@@ -12,6 +12,7 @@ pub mod cahn_hilliard;
 // pub mod ccd; // TODO: fix Clone trait bounds
 pub mod cgle;
 pub mod chaotic_dynamics;
+pub mod chen_attractor;
 pub mod chua_circuit;
 pub mod ck_mpm;
 pub mod clebsch_fluid;

@@ -68,6 +68,7 @@ pub mod navier_stokes_2d;
 pub mod nls_solver;
 pub mod noise;
 pub mod nose_hoover;
+pub mod newton_leipnik_attractor;
 pub mod ogc;
 pub mod parallel;
 // pub mod pbf; // TODO: fix ambiguous numeric type

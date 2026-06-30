@@ -55,6 +55,7 @@ pub mod kuramoto_sivashinsky;
 pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
 pub mod logistic_map;
+pub mod lorenz84;
 pub mod lorenz96;
 pub mod lotka_volterra;
 pub mod lu_attractor;

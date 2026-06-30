@@ -9,6 +9,7 @@ pub mod collision;
 pub mod constraint_solver;
 pub mod contact_manifold;
 pub mod contact_solver;
+pub mod cosserat_rod;
 pub mod dispatcher;
 pub mod dynamic_aabb_tree;
 pub mod eigenfluid;

@@ -4469,6 +4469,7 @@ dependencies = [
  "bytemuck",
  "glam 0.29.3",
  "log",
+ "rand 0.8.6",
  "rayon",
  "serde",
  "wgpu",

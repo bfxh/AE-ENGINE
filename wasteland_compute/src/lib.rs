@@ -1,4 +1,5 @@
 pub mod acoustic_fdtd;
+pub mod allen_cahn;
 pub mod avbd;
 pub mod barnes_hut;
 pub mod burgers;

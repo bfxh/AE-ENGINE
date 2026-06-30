@@ -1210,7 +1210,7 @@ mod tests {
 
     #[test]
     fn test_get_proxy_aabb_includes_fat_margin() {
-        let mut tree = DynamicAabbTree::with_fat_margin(0.5);
+        let mut tree = DynamicAabbTree::new().with_fat_margin(0.5);
         let pid = tree.create_proxy(aabb_at(0.0, 0.0, 0.0, 1.0), 1);
         let fat = tree.get_proxy_aabb(pid);
         // 原 AABB: [-1, 1], fat margin 0.5 -> [-1.5, 1.5]

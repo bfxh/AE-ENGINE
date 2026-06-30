@@ -1,12 +1,63 @@
+pub mod acoustic_fdtd;
+pub mod allen_cahn;
+pub mod avbd;
+pub mod barnes_hut;
+pub mod burgers;
+pub mod bvh;
+pub mod broadphase_sap;
+pub mod cahn_hilliard;
+// pub mod ccd; // TODO: fix Clone trait bounds
+pub mod chaotic_dynamics;
+pub mod ck_mpm;
+pub mod clebsch_fluid;
+pub mod cloth;
+pub mod collision;
+// pub mod contact_manifold; // TODO: fix unique_face_groups method
+// pub mod contact_solver; // TODO: fix normalize_or_zero (glam 0.29 compat)
+// pub mod constraint_solver; // TODO: fix borrow conflicts
+pub mod corotational_fem;
+pub mod cosserat_rod;
 pub mod dispatcher;
+pub mod drucker_prager;
+pub mod dynamic_aabb_tree;
+pub mod eigenfluid;
+pub mod electromagnetic_fdtd;
+pub mod fisher_kpp;
+pub mod fitzhugh_nagumo;
+pub mod fms;
 pub mod fluid;
 pub mod hardware;
+pub mod heat_diffusion;
+pub mod ising_model;
 pub mod job;
-pub mod mpm_compute;
-pub mod parallel;
+pub mod kdv_soliton;
+pub mod kuramoto;
+pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
-pub mod avbd;
+// pub mod mass_splitting_solver; // TODO: depends on contact_manifold
+pub mod molecular_dynamics;
+pub mod mpm_compute;
+pub mod noise;
+pub mod nls_solver;
+pub mod ogc;
+pub mod parallel;
+// pub mod pbf; // TODO: fix ambiguous numeric type
+pub mod phase_change;
+pub mod pic_plasma;
+pub mod plastic_fem;
 pub mod projective_dynamics;
+pub mod reaction_diffusion;
+// pub mod resting_rigid_bodies; // TODO: fix ambiguous numeric type and mismatched types
+pub mod rigid_body;
+pub mod schrodinger;
+pub mod sdf;
+pub mod shape_matching;
+pub mod sine_gordon;
+pub mod stable_neo_hookean;
+pub mod strain_based_dynamics;
+pub mod vbd_solver;
+pub mod wavelet_turbulence;
+// pub mod wcsph; // TODO: depends on pbf
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

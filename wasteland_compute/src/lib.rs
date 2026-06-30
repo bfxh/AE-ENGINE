@@ -24,6 +24,7 @@ pub mod leapfrog_flow_maps;
 pub mod mass_splitting_solver;
 pub mod mpm_compute;
 pub mod noise;
+pub mod reaction_diffusion;
 pub mod ogc;
 pub mod parallel;
 pub mod pbf;

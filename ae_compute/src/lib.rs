@@ -8,6 +8,7 @@ pub mod broadphase_sap;
 pub mod brusselator;
 pub mod burgers;
 pub mod bvh;
+pub mod burke_shaw_attractor;
 pub mod cahn_hilliard;
 // pub mod ccd; // TODO: fix Clone trait bounds
 pub mod cgle;

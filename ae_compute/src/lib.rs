@@ -2,9 +2,9 @@ pub mod acoustic_fdtd;
 pub mod allen_cahn;
 pub mod avbd;
 pub mod barnes_hut;
+pub mod broadphase_sap;
 pub mod burgers;
 pub mod bvh;
-pub mod broadphase_sap;
 pub mod cahn_hilliard;
 // pub mod ccd; // TODO: fix Clone trait bounds
 pub mod chaotic_dynamics;
@@ -24,8 +24,8 @@ pub mod eigenfluid;
 pub mod electromagnetic_fdtd;
 pub mod fisher_kpp;
 pub mod fitzhugh_nagumo;
-pub mod fms;
 pub mod fluid;
+pub mod fms;
 pub mod hardware;
 pub mod heat_diffusion;
 pub mod ising_model;
@@ -38,8 +38,8 @@ pub mod leapfrog_flow_maps;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
 pub mod molecular_dynamics;
 pub mod mpm_compute;
-pub mod noise;
 pub mod nls_solver;
+pub mod noise;
 pub mod ogc;
 pub mod parallel;
 // pub mod pbf; // TODO: fix ambiguous numeric type
@@ -56,11 +56,14 @@ pub mod shape_matching;
 pub mod sine_gordon;
 pub mod stable_neo_hookean;
 pub mod strain_based_dynamics;
+pub mod swift_hohenberg;
 pub mod vbd_solver;
 pub mod wavelet_turbulence;
 // pub mod wcsph; // TODO: depends on pbf
 
+pub use avbd::{
+    AvbdConfig, AvbdParticle, AvbdRigidBody, AvbdSolver, ContactConstraint, DistanceConstraint,
+};
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
-pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};
 pub use leapfrog_flow_maps::{LfmConfig, LfmSolver3D, mgpcg_solve_poisson};
-pub use avbd::{AvbdConfig, AvbdSolver, AvbdParticle, AvbdRigidBody, DistanceConstraint, ContactConstraint};
+pub use mpm_compute::{MpmConfig, MpmGrid3D, MpmParticle, MpmSolver};

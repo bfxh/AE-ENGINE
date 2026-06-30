@@ -1,4 +1,5 @@
 pub mod acoustic_fdtd;
+pub mod aizawa_attractor;
 pub mod allen_cahn;
 pub mod avbd;
 pub mod barnes_hut;

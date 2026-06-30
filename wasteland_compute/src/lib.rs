@@ -1,4 +1,4 @@
-﻿pub mod avbd;
+pub mod avbd;
 pub mod barnes_hut;
 pub mod broadphase_sap;
 pub mod bvh;
@@ -22,6 +22,7 @@ pub mod fms;
 pub mod hardware;
 pub mod heat_diffusion;
 pub mod job;
+pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
 pub mod mass_splitting_solver;
 pub mod mpm_compute;

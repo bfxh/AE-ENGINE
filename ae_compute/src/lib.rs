@@ -36,6 +36,7 @@ pub mod fluid;
 pub mod fms;
 pub mod fpu_beta;
 pub mod gross_pitaevskii;
+pub mod halvorsen_attractor;
 pub mod hardware;
 pub mod heat_diffusion;
 pub mod henon_heiles;

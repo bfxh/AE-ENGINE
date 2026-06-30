@@ -29,6 +29,7 @@ pub mod contact_solver;
 pub mod dynamic_aabb_tree;
 pub mod mass_splitting_solver;
 pub mod vbd_solver;
+pub mod eigenfluid;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

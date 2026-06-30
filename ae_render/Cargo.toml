@@ -1,0 +1,28 @@
+[package]
+name = "ae_render"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+glam.workspace = true
+bytemuck.workspace = true
+log.workspace = true
+hashbrown.workspace = true
+smallvec.workspace = true
+parking_lot = "0.12"
+bitflags = "2"
+wgpu = "24"
+winit = { workspace = true }
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "bmp", "tiff"] }
+ddsfile = "0.5"
+gltf = "1"
+basis-universal = { version = "0.3", optional = true }
+flate2.workspace = true
+slotmap.workspace = true
+serde.workspace = true
+
+[features]
+default = []
+ktx2 = ["basis-universal"]

@@ -1,0 +1,11 @@
+[package]
+name = "ae_cpp_kernel"
+version.workspace = true
+edition.workspace = true
+description = "C++ SIMD 性能内核（通过 cc crate + g++ 编译，Rust FFI 调用）"
+
+[dependencies]
+glam.workspace = true
+
+[build-dependencies]
+cc = "1.0"

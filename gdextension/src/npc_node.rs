@@ -1,7 +1,7 @@
 use godot::prelude::*;
 use std::sync::Mutex;
 use uuid::Uuid;
-use wasteland_engine::{
+use ae_engine::{
     NpcCombatState, NpcSpecies, NpcSystem, create_default_npc_definition,
 };
 
@@ -167,7 +167,7 @@ impl WastelandNPC {
         if let Ok(parsed) = Uuid::parse_str(&npc_id.to_string()) {
             if let Ok(mut guard) = self.system.lock() {
                 if let Some(ref mut system) = *guard {
-                    use wasteland_ai_bridge::character_bridge::FactInjection;
+                    use ae_ai_bridge::character_bridge::FactInjection;
                     let facts = vec![FactInjection {
                         topic: fact.to_string(),
                         content: fact.to_string(),

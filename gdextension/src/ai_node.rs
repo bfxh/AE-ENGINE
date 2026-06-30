@@ -1,6 +1,6 @@
 use godot::prelude::*;
 use std::sync::Mutex;
-use wasteland_ai::{
+use ae_ai::{
     BtContext, BtNode, BtStatus, ComparisonOp, EmotionEngine, EmotionType, GoapAction, GoapGoal,
     GoapPlanner, PersonalityTraits, WorldState,
 };

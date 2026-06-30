@@ -6,7 +6,7 @@
 //! Currently uses lightweight mirror types (`engine_types`) since the
 //! engine crate has a heavy dependency graph (40+ crates).
 //! When the engine compiles cleanly, this module can be extended
-//! to call into `wasteland_engine` directly.
+//! to call into `ae_engine` directly.
 
 use crate::engine_types::*;
 

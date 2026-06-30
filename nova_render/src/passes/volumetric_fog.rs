@@ -1,4 +1,4 @@
-//! Volumetric Fog Pass（port 自 v1 wasteland_render）
+//! Volumetric Fog Pass（port 自 v1 ae_render）
 //!
 //! 高度雾 + 距离雾 + god rays 近似
 //! - 采样深度重建世界坐标
@@ -139,7 +139,7 @@ fn fs_fog(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 "#;
 
-/// 体积雾渲染 Pass（port 自 v1 wasteland_render::VolumetricFogRenderer）
+/// 体积雾渲染 Pass（port 自 v1 ae_render::VolumetricFogRenderer）
 ///
 /// 使用方式：
 /// ```ignore

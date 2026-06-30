@@ -29,9 +29,9 @@
 ---
 
 ## 编译状态
-- wasteland_particle: OK (5 unit + 7 integration pass)
-- wasteland_engine: OK (w/ MpssBuffer集成)
-- wasteland_gdextension: OK (w/ WastelandMpss GodotClass)
+- ae_particle: OK (5 unit + 7 integration pass)
+- ae_engine: OK (w/ MpssBuffer集成)
+- ae_gdextension: OK (w/ WastelandMpss GodotClass)
 - Full workspace: OK (52 crates)
 
 ---
@@ -39,7 +39,7 @@
 ## 代码量
 | 文件 | 行数 | 说明 |
 |------|------|------|
-| wasteland_particle/src/mpss.rs | 404 | MPSS SoA粒子缓冲 (ParticleKind/MpssPhase/MaterialDesc/MpssBuffer) |
+| ae_particle/src/mpss.rs | 404 | MPSS SoA粒子缓冲 (ParticleKind/MpssPhase/MaterialDesc/MpssBuffer) |
 | gdextension/src/mpss_node.rs | 127 | Godot桥接节点 (WastelandMpss) |
 | godot_project/scripts/mpss_demo.gd | 55 | GDScript测试场景 |
 | _v52_test.py | 128 | v5.2文档一致性测试 (已删除) |

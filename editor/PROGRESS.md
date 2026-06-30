@@ -62,7 +62,7 @@
 | mcp/bridge.rs | HTTP bridge (POST /mcp, GET /mcp/responses, GET /mcp/status, GET /) | ✅ 标准库 only, 后台线程, bound_addr/mcp_url 访问器 |
 | mcp/mod.rs | pub mod bridge; + re-exports | ✅ |
 | panels/mcp_debug.rs | MCP调试面板 (状态+URL+端口文件路径显示) | ✅ 新增 Bridge URL 显示 |
-| app.rs | EditorApp::new() 写入端口文件到 {temp_dir}/wasteland_editor_mcp_port.txt | ✅ |
+| app.rs | EditorApp::new() 写入端口文件到 {temp_dir}/ae_editor_mcp_port.txt | ✅ |
 
 ### MCP 外部 AI 客户端
 | 文件 | 内容 | 状态 |
@@ -145,7 +145,7 @@ pub struct EditorApp {
 
 1. **MCP 传输**: MemoryTransport + MemoryTransportHandle 共享 inbox/outbox
 2. **HTTP Bridge**: 127.0.0.1:0 随机端口, POST /mcp 同步等待响应(2s), GET /mcp/responses 批量拉取, GET /mcp/status 计数, GET / HTML 状态页
-3. **端口发现**: EditorApp::new() 启动 bridge 后写入 {temp_dir}/wasteland_editor_mcp_port.txt, 外部 AI 客户端读取此文件发现端口
+3. **端口发现**: EditorApp::new() 启动 bridge 后写入 {temp_dir}/ae_editor_mcp_port.txt, 外部 AI 客户端读取此文件发现端口
 4. **Python 客户端**: scripts/mcp_client.py 仅依赖标准库 (urllib.request), WastelandEditorClient.connect() 自动发现端口, 15个工具方法 + CLI
 5. **插件生命周期**: register_all() → new() → init_plugins() → finish_registration()
 6. **借用检查器**: 
@@ -167,7 +167,7 @@ pub struct EditorApp {
 19. **旋转吸附**: Gizmo::update_rotate 新增 snap_angle: Option<f32> 参数, 启用时将旋转角吸附到最近倍数 `(angle/snap).round()*snap`; SettingsPanel 新增 rotation_snapping(bool)/snap_angle_deg(f32, 1~90°) 字段; viewport.rs Rotate 分支读取设置并传入 snap_angle (度→弧度转换); 新增 test_gizmo_rotate_snap_to_45_degrees 测试验证 50° 旋转吸附到 45°
 20. **删除确认对话框**: EditorApp 新增 pending_delete_confirmation: Option<u64> 字段; execute_pending_action 中 DeleteSelected 分支检查 SettingsPanel.confirm_deletes, 启用时设置 pending_confirmation 而非立即删除; 新增 render_delete_confirmation() 渲染居中模态 Window (显示节点名/ID + Delete/Cancel 按钮), 在 render() 中 panels 之后调用; 节点被其他途径删除时自动关闭对话框
 21. **字体大小可调**: SettingsPanel.font_size (10~24px) 通过 sync_panel_settings 连接到 egui Style::text_styles; EditorApp 跟踪 last_font_size 检测变化, 当 font_size 变化时按 factor=desired/14.0 缩放所有 TextStyle 的 FontId.size (最小 6.0), 通过 ctx.set_style() 应用; Theme 标签页已有 Font Size 滑块
-22. **设置持久化**: 新增 settings.rs 模块, SettingsPanel 添加 #[derive(Serialize, Deserialize)] (跳过 visible/tab UI 状态字段); 配置文件路径跨平台 (Windows: %APPDATA%/wasteland_editor/settings.json, Linux: $XDG_CONFIG_HOME/wasteland_editor/, macOS: ~/Library/Application Support/wasteland_editor/); EditorApp::new() 启动时调用 load_settings() 加载, render() 每 600 帧 (~10s) 自动保存, request_exit() 退出时保存; SettingsPanel General 标签页新增 "Save Now" 和 "Reset to Defaults" 按钮及配置文件路径显示; 2 个单元测试验证序列化往返和缺失文件处理
+22. **设置持久化**: 新增 settings.rs 模块, SettingsPanel 添加 #[derive(Serialize, Deserialize)] (跳过 visible/tab UI 状态字段); 配置文件路径跨平台 (Windows: %APPDATA%/ae_editor/settings.json, Linux: $XDG_CONFIG_HOME/ae_editor/, macOS: ~/Library/Application Support/ae_editor/); EditorApp::new() 启动时调用 load_settings() 加载, render() 每 600 帧 (~10s) 自动保存, request_exit() 退出时保存; SettingsPanel General 标签页新增 "Save Now" 和 "Reset to Defaults" 按钮及配置文件路径显示; 2 个单元测试验证序列化往返和缺失文件处理
 23. **场景自动保存**: EditorApp 新增 auto_save_timer 字段; render() 每帧累积 egui stable_dt, 当 auto_save_enabled && timer >= auto_save_interval && dirty && scene_path.is_some() 时调用 save_scene() 并重置计时器; 用户在 SettingsPanel General 标签页可开关自动保存并调节间隔 (30~3600s)
 24. **最近文件跟踪**: SettingsPanel 新增 recent_files: Vec<String> 字段 (序列化持久化); 新增 add_recent_file() 方法 (去重、插入队首、按 max_recent_files 截断); save_scene_to_path() 和 open_scene_from_path() 成功时自动更新列表; General 标签页显示最近文件列表 (序号+文件名+完整路径), max_recent_files 改为可编辑 DragValue (1~50); 3 个单元测试验证去重排序、截断、空路径忽略
 25. **File 菜单 Open Recent 子菜单 + 可点击打开**: 新增 EditorAction::OpenSceneFromPath(String) 变体, execute_pending_action 中调用 open_scene_from_path; menu_bar.rs File 菜单添加 "Open Recent" 子菜单 (克隆 recent_files 列表避免借用冲突, 点击文件名触发 OpenSceneFromPath); SettingsPanel General 标签页最近文件列表改为可点击按钮 (点击触发 OpenSceneFromPath), render_general 签名改为 &mut EditorApp

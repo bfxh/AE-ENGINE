@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_asset::loader::{AssetState, AssetType};
-use wasteland_asset::pipeline::AssetPipeline;
+use ae_asset::loader::{AssetState, AssetType};
+use ae_asset::pipeline::AssetPipeline;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

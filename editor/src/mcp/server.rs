@@ -29,7 +29,7 @@ pub struct ServerInfo {
 
 impl Default for ServerInfo {
     fn default() -> Self {
-        ServerInfo { name: "wasteland-editor-mcp".to_string(), version: "0.1.0".to_string() }
+        ServerInfo { name: "ae-editor-mcp".to_string(), version: "0.1.0".to_string() }
     }
 }
 

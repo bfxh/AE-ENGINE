@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_terrain::erosion::{ErosionConfig, hydraulic_erosion, thermal_erosion};
-use wasteland_terrain::heightmap::Heightmap;
-use wasteland_terrain::marching_cubes::{VoxelGrid, generate_mesh};
-use wasteland_terrain::noise::PermutationTable;
+use ae_terrain::erosion::{ErosionConfig, hydraulic_erosion, thermal_erosion};
+use ae_terrain::heightmap::Heightmap;
+use ae_terrain::marching_cubes::{VoxelGrid, generate_mesh};
+use ae_terrain::noise::PermutationTable;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -28,7 +28,7 @@ pub(crate) struct WastelandTerrain {
     heightmap: Option<Heightmap>,
     perm_table: Option<PermutationTable>,
     mesh_vertices: Vec<glam::Vec3>,
-    mesh_triangles: Vec<wasteland_terrain::marching_cubes::Triangle>,
+    mesh_triangles: Vec<ae_terrain::marching_cubes::Triangle>,
     generated: bool,
 
     #[base]

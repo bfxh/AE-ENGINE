@@ -7,7 +7,7 @@
 //!
 //! Run: cargo run --release --bin conservation_test
 
-use wasteland_engine::{GameWorld, WorldBounds};
+use ae_engine::{GameWorld, WorldBounds};
 
 fn total_mass(world: &GameWorld) -> f64 {
     let mpss = &world.simulation.mpss;

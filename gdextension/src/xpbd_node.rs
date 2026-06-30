@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_xpbd::constraints::DistanceConstraint;
-use wasteland_xpbd::solver::{XpbdConfig, XpbdParticle, XpbdSolver};
+use ae_xpbd::constraints::DistanceConstraint;
+use ae_xpbd::solver::{XpbdConfig, XpbdParticle, XpbdSolver};
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -22,7 +22,7 @@ pub(crate) struct WastelandXPBD {
     relaxation: f32,
 
     solver: XpbdSolver,
-    constraints: Vec<Box<dyn wasteland_xpbd::solver::XpbdConstraint>>,
+    constraints: Vec<Box<dyn ae_xpbd::solver::XpbdConstraint>>,
     particle_count: i64,
     constraint_count: i64,
     total_time: f32,

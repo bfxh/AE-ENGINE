@@ -300,7 +300,7 @@ fn test_new_scene_resets() {
     let (mut scene, mut sel, mut path, mut dirty) = fresh_state();
     run("create_node", json!({"name":"X","node_type":"empty","parent_id":0}),
         &mut scene, &mut sel, &mut path, &mut dirty);
-    path = Some("/tmp/test.wasteland".into());
+    path = Some("/tmp/test.ae".into());
     let result = run("new_scene", json!({}),
         &mut scene, &mut sel, &mut path, &mut dirty);
     assert!(result.success);
@@ -433,7 +433,7 @@ fn test_save_and_load_scene_roundtrip() {
     run("create_node", json!({"name":"Persist","node_type":"mesh","parent_id":0,"path":"cube.glb","position":[3.0,4.0,5.0]}),
         &mut scene, &mut sel, &mut path, &mut dirty);
 
-    let tmp = std::env::temp_dir().join("slime_editor_test_scene.wasteland");
+    let tmp = std::env::temp_dir().join("slime_editor_test_scene.ae");
     let tmp_str = tmp.to_string_lossy().to_string();
 
     let save_result = run("save_scene", json!({"path": tmp_str}),
@@ -456,7 +456,7 @@ fn test_save_and_load_scene_roundtrip() {
 #[test]
 fn test_load_scene_missing_file() {
     let (mut scene, mut sel, mut path, mut dirty) = fresh_state();
-    let result = run("load_scene", json!({"path": "/nonexistent/path/scene.wasteland"}),
+    let result = run("load_scene", json!({"path": "/nonexistent/path/scene.ae"}),
         &mut scene, &mut sel, &mut path, &mut dirty);
     assert!(!result.success);
 }

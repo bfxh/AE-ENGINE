@@ -1,18 +1,18 @@
 use godot::prelude::*;
 
-use wasteland_ai_bridge::character_bridge::{
+use ae_ai_bridge::character_bridge::{
     BehaviorInjection, CharacterBridge, CharacterBridgeConfig, DialogueContextParams,
     DialogueRequest, EmotionalState, KnowledgeInjection, MoralCompassInjection, NpcRuntimeConfig,
     PersonalityInjection,
 };
-use wasteland_ai_bridge::meta_bridge::{
+use ae_ai_bridge::meta_bridge::{
     Comparator, ConversionType, EffectOperation, GenerationRule, InteractionCondition,
     InteractionRule, MetaEntityBridge, PropertyEffect, PropertyMapping,
 };
-use wasteland_ai_bridge::physics_bridge::{
+use ae_ai_bridge::physics_bridge::{
     PhysicsAction, PhysicsActionType, PhysicsBridge, PhysicsBridgeConfig,
 };
-use wasteland_ai_bridge::world_bridge::{WorldBridge, WorldBridgeConfig, WorldSpawnRequest};
+use ae_ai_bridge::world_bridge::{WorldBridge, WorldBridgeConfig, WorldSpawnRequest};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

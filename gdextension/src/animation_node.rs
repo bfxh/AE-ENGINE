@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_animation::blend::{BoneTransform, Pose};
-use wasteland_animation::gait::{GaitController, GaitType};
-use wasteland_animation::ik::{IKBone, IKChain};
-use wasteland_animation::state_machine::AnimationStateMachine;
+use ae_animation::blend::{BoneTransform, Pose};
+use ae_animation::gait::{GaitController, GaitType};
+use ae_animation::ik::{IKBone, IKChain};
+use ae_animation::state_machine::AnimationStateMachine;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

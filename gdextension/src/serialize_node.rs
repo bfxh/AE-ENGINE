@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_serialize::binary::{BinaryReader, BinaryWriter};
-use wasteland_serialize::bitpack::BitPacker;
-use wasteland_serialize::schema::SchemaRegistry;
-use wasteland_serialize::zerocopy::ZeroCopyBuf;
+use ae_serialize::binary::{BinaryReader, BinaryWriter};
+use ae_serialize::bitpack::BitPacker;
+use ae_serialize::schema::SchemaRegistry;
+use ae_serialize::zerocopy::ZeroCopyBuf;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -195,7 +195,7 @@ impl WastelandSerialize {
                 u64::from_le_bytes(buf)
             })
             .collect();
-        let mut unpacker = wasteland_serialize::bitpack::BitUnpacker::new(&words);
+        let mut unpacker = ae_serialize::bitpack::BitUnpacker::new(&words);
         for _i in 0..count as usize {
             if let Some(bits) = unpacker.read_bits(bits_per_value as usize) {
                 arr.push(f32::from_bits(bits as u32));
@@ -214,7 +214,7 @@ impl WastelandSerialize {
 
     #[func]
     fn register_schema(&mut self, name: GString, _fields_json: GString) -> bool {
-        let schema = wasteland_serialize::schema::Schema {
+        let schema = ae_serialize::schema::Schema {
             name: name.to_string(),
             version: self.schema_version as u32,
             fields: vec![],

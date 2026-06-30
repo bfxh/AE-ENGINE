@@ -10,7 +10,7 @@
 //! Run: cargo run --release --bin perf_test_1m
 
 use std::time::Instant;
-use wasteland_engine::{GameWorld, WorldBounds};
+use ae_engine::{GameWorld, WorldBounds};
 
 fn main() {
     println!("=== Wasteland Engine - 1M Particle Performance Test ===\n");
@@ -144,7 +144,7 @@ fn main() {
         if !world.simulation.mpss.active[i] {
             continue;
         }
-        use wasteland_particle::mpss::MpssPhase;
+        use ae_particle::mpss::MpssPhase;
         match world.simulation.mpss.phase[i] {
             MpssPhase::Solid => solid += 1,
             MpssPhase::Liquid => liquid += 1,

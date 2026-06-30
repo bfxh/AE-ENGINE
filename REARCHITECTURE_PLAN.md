@@ -1,4 +1,4 @@
-# wasteland_project 多语言混合架构重新规划 v2.0
+# ae_project 多语言混合架构重新规划 v2.0
 
 > 创建时间: 2026-06-29
 > 状态: 规划中
@@ -12,11 +12,11 @@
 
 | Crate | 文件数 | 总行数 | 核心算法 |
 |-------|--------|--------|---------|
-| wasteland_xpbd | 3 | 1141 | XPBD 求解器 + 10 种约束（距离/接触/角度/体积/形状匹配等） |
-| wasteland_physics | 17 | 8848 | GJK/EPA 碰撞、MPM 物质点法、SVD 雪塑性、双相实体、体素破坏、布娃娃、6 种关节、17 种材料、定点数确定性 |
-| wasteland_bvh | 1 | 618 | BVH（中位数分割）+ AABB/射线/视锥查询 + 动态 refit |
-| wasteland_simd | 4 | 1483 | AVX2/FMA 内联 SIMD + SoA 布局 + 8 路批量物理积分 |
-| wasteland_engine/simulation.rs | 1 | 980 | LOD 三层网格 + Moving Window MPM + 频率调度 + 14 crate 联动 |
+| ae_xpbd | 3 | 1141 | XPBD 求解器 + 10 种约束（距离/接触/角度/体积/形状匹配等） |
+| ae_physics | 17 | 8848 | GJK/EPA 碰撞、MPM 物质点法、SVD 雪塑性、双相实体、体素破坏、布娃娃、6 种关节、17 种材料、定点数确定性 |
+| ae_bvh | 1 | 618 | BVH（中位数分割）+ AABB/射线/视锥查询 + 动态 refit |
+| ae_simd | 4 | 1483 | AVX2/FMA 内联 SIMD + SoA 布局 + 8 路批量物理积分 |
+| ae_engine/simulation.rs | 1 | 980 | LOD 三层网格 + Moving Window MPM + 频率调度 + 14 crate 联动 |
 | **合计** | **26** | **13070** | **生产级物理引擎** |
 
 ### 1.2 关键发现
@@ -39,10 +39,10 @@
 
 | 引入点 | 价值 | 替代的 Rust 模块 | 实施难度 |
 |--------|------|-----------------|---------|
-| **Jolt Physics 激活** | 工业级 CCD + 大规模刚体堆叠（>10K 刚体）+ island solver | wasteland_physics/jolt_backend.rs 已预留 | 低（依赖已存在） |
-| **Intel Embree** | 光线追踪 BVH（比自研快 2-5x）+ 动态场景优化 | wasteland_bvh 部分场景 | 中 |
-| **NVIDIA Flex / PhysX 5 GPU** | GPU 加速 MPM 粒子（10 万+ 粒子）+ 流体 SPH | wasteland_physics/mpm.rs GPU 路径 | 高（需 CUDA） |
-| **OpenVDB** | 电影级体素破坏（Houdini 同款）+ 稀疏体素层级 | wasteland_physics/destruction.rs | 中 |
+| **Jolt Physics 激活** | 工业级 CCD + 大规模刚体堆叠（>10K 刚体）+ island solver | ae_physics/jolt_backend.rs 已预留 | 低（依赖已存在） |
+| **Intel Embree** | 光线追踪 BVH（比自研快 2-5x）+ 动态场景优化 | ae_bvh 部分场景 | 中 |
+| **NVIDIA Flex / PhysX 5 GPU** | GPU 加速 MPM 粒子（10 万+ 粒子）+ 流体 SPH | ae_physics/mpm.rs GPU 路径 | 高（需 CUDA） |
+| **OpenVDB** | 电影级体素破坏（Houdini 同款）+ 稀疏体素层级 | ae_physics/destruction.rs | 中 |
 
 ### 2.2 C 引入点（中价值）
 
@@ -70,10 +70,10 @@
 ```
 ┌─────────────────────────────────────────────────────┐
 │  游戏逻辑层 (Rust)                                   │
-│  game/ editor/ wasteland_ai/ wasteland_character/   │
+│  game/ editor/ ae_ai/ ae_character/   │
 ├─────────────────────────────────────────────────────┤
 │  模拟层 (Rust)                                       │
-│  wasteland_biology/ chemistry/ physics/ field/ ...  │
+│  ae_biology/ chemistry/ physics/ field/ ...  │
 ├─────────────────────────────────────────────────────┤
 │  性能层 (C++ via FFI)                     │
 │  cpp/jolt_backend/  cpp/embree_bvh/                 │
@@ -114,7 +114,7 @@
 
 ### Phase 1：激活 Jolt C++ 后端（1 天，低成本高价值）
 
-- [ ] `wasteland_physics/Cargo.toml` 默认开启 `jolt` feature
+- [ ] `ae_physics/Cargo.toml` 默认开启 `jolt` feature
 - [ ] 验证 `jolt_backend.rs` 编译通过
 - [ ] 添加 Jolt vs Dummy backend 对比 benchmark
 - [ ] conservation_test.rs 增加 Jolt 后端守恒验证

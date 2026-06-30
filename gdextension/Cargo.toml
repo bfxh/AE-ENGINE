@@ -1,5 +1,5 @@
 [package]
-name = "wasteland_gdextension"
+name = "ae_gdextension"
 version.workspace = true
 edition.workspace = true
 
@@ -7,34 +7,34 @@ edition.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-wasteland_engine = { path = "../wasteland_engine" }
-wasteland_physics = { path = "../wasteland_physics" }
-wasteland_ai = { path = "../wasteland_ai" }
-wasteland_ai_bridge = { path = "../wasteland_ai_bridge" }
-wasteland_ai_tools = { path = "../wasteland_ai_tools" }
-wasteland_character = { path = "../wasteland_character" }
-wasteland_metaentity = { path = "../wasteland_metaentity" }
-wasteland_chemistry = { path = "../wasteland_chemistry" }
-wasteland_materials = { path = "../wasteland_materials" }
-wasteland_audio = { path = "../wasteland_audio" }
-wasteland_profiler = { path = "../wasteland_profiler" }
-wasteland_storage = { path = "../wasteland_storage" }
-wasteland_network = { path = "../wasteland_network" }
-wasteland_compute = { path = "../wasteland_compute" }
-wasteland_memory = { path = "../wasteland_memory" }
-wasteland_timeslice = { path = "../wasteland_timeslice" }
-wasteland_frequency = { path = "../wasteland_frequency" }
-wasteland_eventbus = { path = "../wasteland_eventbus" }
-wasteland_weave = { path = "../wasteland_weave" }
-wasteland_xpbd = { path = "../wasteland_xpbd" }
-wasteland_simd = { path = "../wasteland_simd" }
-wasteland_io = { path = "../wasteland_io" }
-wasteland_asset = { path = "../wasteland_asset" }
-wasteland_serialize = { path = "../wasteland_serialize" }
-wasteland_pathfinding = { path = "../wasteland_pathfinding" }
-wasteland_animation = { path = "../wasteland_animation" }
-wasteland_terrain = { path = "../wasteland_terrain" }
-wasteland_particle = { path = "../wasteland_particle" }
+ae_engine = { path = "../ae_engine" }
+ae_physics = { path = "../ae_physics" }
+ae_ai = { path = "../ae_ai" }
+ae_ai_bridge = { path = "../ae_ai_bridge" }
+ae_ai_tools = { path = "../ae_ai_tools" }
+ae_character = { path = "../ae_character" }
+ae_metaentity = { path = "../ae_metaentity" }
+ae_chemistry = { path = "../ae_chemistry" }
+ae_materials = { path = "../ae_materials" }
+ae_audio = { path = "../ae_audio" }
+ae_profiler = { path = "../ae_profiler" }
+ae_storage = { path = "../ae_storage" }
+ae_network = { path = "../ae_network" }
+ae_compute = { path = "../ae_compute" }
+ae_memory = { path = "../ae_memory" }
+ae_timeslice = { path = "../ae_timeslice" }
+ae_frequency = { path = "../ae_frequency" }
+ae_eventbus = { path = "../ae_eventbus" }
+ae_weave = { path = "../ae_weave" }
+ae_xpbd = { path = "../ae_xpbd" }
+ae_simd = { path = "../ae_simd" }
+ae_io = { path = "../ae_io" }
+ae_asset = { path = "../ae_asset" }
+ae_serialize = { path = "../ae_serialize" }
+ae_pathfinding = { path = "../ae_pathfinding" }
+ae_animation = { path = "../ae_animation" }
+ae_terrain = { path = "../ae_terrain" }
+ae_particle = { path = "../ae_particle" }
 godot = { git = "https://github.com/godot-rust/gdext", branch = "master" }
 glam.workspace = true
 uuid.workspace = true

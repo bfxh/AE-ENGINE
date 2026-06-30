@@ -1,9 +1,9 @@
-# wasteland_project 规则 — 废土创世游戏引擎
+# ae_project 规则 — 废土创世游戏引擎
 
 > **版本**: v4.1
 > **更新**: 2026-06-07
 > **设计文档**: [游戏核心系统技术文档 v7.2](file:///E:/开发/我的/游戏核心系统技术文档_v7.0.md)
-> **演示文档**: [FEATURE_DEMO.md](file:///d:/rj/wasteland_project/FEATURE_DEMO.md)
+> **演示文档**: [FEATURE_DEMO.md](file:///d:/rj/ae_project/FEATURE_DEMO.md)
 
 ---
 
@@ -11,7 +11,7 @@
 
 | 属性 | 值 |
 |------|-----|
-| 项目名 | wasteland_project / 废土创世 |
+| 项目名 | ae_project / 废土创世 |
 | 类型 | 规则驱动物理沙盒游戏引擎 |
 | 语言 | Rust (核心 Crate) + C (数学/SIMD) + C++ (Godot 集成) + Go (场服务) + Java (宏观模拟) + Python (资产管线) |
 | 目标引擎 | Godot 4.6+ (Jolt Physics 默认) |
@@ -26,7 +26,7 @@
 |------|------|
 | 资格检查 | [qualify.md](file:///d:/rj/.trae/specs/pipeline/qualify.md) |
 | 技术路线 | [roadmap.md](file:///d:/rj/.trae/specs/pipeline/roadmap.md) |
-| 项目技术规格 | [spec.md](file:///d:/rj/wasteland_project/spec.md) |
+| 项目技术规格 | [spec.md](file:///d:/rj/ae_project/spec.md) |
 
 ### 按需加载规范
 
@@ -95,26 +95,26 @@
 
 ### 4.1 模块边界
 - **A-001**: 每个子 crate 独立职责，禁止循环依赖
-- **A-002**: 核心层（wasteland_physics/chemistry/biology）不依赖应用层（gdextension）
-- **A-003**: 所有跨模块通信通过 `wasteland_eventbus` 事件总线
+- **A-002**: 核心层（ae_physics/chemistry/biology）不依赖应用层（gdextension）
+- **A-003**: 所有跨模块通信通过 `ae_eventbus` 事件总线
 - **A-004**: 外部依赖接口必须定义 trait，先写假实现再写真实实现
 
 ### 4.2 数据流
-- **A-101**: 实体状态统一存储在 ECS 组件数组中（`wasteland_engine::ecs`）
-- **A-102**: 跨系统状态变更通过 `wasteland_engine::arbitration` 仲裁器合并
+- **A-101**: 实体状态统一存储在 ECS 组件数组中（`ae_engine::ecs`）
+- **A-102**: 跨系统状态变更通过 `ae_engine::arbitration` 仲裁器合并
 - **A-103**: 所有状态变更为不可变事件序列（事件溯源模式）
-- **A-104**: 物理计算使用 64 位定点数保证确定性（`wasteland_physics::fixed_point`）
+- **A-104**: 物理计算使用 64 位定点数保证确定性（`ae_physics::fixed_point`）
 
 ### 4.3 模块依赖图
 ```
-wasteland_physics ──┐
-wasteland_chemistry ─┤
-wasteland_biology ───┼── wasteland_metaentity ── wasteland_engine ── gdextension
-wasteland_field ─────┤         │
-wasteland_particle ──┤         ├── wasteland_eventbus
-wasteland_emergence ─┘         ├── wasteland_crafting
-                               └── wasteland_modding
-wasteland_timeslice ── (独立，被 engine 引用)
+ae_physics ──┐
+ae_chemistry ─┤
+ae_biology ───┼── ae_metaentity ── ae_engine ── gdextension
+ae_field ─────┤         │
+ae_particle ──┤         ├── ae_eventbus
+ae_emergence ─┘         ├── ae_crafting
+                               └── ae_modding
+ae_timeslice ── (独立，被 engine 引用)
 ```
 
 ---
@@ -199,7 +199,7 @@ cargo doc --no-deps --open     # 生成文档
 ### 8.2 测试命令
 ```bash
 cargo test                     # 全部测试
-cargo test -p wasteland_physics  # 单模块测试
+cargo test -p ae_physics  # 单模块测试
 cargo test -- --nocapture      # 显示输出
 cargo test -- --test-threads=1 # 单线程测试
 python tests/run_all_tests.py  # 集成测试脚本
@@ -355,7 +355,7 @@ python tests/run_all_tests.py  # 集成测试脚本
 |------|------|
 | **ARB-001** | 同一帧内多系统对同一实体的修改通过 `ArbitrationSystem` 合并 |
 | **ARB-002** | 冲突解决优先级：物理（破坏）> 化学（反应）> 生物（状态变化） |
-| **ARB-003** | 仲裁结果写入 ECS 组件，触发 `wasteland_eventbus` 事件 |
+| **ARB-003** | 仲裁结果写入 ECS 组件，触发 `ae_eventbus` 事件 |
 | **ARB-004** | 仲裁必须是确定性的：同帧同输入 → 同合并结果 |
 
 ### 13.9 底层编译约束

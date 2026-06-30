@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_profiler::export::export_chrome_trace;
-use wasteland_profiler::memory::MemoryTracker;
-use wasteland_profiler::metrics::MetricsCollector;
-use wasteland_profiler::timing::FrameTimer;
+use ae_profiler::export::export_chrome_trace;
+use ae_profiler::memory::MemoryTracker;
+use ae_profiler::metrics::MetricsCollector;
+use ae_profiler::timing::FrameTimer;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

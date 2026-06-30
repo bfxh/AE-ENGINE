@@ -1,0 +1,19 @@
+[package]
+name = "ae_weave"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde.workspace = true
+log.workspace = true
+slotmap.workspace = true
+smallvec.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+bitflags.workspace = true
+ae_physics = { path = "../ae_physics" }
+
+[dev-dependencies]
+criterion = { workspace = true, features = ["html_reports"] }

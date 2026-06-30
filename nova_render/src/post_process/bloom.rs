@@ -1,4 +1,4 @@
-//! Bloom Pass（port 自 v1 wasteland_render::post_process）
+//! Bloom Pass（port 自 v1 ae_render::post_process）
 //!
 //! 3A 级 Bloom 管线：
 //! 1. **Bloom Extract**：从 HDR 纹理提取高亮度区域（soft knee 软阈值）
@@ -148,7 +148,7 @@ fn fs_blur(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 "#;
 
-/// Bloom Pass（port 自 v1 wasteland_render::PostProcessRenderer 的 Bloom 部分）
+/// Bloom Pass（port 自 v1 ae_render::PostProcessRenderer 的 Bloom 部分）
 ///
 /// 使用方式：
 /// ```ignore

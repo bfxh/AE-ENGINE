@@ -1,0 +1,73 @@
+[package]
+name = "ae_engine"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ae_physics = { path = "../ae_physics" }
+ae_chemistry = { path = "../ae_chemistry" }
+ae_biology = { path = "../ae_biology" }
+ae_field = { path = "../ae_field" }
+ae_particle = { path = "../ae_particle" }
+ae_emergence = { path = "../ae_emergence" }
+ae_timeslice = { path = "../ae_timeslice" }
+ae_metaentity = { path = "../ae_metaentity" }
+ae_weave = { path = "../ae_weave" }
+ae_generalizer = { path = "../ae_generalizer" }
+ae_frequency = { path = "../ae_frequency" }
+ae_thermo = { path = "../ae_thermo" }
+ae_electro = { path = "../ae_electro" }
+ae_materials = { path = "../ae_materials" }
+ae_ai = { path = "../ae_ai" }
+ae_ai_bridge = { path = "../ae_ai_bridge" }
+ae_weather = { path = "../ae_weather" }
+ae_fluid = { path = "../ae_fluid" }
+ae_acoustics = { path = "../ae_acoustics" }
+ae_optics = { path = "../ae_optics" }
+ae_geo = { path = "../ae_geo" }
+ae_hydro = { path = "../ae_hydro" }
+ae_eco = { path = "../ae_eco" }
+ae_factory = { path = "../ae_factory" }
+ae_axiom = { path = "../ae_axiom" }
+ae_info = { path = "../ae_info" }
+ae_simd = { path = "../ae_simd" }
+ae_character = { path = "../ae_character" }
+ae_memory = { path = "../ae_memory" }
+ae_compute = { path = "../ae_compute" }
+ae_audio = { path = "../ae_audio" }
+ae_storage = { path = "../ae_storage" }
+ae_network = { path = "../ae_network" }
+ae_profiler = { path = "../ae_profiler" }
+ae_io = { path = "../ae_io" }
+ae_asset = { path = "../ae_asset" }
+ae_serialize = { path = "../ae_serialize" }
+ae_asset_pipeline = { path = "../ae_asset_pipeline" }
+ae_save_system = { path = "../ae_save_system" }
+ae_game = { path = "../ae_game" }
+ae_render = { path = "../ae_render" }
+ae_modding = { path = "../ae_modding" }
+ae_pathfinding = { path = "../ae_pathfinding" }
+pollster = "0.4"
+parking_lot = "0.12"
+serde.workspace = true
+serde_json.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+slotmap.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+smallvec.workspace = true
+rayon.workspace = true
+
+[dev-dependencies]
+criterion = { workspace = true, features = ["html_reports"] }
+ae_unified_interface = { path = "../ae_unified_interface" }
+ae_scheduler = { path = "../ae_scheduler" }
+ae_registry = { path = "../ae_registry" }
+ae_physics = { path = "../ae_physics" }
+ae_metaentity = { path = "../ae_metaentity" }
+
+[[bench]]
+name = "engine_tick_bench"
+harness = false

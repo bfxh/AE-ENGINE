@@ -1,8 +1,8 @@
 use godot::prelude::*;
 use std::sync::Mutex;
 use uuid::Uuid;
-use wasteland_physics::fixed_point::{FixedPoint, FixedQuat, FixedVec3};
-use wasteland_physics::world::{BodyType, PhysicsWorld, RigidBody, SimulationSpeed};
+use ae_physics::fixed_point::{FixedPoint, FixedQuat, FixedVec3};
+use ae_physics::world::{BodyType, PhysicsWorld, RigidBody, SimulationSpeed};
 
 #[allow(dead_code)]
 struct Constraint {
@@ -81,7 +81,7 @@ impl WastelandPhysics {
                 velocity: FixedVec3::ZERO,
                 angular_velocity: FixedVec3::ZERO,
                 mass: FixedPoint::from_f32(mass),
-                material: wasteland_physics::material::MaterialProperties::concrete(),
+                material: ae_physics::material::MaterialProperties::concrete(),
                 body_type: if is_static { BodyType::Static } else { BodyType::Dynamic },
                 is_sleeping: false,
                 sleep_timer: FixedPoint::ZERO,

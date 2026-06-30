@@ -65,7 +65,7 @@ WastelandServer (主服务器)
 Rust 游戏客户端通过 HTTP 调用本服务。在 Rust 端添加依赖：
 
 ```toml
-# wasteland_network/Cargo.toml
+# ae_network/Cargo.toml
 [dependencies]
 reqwest = { version = "0.12", features = ["json"] }
 serde = { version = "1", features = ["derive"] }
@@ -113,7 +113,7 @@ let resp: Health = reqwest::get("http://localhost:8080/health")
 1. **调试友好**：curl 即可测试，无需 protobuf 工具链
 2. **Rust 客户端简单**：reqwest 一行调用，无需 tonic/prost
 3. **游戏场景适用**：匹配/排行榜是低频请求，HTTP 足够；实时同步才需 gRPC/WebSocket
-4. **未来可扩展**：gRPC proto 定义见 `proto/wasteland.proto`，需要时可生成
+4. **未来可扩展**：gRPC proto 定义见 `proto/ae.proto`，需要时可生成
 
 ## 性能
 

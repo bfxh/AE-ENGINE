@@ -323,7 +323,7 @@ fn test_end_to_end_initialize_handshake() {
         resp
     );
     assert!(
-        resp.contains("wasteland-editor-mcp"),
+        resp.contains("ae-editor-mcp"),
         "initialize response should contain server name: {}",
         resp
     );

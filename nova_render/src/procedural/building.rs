@@ -1,4 +1,4 @@
-//! 程序化建筑生成器（从 v1 wasteland_render/procedural/building.rs 移植）
+//! 程序化建筑生成器（从 v1 ae_render/procedural/building.rs 移植）
 //!
 //! 突破性参数化建筑部件生成：
 //! - `WindowParams`：窗框（frame_width/glass_ratio/mullion_count/depth）

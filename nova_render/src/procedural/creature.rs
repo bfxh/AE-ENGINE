@@ -1,4 +1,4 @@
-//! 程序化异形生物生成器（从 v1 wasteland_render/procedural/morph.rs 移植）
+//! 程序化异形生物生成器（从 v1 ae_render/procedural/morph.rs 移植）
 //!
 //! 母巢子实体 8 种异形生物（来自废土创世世界观）：
 //! - Stalker 践踏者：双足菌丝体，无眼无口，传感触角

@@ -1,6 +1,6 @@
 //! nova_render 最小可运行示例：winit 窗口 + wgpu 三角形
 //!
-//! 编译运行：cargo run --example hello_triangle --target-dir d:\rj\wasteland_project\target2
+//! 编译运行：cargo run --example hello_triangle --target-dir d:\rj\ae_project\target2
 //!
 //! 这是 3A 标准 3D 渲染的最低门槛：能打开窗口、初始化 wgpu、画一个三角形。
 //! 后续所有 pass（Forward/Shadow/SSAO/SSR/TAA/Bloom/VolumetricFog）都会挂到这个主循环上。

@@ -1,10 +1,10 @@
-# wasteland_project 项目规则
+# ae_project 项目规则
 
-> **项目**: wasteland_project
+> **项目**: ae_project
 > **版本**: v1.1
 > **创建日期**: 2026-06-07
 > **更新日期**: 2026-06-07
-> **项目路径**: d:\rj\wasteland_project
+> **项目路径**: d:\rj\ae_project
 
 ---
 
@@ -21,7 +21,7 @@
 
 ## 1. 项目概述
 
-wasteland 是一个 Rust 3D 游戏引擎项目，专注于高性能 3D 渲染和物理模拟。
+ae 是一个 Rust 3D 游戏引擎项目，专注于高性能 3D 渲染和物理模拟。
 
 ## 2. 技术栈
 
@@ -55,4 +55,4 @@ wasteland 是一个 Rust 3D 游戏引擎项目，专注于高性能 3D 渲染和
 
 | 文档 | 路径 | 说明 |
 |------|------|------|
-| 项目索引 | [.trae/rules/project_index.md](file:///d:/rj/wasteland_project/.trae/rules/project_index.md) | 项目相关规范索引 |
+| 项目索引 | [.trae/rules/project_index.md](file:///d:/rj/ae_project/.trae/rules/project_index.md) | 项目相关规范索引 |

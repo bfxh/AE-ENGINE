@@ -15,8 +15,8 @@
   "installed_to": "E:\\SteamLibrary\\steamapps\\common\\Blender\\5.x\\scripts\\addons",
   "plugin_files": [
     "install_plugin.py",
-    "verify_wasteland.py",
-    "wasteland_generator.py"
+    "verify_ae.py",
+    "ae_generator.py"
   ],
   "status": "SUCCESS"
 }

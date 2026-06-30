@@ -15,7 +15,7 @@
       "type": "CLIPTextEncode",
       "pos": [450, 50],
       "size": [400, 150],
-      "widgets_values": ["wasteland post-apocalyptic building, ruined concrete structure, rebar exposed, broken windows, overgrown vegetation, photorealistic, detailed architecture, 8k"],
+      "widgets_values": ["ae post-apocalyptic building, ruined concrete structure, rebar exposed, broken windows, overgrown vegetation, photorealistic, detailed architecture, 8k"],
       "title": "Positive Prompt (Front)"
     },
     {
@@ -54,7 +54,7 @@
       "type": "SaveImage",
       "pos": [1650, 100],
       "size": [320, 270],
-      "widgets_values": ["wasteland_front"],
+      "widgets_values": ["ae_front"],
       "title": "Save Front View"
     },
     {
@@ -62,7 +62,7 @@
       "type": "CLIPTextEncode",
       "pos": [50, 350],
       "size": [400, 150],
-      "widgets_values": ["wasteland post-apocalyptic building, side view, ruined concrete wall, debris, photorealistic, detailed architecture, 8k"],
+      "widgets_values": ["ae post-apocalyptic building, side view, ruined concrete wall, debris, photorealistic, detailed architecture, 8k"],
       "title": "Positive Prompt (Side)"
     },
     {
@@ -85,7 +85,7 @@
       "type": "SaveImage",
       "pos": [1650, 400],
       "size": [320, 270],
-      "widgets_values": ["wasteland_side"],
+      "widgets_values": ["ae_side"],
       "title": "Save Side View"
     },
     {
@@ -93,7 +93,7 @@
       "type": "CLIPTextEncode",
       "pos": [50, 600],
       "size": [400, 150],
-      "widgets_values": ["wasteland post-apocalyptic building, back view, damaged rear wall, collapsed roof section, photorealistic, detailed architecture, 8k"],
+      "widgets_values": ["ae post-apocalyptic building, back view, damaged rear wall, collapsed roof section, photorealistic, detailed architecture, 8k"],
       "title": "Positive Prompt (Back)"
     },
     {
@@ -116,7 +116,7 @@
       "type": "SaveImage",
       "pos": [1650, 700],
       "size": [320, 270],
-      "widgets_values": ["wasteland_back"],
+      "widgets_values": ["ae_back"],
       "title": "Save Back View"
     },
     {
@@ -124,7 +124,7 @@
       "type": "CLIPTextEncode",
       "pos": [50, 850],
       "size": [400, 150],
-      "widgets_values": ["wasteland post-apocalyptic building, top-down aerial view, collapsed roof, interior visible, photorealistic, detailed architecture, 8k"],
+      "widgets_values": ["ae post-apocalyptic building, top-down aerial view, collapsed roof, interior visible, photorealistic, detailed architecture, 8k"],
       "title": "Positive Prompt (Top)"
     },
     {
@@ -166,12 +166,12 @@
   "extra": {
     "info": {
       "name": "Wasteland 6-View Text-to-Image Pipeline",
-      "description": "Generates 6 views (front, side, back, top, left, right) of wasteland buildings/objects for 3D reconstruction. Uses SDXL base + ControlNet compatible prompts.",
+      "description": "Generates 6 views (front, side, back, top, left, right) of ae buildings/objects for 3D reconstruction. Uses SDXL base + ControlNet compatible prompts.",
       "version": "1.0",
       "author": "Wasteland Pipeline",
       "usage": "1. Set checkpoint path in node 1. 2. Modify prompts for target object. 3. Run workflow. 4. Collect 6 view images from output directory.",
       "view_angles": ["front_0deg", "right_90deg", "back_180deg", "left_270deg", "top_270pitch", "bottom_90pitch"],
-      "prompt_template": "wasteland post-apocalyptic {object}, {view_description}, photorealistic, detailed architecture, 8k"
+      "prompt_template": "ae post-apocalyptic {object}, {view_description}, photorealistic, detailed architecture, 8k"
     }
   }
 }

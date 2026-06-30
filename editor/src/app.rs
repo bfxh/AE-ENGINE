@@ -302,7 +302,7 @@ impl EditorApp {
             Ok(b) => {
                 // Write the bound address to a well-known file so external AI
                 // clients (Python scripts, etc.) can discover the port.
-                let port_file = std::env::temp_dir().join("wasteland_editor_mcp_port.txt");
+                let port_file = std::env::temp_dir().join("ae_editor_mcp_port.txt");
                 let addr = b.bound_addr().to_string();
                 let _ = std::fs::write(&port_file, &addr);
                 log::info!("MCP bridge port written to {}", port_file.display());
@@ -780,7 +780,7 @@ impl EditorApp {
     /// Open a file dialog to choose a scene file to open.
     fn execute_open_dialog(&mut self) {
         let file = rfd::FileDialog::new()
-            .add_filter("Wasteland Scene", &["wasteland", "json"])
+            .add_filter("Wasteland Scene", &["ae", "json"])
             .add_filter("All Files", &["*"])
             .pick_file();
 
@@ -793,7 +793,7 @@ impl EditorApp {
     /// Open a file dialog to choose where to save the scene.
     fn execute_save_as_dialog(&mut self) {
         let file = rfd::FileDialog::new()
-            .add_filter("Wasteland Scene", &["wasteland", "json"])
+            .add_filter("Wasteland Scene", &["ae", "json"])
             .add_filter("All Files", &["*"])
             .set_file_name(&self.scene.name)
             .save_file();

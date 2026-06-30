@@ -1,6 +1,6 @@
 use godot::prelude::*;
 use std::sync::Mutex;
-use wasteland_engine::GameWorld;
+use ae_engine::GameWorld;
 
 mod acoustics_node;
 mod ai_bridge_node;
@@ -94,7 +94,7 @@ impl INode3D for WastelandWorld {
 impl WastelandWorld {
     #[func]
     fn init_world(&mut self, size: f32) {
-        let bounds = wasteland_engine::WorldBounds {
+        let bounds = ae_engine::WorldBounds {
             min: glam::Vec3::new(-size, -size, -size),
             max: glam::Vec3::new(size, size, size),
         };
@@ -119,7 +119,7 @@ impl WastelandWorld {
             if let Some(ref mut world) = *guard {
                 world.spawn_ecosystem(
                     name.to_string(),
-                    wasteland_engine::Biome::Wasteland,
+                    ae_engine::Biome::Wasteland,
                     glam::Vec3::new(min_x, min_y, min_z),
                     glam::Vec3::new(max_x, max_y, max_z),
                 );
@@ -144,7 +144,7 @@ impl WastelandWorld {
                     [res_x, res_y, res_z],
                     voxel_size,
                     glam::Vec3::new(ox, oy, oz),
-                    wasteland_engine::MaterialProperties::concrete(),
+                    ae_engine::MaterialProperties::concrete(),
                 );
             }
         }
@@ -495,7 +495,7 @@ impl WastelandWorld {
                     world_size,
                     max_depth as u8,
                     glam::Vec3::new(ox, oy, oz),
-                    wasteland_engine::MaterialProperties::concrete(),
+                    ae_engine::MaterialProperties::concrete(),
                 );
                 return idx as i64;
             }
@@ -543,7 +543,7 @@ impl WastelandWorld {
         if let Ok(mut guard) = self.world.lock() {
             if let Some(ref mut world) = *guard {
                 if let Some(id) = world.spawn_dual_phase_entity(
-                    wasteland_engine::MaterialProperties::concrete(),
+                    ae_engine::MaterialProperties::concrete(),
                     [res_x, res_y, res_z],
                     voxel_size,
                     glam::Vec3::new(ox, oy, oz),
@@ -611,12 +611,12 @@ impl WastelandWorld {
         if let Ok(mut guard) = self.world.lock() {
             if let Some(ref mut world) = *guard {
                 let sp = match species.to_string().as_str() {
-                    "human" => wasteland_engine::NpcSpecies::Human,
-                    "mutant" => wasteland_engine::NpcSpecies::Mutant,
-                    "ghoul" => wasteland_engine::NpcSpecies::Ghoul,
-                    "robot" => wasteland_engine::NpcSpecies::Robot,
-                    "animal" => wasteland_engine::NpcSpecies::Animal,
-                    _ => wasteland_engine::NpcSpecies::Human,
+                    "human" => ae_engine::NpcSpecies::Human,
+                    "mutant" => ae_engine::NpcSpecies::Mutant,
+                    "ghoul" => ae_engine::NpcSpecies::Ghoul,
+                    "robot" => ae_engine::NpcSpecies::Robot,
+                    "animal" => ae_engine::NpcSpecies::Animal,
+                    _ => ae_engine::NpcSpecies::Human,
                 };
                 let id = world.spawn_npc(
                     &name.to_string(),
@@ -773,7 +773,7 @@ impl WastelandWorld {
                     let pop_dict: Dictionary<Variant, Variant> = dict! {
                         "id" => pop.species_id.clone().as_str(),
                         "count" => pop.count as i64,
-                        "carrying_capacity" => pop.carrying_capacity,
+                        "carrying_capacity" => pop.carrying_capacity as i64,
                         "growth_rate" => pop.growth_rate,
                         "death_rate" => pop.death_rate,
                         "birth_rate" => pop.birth_rate,

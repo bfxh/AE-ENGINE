@@ -1,6 +1,6 @@
 //! Lightweight mirror types for the Wasteland Engine.
 //!
-//! These types mirror the `wasteland_engine` data structures without
+//! These types mirror the `ae_engine` data structures without
 //! depending on the heavy engine crate (40+ dependencies).
 //! The editor uses these for display and light interaction.
 //!

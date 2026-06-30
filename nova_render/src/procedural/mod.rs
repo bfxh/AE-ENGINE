@@ -1,4 +1,4 @@
-//! 程序化生成系统（从 v1 wasteland_render 移植 + 重构为 nova 架构）
+//! 程序化生成系统（从 v1 ae_render 移植 + 重构为 nova 架构）
 //!
 //! 模块组织（对应 v1 procedural/）：
 //! - `building`：参数化废土建筑（窗框/人字屋顶/阳台/钢筋 + 承重图 + 老化状态）
@@ -65,7 +65,7 @@ pub struct GeneratorParams {
     pub material_palette: Vec<usize>,
     /// LOD 等级（0=最高精度，255=最低精度）
     pub lod: u8,
-    /// 影响生成的实体特征（如 "wasteland"、"ruined"、"infected"）
+    /// 影响生成的实体特征（如 "ae"、"ruined"、"infected"）
     pub seed_entities: Vec<String>,
 }
 

@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_storage::compression::{compress_snapshot, decompress_snapshot};
-use wasteland_storage::delta::WorldDelta;
-use wasteland_storage::migration::SchemaVersion;
-use wasteland_storage::snapshot::Snapshot;
+use ae_storage::compression::{compress_snapshot, decompress_snapshot};
+use ae_storage::delta::WorldDelta;
+use ae_storage::migration::SchemaVersion;
+use ae_storage::snapshot::Snapshot;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

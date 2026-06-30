@@ -1,12 +1,12 @@
 [package]
-name = "wasteland-game"
+name = "ae-game"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 authors.workspace = true
 
 [[bin]]
-name = "wasteland-game"
+name = "ae-game"
 path = "src/main.rs"
 
 [[bin]]
@@ -17,10 +17,10 @@ path = "src/bin/world_viewer.rs"
 glam.workspace = true
 log.workspace = true
 env_logger = "0.11"
-wasteland_engine = { path = "../wasteland_engine" }
-wasteland_particle = { path = "../wasteland_particle" }
-wasteland_render = { path = "../wasteland_render" }
-wasteland_terrain = { path = "../wasteland_terrain" }
+ae_engine = { path = "../ae_engine" }
+ae_particle = { path = "../ae_particle" }
+ae_render = { path = "../ae_render" }
+ae_terrain = { path = "../ae_terrain" }
 winit = { workspace = true }
 wgpu = { workspace = true }
 pollster = { workspace = true }

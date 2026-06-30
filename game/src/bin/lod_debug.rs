@@ -1,5 +1,5 @@
 //! LOD 漂移调试：每 10 ticks 打印 player_position 和粒子位置范围
-use wasteland_engine::{GameWorld, WorldBounds};
+use ae_engine::{GameWorld, WorldBounds};
 
 fn main() {
     println!("=== LOD Drift Debug ===");

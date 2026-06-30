@@ -1,4 +1,4 @@
-//! TAA Pass（port 自 v1 wasteland_render::taa）
+//! TAA Pass（port 自 v1 ae_render::taa）
 //!
 //! 时域抗锯齿：利用历史帧信息在时域上累积样本，配合亚像素抖动实现全屏抗锯齿。
 //!
@@ -147,7 +147,7 @@ fn fs_taa(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 "#;
 
-/// TAA Pass（port 自 v1 wasteland_render::TaaRenderer）
+/// TAA Pass（port 自 v1 ae_render::TaaRenderer）
 ///
 /// 管理 TAA resolve 管线与 ping-pong 历史帧。
 pub struct TaaPass {

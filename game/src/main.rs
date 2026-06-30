@@ -1,14 +1,14 @@
 //! Wasteland Game Launcher - Visual Demo
 //!
 //! winit + wgpu 可视化 demo，展示引擎模拟的体素网格和元体。
-//! 渲染层委托给 wasteland_render（SurfaceRenderer + InstancedRenderer）。
+//! 渲染层委托给 ae_render（SurfaceRenderer + InstancedRenderer）。
 //! 鼠标拖拽旋转相机，滚轮缩放，ESC 退出。
 
 use std::time::Instant;
 
 use glam::{Mat4, Vec3};
-use wasteland_engine::{Biome, GameWorld, MaterialProperties, WorldBounds};
-use wasteland_render::{CameraUniform, InstancedRenderer, InstanceData, PointInstanceData, SurfaceRenderer};
+use ae_engine::{Biome, GameWorld, MaterialProperties, WorldBounds};
+use ae_render::{CameraUniform, InstancedRenderer, InstanceData, PointInstanceData, SurfaceRenderer};
 use winit::{
     event::{ElementState, MouseButton, MouseScrollDelta, WindowEvent},
     event_loop::{ActiveEventLoop, EventLoop},
@@ -57,7 +57,7 @@ impl CameraState {
         self.projection_matrix() * self.view_matrix()
     }
 
-    /// Build wasteland_render::CameraUniform (view_proj + view + proj + position, 208 bytes).
+    /// Build ae_render::CameraUniform (view_proj + view + proj + position, 208 bytes).
     fn uniform(&self) -> CameraUniform {
         let pos = self.position();
         CameraUniform {
@@ -154,7 +154,7 @@ impl ApplicationHandler for App {
             return;
         }
         let window_attrs = WindowAttributes::default()
-            .with_title("Wasteland Engine - Visual Demo (wasteland_render)")
+            .with_title("Wasteland Engine - Visual Demo (ae_render)")
             .with_inner_size(winit::dpi::PhysicalSize::new(WINDOW_WIDTH, WINDOW_HEIGHT));
         let window = event_loop
             .create_window(window_attrs)
@@ -315,7 +315,7 @@ impl ApplicationHandler for App {
 fn main() {
     env_logger::Builder::from_env(env_logger::Env::default().default_filter_or("info")).init();
 
-    log::info!("Wasteland Engine - Visual Demo starting (wasteland_render backend)...");
+    log::info!("Wasteland Engine - Visual Demo starting (ae_render backend)...");
 
     let world = create_world();
     let stats = world.stats();

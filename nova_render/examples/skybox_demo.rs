@@ -6,7 +6,7 @@
 //!
 //! 运行：
 //! ```bash
-//! cargo run --example skybox_demo --features compat-v1 --target-dir d:\rj\wasteland_project\target2
+//! cargo run --example skybox_demo --features compat-v1 --target-dir d:\rj\ae_project\target2
 //! ```
 
 use nova_render::application::NovaApp;

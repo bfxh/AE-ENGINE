@@ -2,7 +2,7 @@
 //!
 //! 基于 ray marching + 黑体色温映射（Tanner Helland 算法）
 //! 输入：
-//! - 火焰密度 3D 纹理（来自 wasteland_compute::StamFluidSolver3D::density）
+//! - 火焰密度 3D 纹理（来自 ae_compute::StamFluidSolver3D::density）
 //! - 温度 3D 纹理（来自 StamFluidSolver3D::temperature）
 //! 输出：
 //! - 合成到 HDR 缓冲的火焰颜色（含发光）

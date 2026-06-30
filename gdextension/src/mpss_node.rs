@@ -1,6 +1,6 @@
 use godot::prelude::*;
 use std::sync::Mutex;
-use wasteland_particle::mpss::{MpssBuffer, ParticleKind};
+use ae_particle::mpss::{MpssBuffer, ParticleKind};
 
 #[derive(GodotClass)]
 #[class(base=Node3D)]

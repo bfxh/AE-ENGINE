@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_timeslice::diff_graph::DiffUpdateGraph;
-use wasteland_timeslice::time_slice::{LayeredTimeSlicer, SystemId, TimeSliceLayer};
+use ae_timeslice::diff_graph::DiffUpdateGraph;
+use ae_timeslice::time_slice::{LayeredTimeSlicer, SystemId, TimeSliceLayer};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

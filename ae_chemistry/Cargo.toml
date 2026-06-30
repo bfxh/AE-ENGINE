@@ -1,0 +1,24 @@
+[package]
+name = "ae_chemistry"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+slotmap.workspace = true
+smallvec.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+rand_distr.workspace = true
+lru = "0.12"
+bitflags.workspace = true
+
+[dev-dependencies]
+criterion = { workspace = true, features = ["html_reports"] }
+
+[[bench]]
+name = "chemistry_bench"
+harness = false

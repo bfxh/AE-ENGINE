@@ -28,4 +28,4 @@ glam.workspace = true
 bytemuck.workspace = true
 pollster = "0.4"
 anyhow = "1"
-wasteland_bvh = { path = "../wasteland_bvh" }
+ae_bvh = { path = "../ae_bvh" }

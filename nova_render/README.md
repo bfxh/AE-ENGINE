@@ -39,8 +39,8 @@ nova_render/
 - `default`: 基础渲染框架
 - `ktx2`: KTX2/BasisU 纹理压缩
 - `profile`: 性能追踪（profiling crate）
-- `compat-v1`: v1 wasteland_render 兼容层
-- `engine-bridge`: wasteland_engine GameWorld 对接
+- `compat-v1`: v1 ae_render 兼容层
+- `engine-bridge`: ae_engine GameWorld 对接
 
 ## Build
 

@@ -1,6 +1,6 @@
 use super::mesh_data::{MeshBuffer, Vertex};
 use glam::{Mat4, Vec3};
-use wasteland_bvh::{frustum_from_view_proj, Aabb, Bvh};
+use ae_bvh::{frustum_from_view_proj, Aabb, Bvh};
 use wgpu::util::DeviceExt;
 use wgpu::*;
 

@@ -22,11 +22,11 @@
 use std::time::Instant;
 
 use glam::{Mat4, Vec3};
-use wasteland_engine::{Biome, GameWorld, MaterialProperties, NpcSpecies, WorldBounds};
-use wasteland_engine::managers::domain_isolation::IsolationDomain;
-use wasteland_terrain::heightmap::Heightmap;
-use wasteland_terrain::noise::PermutationTable;
-use wasteland_render::{
+use ae_engine::{Biome, GameWorld, MaterialProperties, NpcSpecies, WorldBounds};
+use ae_engine::managers::domain_isolation::IsolationDomain;
+use ae_terrain::heightmap::Heightmap;
+use ae_terrain::noise::PermutationTable;
+use ae_render::{
     CameraUniform, InstancedRenderer, InstanceData, LightUniform, MeshInstanceData, MeshRenderer,
     PointInstanceData, PostProcessParams, PostProcessRenderer, SkyboxRenderer, SurfaceRenderer,
     WaterRenderer,
@@ -304,11 +304,11 @@ fn terrain_world_y(x: f32, z: f32, hm: &Heightmap) -> f32 {
     let v = ((z + TERRAIN_OFFSET) / 2000.0).clamp(0.0, 1.0);
     hm.sample(glam::Vec2::new(u, v)) * TERRAIN_HEIGHT_SCALE
 }
-fn generate_terrain_mesh() -> (Vec<wasteland_render::Vertex>, Vec<u32>) {
+fn generate_terrain_mesh() -> (Vec<ae_render::Vertex>, Vec<u32>) {
     let hm = make_terrain_heightmap();
     let w = hm.width;
     let h = hm.height;
-    let mut vertices: Vec<wasteland_render::Vertex> = Vec::with_capacity(w * h);
+    let mut vertices: Vec<ae_render::Vertex> = Vec::with_capacity(w * h);
     for y in 0..h {
         for x in 0..w {
             let height_val = hm.get(x, y);
@@ -324,7 +324,7 @@ fn generate_terrain_mesh() -> (Vec<wasteland_render::Vertex>, Vec<u32>) {
             } else {
                 [0.9, 0.9, 0.95, 1.0]
             };
-            vertices.push(wasteland_render::Vertex {
+            vertices.push(ae_render::Vertex {
                 position: [px, py, pz],
                 normal: [0.0, 1.0, 0.0],
                 tangent: [1.0, 0.0, 0.0, 1.0],
@@ -461,7 +461,7 @@ fn building_specs() -> Vec<BuildingSpec> {
     specs
 }
 
-fn generate_building_meshes() -> Vec<(Vec<wasteland_render::Vertex>, Vec<u32>)> {
+fn generate_building_meshes() -> Vec<(Vec<ae_render::Vertex>, Vec<u32>)> {
     let specs = building_specs();
     let mut meshes = Vec::new();
     for spec in &specs {
@@ -485,7 +485,7 @@ fn generate_building_meshes() -> Vec<(Vec<wasteland_render::Vertex>, Vec<u32>)> 
     meshes
 }
 
-fn generate_npc_mesh() -> (Vec<wasteland_render::Vertex>, Vec<u32>) {
+fn generate_npc_mesh() -> (Vec<ae_render::Vertex>, Vec<u32>) {
     let params = NpcBodyParams {
         height: 1.8,
         build: 0.5,
@@ -493,17 +493,17 @@ fn generate_npc_mesh() -> (Vec<wasteland_render::Vertex>, Vec<u32>) {
         hip_width: 0.36,
         head_ratio: 1.0 / 7.5,
         skin_color: [0.85, 0.7, 0.55, 1.0],
-        gender: wasteland_render::procedural::npc::Gender::Male,
+        gender: ae_render::procedural::npc::Gender::Male,
     };
     let (verts, idxs, _skel, _weights) = NpcBodyGenerator::new().generate(&params);
     (verts, idxs)
 }
 
-fn generate_morph_meshes() -> Vec<(Vec<wasteland_render::Vertex>, Vec<u32>)> {
+fn generate_morph_meshes() -> Vec<(Vec<ae_render::Vertex>, Vec<u32>)> {
     let templates = all_templates();
     let mut meshes = Vec::new();
     for (i, template) in templates.iter().enumerate() {
-        let params = wasteland_render::procedural::npc::MorphParams {
+        let params = ae_render::procedural::npc::MorphParams {
             scale: 1.0 + (i as f32) * 0.05,
             variant_seed: i as u32 * 17,
             ..Default::default()

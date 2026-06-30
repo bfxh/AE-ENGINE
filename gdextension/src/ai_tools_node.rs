@@ -1,13 +1,13 @@
 use godot::prelude::*;
 
-use wasteland_ai_tools::model_optimizer::ModelOptimizer;
-use wasteland_ai_tools::npc_knowledge::{
+use ae_ai_tools::model_optimizer::ModelOptimizer;
+use ae_ai_tools::npc_knowledge::{
     KnowledgeInjectConfig, MoralCompass, NpcKnowledgeInjector, PersonalityProfile,
 };
-use wasteland_ai_tools::pipeline::{AiPipeline, PipelineConfig, TaskPriority, TaskType};
-use wasteland_ai_tools::prompt_templates::{PromptCategory, PromptLibrary};
-use wasteland_ai_tools::rag::{KnowledgeSource, RagConfig, RagEngine};
-use wasteland_ai_tools::world_gen::{
+use ae_ai_tools::pipeline::{AiPipeline, PipelineConfig, TaskPriority, TaskType};
+use ae_ai_tools::prompt_templates::{PromptCategory, PromptLibrary};
+use ae_ai_tools::rag::{KnowledgeSource, RagConfig, RagEngine};
+use ae_ai_tools::world_gen::{
     PopulationConfig, TerrainConfig, WorldGenConfig, WorldGenRequest, WorldGenerator,
 };
 

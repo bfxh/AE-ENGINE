@@ -1,7 +1,7 @@
 {
   "blender_path": "E:\\SteamLibrary\\steamapps\\common\\Blender\\blender.exe",
   "godot_path": "E:\\Godot46\\Godot_v4.6.2-stable_win64_console.exe",
-  "output_dir": "d:\\rj\\wasteland_project\\godot_project\\assets",
+  "output_dir": "d:\\rj\\ae_project\\godot_project\\assets",
   "llm_endpoint": "http://localhost:11434/api/generate",
   "llm_model": "qwen3.5-4b",
   "texture_resolution": 2048,

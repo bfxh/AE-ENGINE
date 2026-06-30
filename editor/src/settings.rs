@@ -6,28 +6,28 @@
 use crate::panels::settings_panel::SettingsPanel;
 use std::path::PathBuf;
 
-/// Return the config directory for the wasteland editor.
+/// Return the config directory for the ae editor.
 ///
-/// - Windows: `%APPDATA%/wasteland_editor/`
-/// - Linux: `$XDG_CONFIG_HOME/wasteland_editor/` or `$HOME/.config/wasteland_editor/`
-/// - macOS: `$HOME/Library/Application Support/wasteland_editor/`
+/// - Windows: `%APPDATA%/ae_editor/`
+/// - Linux: `$XDG_CONFIG_HOME/ae_editor/` or `$HOME/.config/ae_editor/`
+/// - macOS: `$HOME/Library/Application Support/ae_editor/`
 fn config_dir() -> Option<PathBuf> {
     #[cfg(target_os = "windows")]
     {
-        std::env::var_os("APPDATA").map(|p| PathBuf::from(p).join("wasteland_editor"))
+        std::env::var_os("APPDATA").map(|p| PathBuf::from(p).join("ae_editor"))
     }
     #[cfg(target_os = "macos")]
     {
         std::env::var_os("HOME").map(|h| {
-            PathBuf::from(h).join("Library").join("Application Support").join("wasteland_editor")
+            PathBuf::from(h).join("Library").join("Application Support").join("ae_editor")
         })
     }
     #[cfg(all(unix, not(target_os = "macos")))]
     {
         if let Some(xdg) = std::env::var_os("XDG_CONFIG_HOME") {
-            Some(PathBuf::from(xdg).join("wasteland_editor"))
+            Some(PathBuf::from(xdg).join("ae_editor"))
         } else {
-            std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config").join("wasteland_editor"))
+            std::env::var_os("HOME").map(|h| PathBuf::from(h).join(".config").join("ae_editor"))
         }
     }
     #[cfg(not(any(target_os = "windows", target_os = "macos", unix)))]

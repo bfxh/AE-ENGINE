@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_frequency::scheduler::{FrequencyScheduler, SchedulerConfig};
-use wasteland_frequency::tier::{FrequencyTier, Urgency};
+use ae_frequency::scheduler::{FrequencyScheduler, SchedulerConfig};
+use ae_frequency::tier::{FrequencyTier, Urgency};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

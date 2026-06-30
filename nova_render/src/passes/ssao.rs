@@ -1,4 +1,4 @@
-//! SSAO Pass（port 自 v1 wasteland_render::ssao）
+//! SSAO Pass（port 自 v1 ae_render::ssao）
 //!
 //! 屏幕空间环境光遮蔽：基于深度缓冲在屏幕空间近似全局光照中的环境遮蔽。
 //!
@@ -282,7 +282,7 @@ fn fs_apply(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 "#;
 
-/// SSAO 渲染 Pass（port 自 v1 wasteland_render::SsaoRenderer）
+/// SSAO 渲染 Pass（port 自 v1 ae_render::SsaoRenderer）
 ///
 /// 使用方式：
 /// ```ignore

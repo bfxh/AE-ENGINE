@@ -68,7 +68,7 @@ impl EditorPanel for McpDebugPanel {
         let bridge_url: Option<String> =
             app.mcp_http_bridge.as_ref().map(|b| b.mcp_url());
         let port_file_path = std::env::temp_dir()
-            .join("wasteland_editor_mcp_port.txt")
+            .join("ae_editor_mcp_port.txt")
             .to_string_lossy()
             .into_owned();
 

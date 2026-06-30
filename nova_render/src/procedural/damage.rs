@@ -1,4 +1,4 @@
-//! 角色损伤系统（从 v1 wasteland_render/procedural/damage.rs 移植）
+//! 角色损伤系统（从 v1 ae_render/procedural/damage.rs 移植）
 //!
 //! 突破性损伤模拟：
 //! - 四级损伤等级（表面/中度/重度/完全毁坏）

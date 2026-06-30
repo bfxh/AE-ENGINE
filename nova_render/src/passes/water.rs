@@ -1,4 +1,4 @@
-//! Water Pass: Gerstner-wave displaced grid + Fresnel reflection（port 自 v1 wasteland_render）
+//! Water Pass: Gerstner-wave displaced grid + Fresnel reflection（port 自 v1 ae_render）
 //!
 //! - 4 stacked Gerstner waves with analytic normals (height-field approximation)
 //! - Fresnel reflectance (Schlick approximation, F0 = 0.02 for water)

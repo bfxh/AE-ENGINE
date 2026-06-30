@@ -25,7 +25,7 @@
 //! post_process/ EffectStack + Bloom / Tonemap / TAA / SSAO / SSR / ...
 //! gi/           DDGI + SSGI + RT
 //! serialize/    Visit trait + Prefab
-//! compat/       v1_adapter 对接 wasteland_engine
+//! compat/       v1_adapter 对接 ae_engine
 //! profiling/    性能追踪
 //! ```
 

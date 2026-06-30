@@ -1,4 +1,4 @@
-//! Forward Pass: 自定义 mesh 实例化渲染（port 自 v1 wasteland_render mesh_renderer）
+//! Forward Pass: 自定义 mesh 实例化渲染（port 自 v1 ae_render mesh_renderer）
 //!
 //! 用于渲染程序化生成的建筑/NPC/Morph 等复杂几何体：
 //! - 每个注册的 mesh 拥有独立 vertex/index buffer（由 RenderGraph 调度绑定）

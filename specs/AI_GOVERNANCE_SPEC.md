@@ -1,7 +1,7 @@
 # Wasteland 项目 AI 自治规范 v2.0
 
 > 适用AI: Claude/GPT/DeepSeek/Kimi/所有AI助手
-> 生效范围: wasteland_project 全生命周期
+> 生效范围: ae_project 全生命周期
 > 执行模式: 自动化检查 + 人工复审
 
 ---

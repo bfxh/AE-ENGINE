@@ -1,11 +1,11 @@
 use godot::prelude::*;
 use slotmap::Key;
 
-use wasteland_physics::fixed_point::FixedPoint;
-use wasteland_weave::constraint::{ConstraintGroup, ConstraintInput, ConstraintType, NodeId};
-use wasteland_weave::fracture::{FractureConfig, FractureSystem};
-use wasteland_weave::network::ConstraintNetwork;
-use wasteland_weave::solver::{SolverConfig, WeaveSolver};
+use ae_physics::fixed_point::FixedPoint;
+use ae_weave::constraint::{ConstraintGroup, ConstraintInput, ConstraintType, NodeId};
+use ae_weave::fracture::{FractureConfig, FractureSystem};
+use ae_weave::network::ConstraintNetwork;
+use ae_weave::solver::{SolverConfig, WeaveSolver};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

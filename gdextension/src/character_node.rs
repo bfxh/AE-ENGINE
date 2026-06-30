@@ -1,7 +1,7 @@
 use godot::prelude::*;
 use std::sync::Mutex;
 use uuid::Uuid;
-use wasteland_character::{
+use ae_character::{
     BodyPart, DeformationHistory, ForceFeedbackBus, Skeleton, SurfaceContactDetector,
 };
 

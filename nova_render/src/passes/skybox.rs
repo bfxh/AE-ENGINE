@@ -1,4 +1,4 @@
-//! Skybox Pass: 程序化天空盒 + 大气散射（port 自 v1 wasteland_render）
+//! Skybox Pass: 程序化天空盒 + 大气散射（port 自 v1 ae_render）
 //!
 //! 基于 Rayleigh + Mie 散射的实时大气散射，支持太阳/月亮方向与 HDR 输出。
 //! - 天空穹顶球体（半径 1.0，仅渲染内表面）

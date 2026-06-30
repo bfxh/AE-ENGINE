@@ -8,6 +8,6 @@
   "terrain_faces": 16384,
   "buildings": 30,
   "trees": 100,
-  "export_path": "D:\\rj\\wasteland_project\\blender_plugin\\wasteland_verify.glb",
+  "export_path": "D:\\rj\\ae_project\\blender_plugin\\ae_verify.glb",
   "export_size_bytes": 636420
 }

@@ -1,4 +1,4 @@
-//! Particles Pass: GPU Particle System（port 自 v1 wasteland_render）
+//! Particles Pass: GPU Particle System（port 自 v1 ae_render）
 //!
 //! compute-driven 粒子模拟 + billboard 渲染：
 //! - ParticleData: 64 bytes/粒子（4 × vec4），存储在 storage buffer（read_write）

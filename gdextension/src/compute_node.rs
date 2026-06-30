@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_compute::hardware;
-use wasteland_compute::parallel;
+use ae_compute::hardware;
+use ae_compute::parallel;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

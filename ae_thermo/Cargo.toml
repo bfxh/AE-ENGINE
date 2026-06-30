@@ -1,0 +1,13 @@
+[package]
+name = "ae_thermo"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde.workspace = true
+log.workspace = true
+glam.workspace = true
+hashbrown.workspace = true
+uuid.workspace = true

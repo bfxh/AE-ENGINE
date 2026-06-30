@@ -25,6 +25,853 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "320119579fcad9c21884f5c4861d16174d0e06250625266f50fe6898340abefa"
 
 [[package]]
+name = "ae-game"
+version = "0.1.0"
+dependencies = [
+ "ae_engine",
+ "ae_particle",
+ "ae_render",
+ "ae_terrain",
+ "bytemuck",
+ "env_logger",
+ "glam 0.29.3",
+ "log",
+ "pollster",
+ "wgpu",
+ "winit",
+]
+
+[[package]]
+name = "ae_acoustics"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "uuid",
+ "wgpu",
+]
+
+[[package]]
+name = "ae_ai"
+version = "0.1.0"
+dependencies = [
+ "ae_info",
+ "ae_physics",
+ "glam 0.29.3",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_ai_bridge"
+version = "0.1.0"
+dependencies = [
+ "rand 0.8.6",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ae_ai_tools"
+version = "0.1.0"
+dependencies = [
+ "criterion",
+ "rand 0.8.6",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "ae_animation"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "smallvec",
+]
+
+[[package]]
+name = "ae_asset"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ae_asset_pipeline"
+version = "0.1.0"
+dependencies = [
+ "ae_metaentity",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "ae_audio"
+version = "0.1.0"
+dependencies = [
+ "cpal",
+ "crossbeam-channel",
+ "glam 0.29.3",
+ "log",
+ "parking_lot",
+ "rand 0.8.6",
+]
+
+[[package]]
+name = "ae_axiom"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_biology"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_biomech"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rayon",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_botany"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_bvh"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+]
+
+[[package]]
+name = "ae_character"
+version = "0.1.0"
+dependencies = [
+ "ae_physics",
+ "ae_weave",
+ "glam 0.29.3",
+ "rand 0.8.6",
+ "serde",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_chemistry"
+version = "0.1.0"
+dependencies = [
+ "bitflags 2.11.1",
+ "criterion",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "lru",
+ "rand 0.8.6",
+ "rand_distr",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_compute"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
+ "log",
+ "rand 0.8.6",
+ "rayon",
+ "serde",
+ "wgpu",
+]
+
+[[package]]
+name = "ae_cpp_kernel"
+version = "0.1.0"
+dependencies = [
+ "cc",
+ "glam 0.29.3",
+]
+
+[[package]]
+name = "ae_crafting"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "rand 0.8.6",
+ "serde",
+ "serde_json",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_eco"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_electro"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "log",
+ "serde",
+]
+
+[[package]]
+name = "ae_emergence"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "ae_engine"
+version = "0.1.0"
+dependencies = [
+ "ae_acoustics",
+ "ae_ai",
+ "ae_ai_bridge",
+ "ae_asset",
+ "ae_asset_pipeline",
+ "ae_audio",
+ "ae_axiom",
+ "ae_biology",
+ "ae_character",
+ "ae_chemistry",
+ "ae_compute",
+ "ae_eco",
+ "ae_electro",
+ "ae_emergence",
+ "ae_factory",
+ "ae_field",
+ "ae_fluid",
+ "ae_frequency",
+ "ae_game",
+ "ae_generalizer",
+ "ae_geo",
+ "ae_hydro",
+ "ae_info",
+ "ae_io",
+ "ae_materials",
+ "ae_memory",
+ "ae_metaentity",
+ "ae_modding",
+ "ae_network",
+ "ae_optics",
+ "ae_particle",
+ "ae_pathfinding",
+ "ae_physics",
+ "ae_profiler",
+ "ae_registry",
+ "ae_render",
+ "ae_save_system",
+ "ae_scheduler",
+ "ae_serialize",
+ "ae_simd",
+ "ae_storage",
+ "ae_thermo",
+ "ae_timeslice",
+ "ae_unified_interface",
+ "ae_weather",
+ "ae_weave",
+ "criterion",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "parking_lot",
+ "pollster",
+ "rand 0.8.6",
+ "rayon",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_eventbus"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_factory"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_field"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_fluid"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_frequency"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_game"
+version = "0.1.0"
+dependencies = [
+ "ae_ai",
+ "ae_ai_bridge",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_gdextension"
+version = "0.1.0"
+dependencies = [
+ "ae_ai",
+ "ae_ai_bridge",
+ "ae_ai_tools",
+ "ae_animation",
+ "ae_asset",
+ "ae_audio",
+ "ae_character",
+ "ae_chemistry",
+ "ae_compute",
+ "ae_engine",
+ "ae_eventbus",
+ "ae_frequency",
+ "ae_io",
+ "ae_materials",
+ "ae_memory",
+ "ae_metaentity",
+ "ae_network",
+ "ae_particle",
+ "ae_pathfinding",
+ "ae_physics",
+ "ae_profiler",
+ "ae_serialize",
+ "ae_simd",
+ "ae_storage",
+ "ae_terrain",
+ "ae_timeslice",
+ "ae_weave",
+ "ae_xpbd",
+ "glam 0.29.3",
+ "godot",
+ "rand 0.8.6",
+ "slotmap",
+ "uuid",
+]
+
+[[package]]
+name = "ae_generalizer"
+version = "0.1.0"
+dependencies = [
+ "ae_physics",
+ "hashbrown 0.15.5",
+ "log",
+ "lru",
+ "rand 0.8.6",
+ "serde",
+]
+
+[[package]]
+name = "ae_geo"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_hydro"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_info"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_io"
+version = "0.1.0"
+dependencies = [
+ "hashbrown 0.15.5",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ae_materials"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "log",
+ "serde",
+]
+
+[[package]]
+name = "ae_memory"
+version = "0.1.0"
+
+[[package]]
+name = "ae_metaentity"
+version = "0.1.0"
+dependencies = [
+ "ae_materials",
+ "ae_physics",
+ "ae_weave",
+ "bincode",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "lru",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_modding"
+version = "0.1.0"
+dependencies = [
+ "hashbrown 0.15.5",
+ "log",
+ "mlua",
+ "parking_lot",
+ "serde",
+ "serde_json",
+ "toml",
+ "uuid",
+]
+
+[[package]]
+name = "ae_network"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+]
+
+[[package]]
+name = "ae_optics"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_particle"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rand_distr",
+ "rayon",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_pathfinding"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "slotmap",
+ "smallvec",
+]
+
+[[package]]
+name = "ae_physchem"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "rayon",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_physics"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "bitflags 2.11.1",
+ "bytemuck",
+ "criterion",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "joltc-sys",
+ "log",
+ "rand 0.8.6",
+ "rolt",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_profiler"
+version = "0.1.0"
+dependencies = [
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ae_registry"
+version = "0.1.0"
+dependencies = [
+ "ae_metaentity",
+ "ae_unified_interface",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_render"
+version = "0.1.0"
+dependencies = [
+ "basis-universal",
+ "bitflags 2.11.1",
+ "bytemuck",
+ "ddsfile",
+ "flate2",
+ "glam 0.29.3",
+ "gltf",
+ "hashbrown 0.15.5",
+ "image",
+ "log",
+ "parking_lot",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "wgpu",
+ "winit",
+]
+
+[[package]]
+name = "ae_save_system"
+version = "0.1.0"
+dependencies = [
+ "ae_metaentity",
+ "ae_unified_interface",
+ "bincode",
+ "flate2",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "serde_json",
+ "slotmap",
+ "uuid",
+]
+
+[[package]]
+name = "ae_scheduler"
+version = "0.1.0"
+dependencies = [
+ "ae_metaentity",
+ "ae_unified_interface",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rayon",
+ "serde",
+ "slotmap",
+ "uuid",
+]
+
+[[package]]
+name = "ae_serialize"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "criterion",
+ "serde",
+]
+
+[[package]]
+name = "ae_simd"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "criterion",
+ "glam 0.29.3",
+ "serde",
+]
+
+[[package]]
+name = "ae_storage"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "ae_terrain"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "log",
+ "rand 0.8.6",
+ "serde",
+]
+
+[[package]]
+name = "ae_thermo"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_thermo_sandbox"
+version = "0.1.0"
+dependencies = [
+ "ae_render",
+ "ae_thermo",
+ "bytemuck",
+ "env_logger",
+ "glam 0.29.3",
+ "log",
+ "pollster",
+ "serde",
+ "wgpu",
+ "winit",
+]
+
+[[package]]
+name = "ae_timeslice"
+version = "0.1.0"
+dependencies = [
+ "bincode",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "rusqlite",
+ "serde",
+ "serde_json",
+ "uuid",
+]
+
+[[package]]
+name = "ae_unified_interface"
+version = "0.1.0"
+dependencies = [
+ "ae_metaentity",
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "rayon",
+ "serde",
+ "slotmap",
+ "smallvec",
+ "uuid",
+]
+
+[[package]]
+name = "ae_weather"
+version = "0.1.0"
+dependencies = [
+ "glam 0.29.3",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "uuid",
+]
+
+[[package]]
+name = "ae_weave"
+version = "0.1.0"
+dependencies = [
+ "ae_physics",
+ "bitflags 2.11.1",
+ "criterion",
+ "hashbrown 0.15.5",
+ "log",
+ "rand 0.8.6",
+ "serde",
+ "slotmap",
+ "smallvec",
+]
+
+[[package]]
+name = "ae_xpbd"
+version = "0.1.0"
+dependencies = [
+ "bytemuck",
+ "glam 0.29.3",
+ "serde",
+]
+
+[[package]]
 name = "ahash"
 version = "0.8.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3605,6 +4452,7 @@ checksum = "0c790de23124f9ab44544d7ac05d60440adc586479ce501c1d6d7da3cd8c9cf5"
 name = "slime-editor"
 version = "0.1.0"
 dependencies = [
+ "ae_bvh",
  "anyhow",
  "bytemuck",
  "egui",
@@ -3617,7 +4465,6 @@ dependencies = [
  "rfd",
  "serde",
  "serde_json",
- "wasteland_bvh",
  "wgpu",
  "winit",
 ]
@@ -4255,853 +5102,6 @@ dependencies = [
  "hashbrown 0.15.5",
  "indexmap",
  "semver",
-]
-
-[[package]]
-name = "wasteland-game"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "env_logger",
- "glam 0.29.3",
- "log",
- "pollster",
- "wasteland_engine",
- "wasteland_particle",
- "wasteland_render",
- "wasteland_terrain",
- "wgpu",
- "winit",
-]
-
-[[package]]
-name = "wasteland_acoustics"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "uuid",
- "wgpu",
-]
-
-[[package]]
-name = "wasteland_ai"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "rand 0.8.6",
- "serde",
- "uuid",
- "wasteland_info",
- "wasteland_physics",
-]
-
-[[package]]
-name = "wasteland_ai_bridge"
-version = "0.1.0"
-dependencies = [
- "rand 0.8.6",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "wasteland_ai_tools"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "rand 0.8.6",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_animation"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "smallvec",
-]
-
-[[package]]
-name = "wasteland_asset"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "wasteland_asset_pipeline"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "serde_json",
- "uuid",
- "wasteland_metaentity",
-]
-
-[[package]]
-name = "wasteland_audio"
-version = "0.1.0"
-dependencies = [
- "cpal",
- "crossbeam-channel",
- "glam 0.29.3",
- "log",
- "parking_lot",
- "rand 0.8.6",
-]
-
-[[package]]
-name = "wasteland_axiom"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_biology"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rand_distr",
- "rayon",
- "serde",
- "serde_json",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_biomech"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rayon",
- "serde",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_botany"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rand_distr",
- "rayon",
- "serde",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_bvh"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
-]
-
-[[package]]
-name = "wasteland_character"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "rand 0.8.6",
- "serde",
- "smallvec",
- "uuid",
- "wasteland_physics",
- "wasteland_weave",
-]
-
-[[package]]
-name = "wasteland_chemistry"
-version = "0.1.0"
-dependencies = [
- "bitflags 2.11.1",
- "criterion",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "lru",
- "rand 0.8.6",
- "rand_distr",
- "serde",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_compute"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam 0.29.3",
- "log",
- "rand 0.8.6",
- "rayon",
- "serde",
- "wgpu",
-]
-
-[[package]]
-name = "wasteland_cpp_kernel"
-version = "0.1.0"
-dependencies = [
- "cc",
- "glam 0.29.3",
-]
-
-[[package]]
-name = "wasteland_crafting"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "rand 0.8.6",
- "serde",
- "serde_json",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_eco"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_electro"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "log",
- "serde",
-]
-
-[[package]]
-name = "wasteland_emergence"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rand_distr",
- "rayon",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_engine"
-version = "0.1.0"
-dependencies = [
- "criterion",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "parking_lot",
- "pollster",
- "rand 0.8.6",
- "rayon",
- "serde",
- "serde_json",
- "slotmap",
- "smallvec",
- "uuid",
- "wasteland_acoustics",
- "wasteland_ai",
- "wasteland_ai_bridge",
- "wasteland_asset",
- "wasteland_asset_pipeline",
- "wasteland_audio",
- "wasteland_axiom",
- "wasteland_biology",
- "wasteland_character",
- "wasteland_chemistry",
- "wasteland_compute",
- "wasteland_eco",
- "wasteland_electro",
- "wasteland_emergence",
- "wasteland_factory",
- "wasteland_field",
- "wasteland_fluid",
- "wasteland_frequency",
- "wasteland_game",
- "wasteland_generalizer",
- "wasteland_geo",
- "wasteland_hydro",
- "wasteland_info",
- "wasteland_io",
- "wasteland_materials",
- "wasteland_memory",
- "wasteland_metaentity",
- "wasteland_modding",
- "wasteland_network",
- "wasteland_optics",
- "wasteland_particle",
- "wasteland_pathfinding",
- "wasteland_physics",
- "wasteland_profiler",
- "wasteland_registry",
- "wasteland_render",
- "wasteland_save_system",
- "wasteland_scheduler",
- "wasteland_serialize",
- "wasteland_simd",
- "wasteland_storage",
- "wasteland_thermo",
- "wasteland_timeslice",
- "wasteland_unified_interface",
- "wasteland_weather",
- "wasteland_weave",
-]
-
-[[package]]
-name = "wasteland_eventbus"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_factory"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_field"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rand_distr",
- "rayon",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_fluid"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_frequency"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_game"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "serde_json",
- "slotmap",
- "smallvec",
- "uuid",
- "wasteland_ai",
- "wasteland_ai_bridge",
-]
-
-[[package]]
-name = "wasteland_gdextension"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "godot",
- "rand 0.8.6",
- "slotmap",
- "uuid",
- "wasteland_ai",
- "wasteland_ai_bridge",
- "wasteland_ai_tools",
- "wasteland_animation",
- "wasteland_asset",
- "wasteland_audio",
- "wasteland_character",
- "wasteland_chemistry",
- "wasteland_compute",
- "wasteland_engine",
- "wasteland_eventbus",
- "wasteland_frequency",
- "wasteland_io",
- "wasteland_materials",
- "wasteland_memory",
- "wasteland_metaentity",
- "wasteland_network",
- "wasteland_particle",
- "wasteland_pathfinding",
- "wasteland_physics",
- "wasteland_profiler",
- "wasteland_serialize",
- "wasteland_simd",
- "wasteland_storage",
- "wasteland_terrain",
- "wasteland_timeslice",
- "wasteland_weave",
- "wasteland_xpbd",
-]
-
-[[package]]
-name = "wasteland_generalizer"
-version = "0.1.0"
-dependencies = [
- "hashbrown 0.15.5",
- "log",
- "lru",
- "rand 0.8.6",
- "serde",
- "wasteland_physics",
-]
-
-[[package]]
-name = "wasteland_geo"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_hydro"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_info"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_io"
-version = "0.1.0"
-dependencies = [
- "hashbrown 0.15.5",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "wasteland_materials"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "log",
- "serde",
-]
-
-[[package]]
-name = "wasteland_memory"
-version = "0.1.0"
-
-[[package]]
-name = "wasteland_metaentity"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "lru",
- "serde",
- "serde_json",
- "slotmap",
- "smallvec",
- "uuid",
- "wasteland_materials",
- "wasteland_physics",
- "wasteland_weave",
-]
-
-[[package]]
-name = "wasteland_modding"
-version = "0.1.0"
-dependencies = [
- "hashbrown 0.15.5",
- "log",
- "mlua",
- "parking_lot",
- "serde",
- "serde_json",
- "toml",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_network"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
-]
-
-[[package]]
-name = "wasteland_optics"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_particle"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rand_distr",
- "rayon",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_pathfinding"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "slotmap",
- "smallvec",
-]
-
-[[package]]
-name = "wasteland_physchem"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "rayon",
- "serde",
- "serde_json",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_physics"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "bitflags 2.11.1",
- "bytemuck",
- "criterion",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "joltc-sys",
- "log",
- "rand 0.8.6",
- "rolt",
- "serde",
- "slotmap",
- "smallvec",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_profiler"
-version = "0.1.0"
-dependencies = [
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "wasteland_registry"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "serde",
- "uuid",
- "wasteland_metaentity",
- "wasteland_unified_interface",
-]
-
-[[package]]
-name = "wasteland_render"
-version = "0.1.0"
-dependencies = [
- "basis-universal",
- "bitflags 2.11.1",
- "bytemuck",
- "ddsfile",
- "flate2",
- "glam 0.29.3",
- "gltf",
- "hashbrown 0.15.5",
- "image",
- "log",
- "parking_lot",
- "serde",
- "slotmap",
- "smallvec",
- "wgpu",
- "winit",
-]
-
-[[package]]
-name = "wasteland_save_system"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "flate2",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "serde_json",
- "slotmap",
- "uuid",
- "wasteland_metaentity",
- "wasteland_unified_interface",
-]
-
-[[package]]
-name = "wasteland_scheduler"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rayon",
- "serde",
- "slotmap",
- "uuid",
- "wasteland_metaentity",
- "wasteland_unified_interface",
-]
-
-[[package]]
-name = "wasteland_serialize"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "criterion",
- "serde",
-]
-
-[[package]]
-name = "wasteland_simd"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "criterion",
- "glam 0.29.3",
- "serde",
-]
-
-[[package]]
-name = "wasteland_storage"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "wasteland_terrain"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "log",
- "rand 0.8.6",
- "serde",
-]
-
-[[package]]
-name = "wasteland_thermo"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_thermo_sandbox"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "env_logger",
- "glam 0.29.3",
- "log",
- "pollster",
- "serde",
- "wasteland_render",
- "wasteland_thermo",
- "wgpu",
- "winit",
-]
-
-[[package]]
-name = "wasteland_timeslice"
-version = "0.1.0"
-dependencies = [
- "bincode",
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "rusqlite",
- "serde",
- "serde_json",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_unified_interface"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "rayon",
- "serde",
- "slotmap",
- "smallvec",
- "uuid",
- "wasteland_metaentity",
-]
-
-[[package]]
-name = "wasteland_weather"
-version = "0.1.0"
-dependencies = [
- "glam 0.29.3",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "uuid",
-]
-
-[[package]]
-name = "wasteland_weave"
-version = "0.1.0"
-dependencies = [
- "bitflags 2.11.1",
- "criterion",
- "hashbrown 0.15.5",
- "log",
- "rand 0.8.6",
- "serde",
- "slotmap",
- "smallvec",
- "wasteland_physics",
-]
-
-[[package]]
-name = "wasteland_xpbd"
-version = "0.1.0"
-dependencies = [
- "bytemuck",
- "glam 0.29.3",
- "serde",
 ]
 
 [[package]]

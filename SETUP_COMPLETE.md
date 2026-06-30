@@ -4,7 +4,7 @@
 
 ### 1. GDExtension 编译
 - ✅ Rust GDExtension 编译成功
-- ✅ DLL 已复制到 `godot_project/bin/wasteland_gdextension.dll`
+- ✅ DLL 已复制到 `godot_project/bin/ae_gdextension.dll`
 - ✅ 编译时间：7分15秒（Release模式）
 
 ### 2. GDScript 验证
@@ -52,7 +52,7 @@
 
 ### 方法2：手动启动
 ```batch
-cd d:\rj\wasteland_project\godot_project
+cd d:\rj\ae_project\godot_project
 godot
 ```
 
@@ -73,7 +73,7 @@ godot
 
 ## 📁 项目结构
 ```
-wasteland_project/
+ae_project/
 ├── godot_project/
 │   ├── scripts/          # GDScript游戏逻辑
 │   ├── scenes/           # 场景文件

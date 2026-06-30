@@ -1,8 +1,8 @@
 use godot::prelude::*;
 
-use wasteland_audio::source::{DirectivityPattern, PropagationMode, SoundSource};
-use wasteland_audio::spatial::SpatialAudio;
-use wasteland_audio::synthesis::{FractureSound, FrictionSound, ImpactSound};
+use ae_audio::source::{DirectivityPattern, PropagationMode, SoundSource};
+use ae_audio::spatial::SpatialAudio;
+use ae_audio::synthesis::{FractureSound, FrictionSound, ImpactSound};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

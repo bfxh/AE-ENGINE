@@ -81,11 +81,11 @@ impl EditorPanel for AboutPanel {
 
                     ui.horizontal(|ui| {
                         ui.label("GitHub:");
-                        ui.hyperlink("https://github.com/wasteland");
+                        ui.hyperlink("https://github.com/ae");
                     });
                     ui.horizontal(|ui| {
                         ui.label("Docs:");
-                        ui.hyperlink("https://docs.wasteland.dev");
+                        ui.hyperlink("https://docs.ae.dev");
                     });
 
                     ui.add_space(15.0);

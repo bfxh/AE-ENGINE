@@ -1,10 +1,10 @@
 use godot::prelude::*;
 
 use slotmap::Key;
-use wasteland_pathfinding::astar::AStarPathfinder;
-use wasteland_pathfinding::flowfield::FlowField;
-use wasteland_pathfinding::navmesh::{NavMesh, NavNode, NavPoly};
-use wasteland_pathfinding::smoothing::{SmoothConfig, smooth_path};
+use ae_pathfinding::astar::AStarPathfinder;
+use ae_pathfinding::flowfield::FlowField;
+use ae_pathfinding::navmesh::{NavMesh, NavNode, NavPoly};
+use ae_pathfinding::smoothing::{SmoothConfig, smooth_path};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

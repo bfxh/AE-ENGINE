@@ -1,9 +1,9 @@
 //! 兼容层
 //!
-//! - `compat-v1`: 对接 v1 wasteland_render（资源类型转换）
+//! - `compat-v1`: 对接 v1 ae_render（资源类型转换）
 //! - `engine-bridge`: 通过 `GameWorldSource` trait 对接上层引擎（从 GameWorld 提取渲染数据）
 //!
-//! `engine-bridge` 不直接依赖 `wasteland_engine`，由 game crate 为具体引擎类型
+//! `engine-bridge` 不直接依赖 `ae_engine`，由 game crate 为具体引擎类型
 //! impl `GameWorldSource`，nova_render 只依赖 trait。
 
 #[cfg(feature = "compat-v1")]

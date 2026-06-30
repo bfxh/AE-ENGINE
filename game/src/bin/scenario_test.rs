@@ -7,7 +7,7 @@
 //!
 //! Run: cargo run --release --bin scenario_test
 
-use wasteland_engine::{GameWorld, WorldBounds};
+use ae_engine::{GameWorld, WorldBounds};
 
 fn main() {
     println!("=== Wasteland Engine - Scenario Integration Tests ===\n");
@@ -188,7 +188,7 @@ fn test_fire_spread_scenario(bounds: WorldBounds) -> bool {
 
     // Verify: first particle should have undergone pyrolysis (Solid -> Gas)
     let first_phase = world.simulation.mpss.phase[wood_indices[0]];
-    let pass_pyrolysis = first_phase == wasteland_particle::mpss::MpssPhase::Gas;
+    let pass_pyrolysis = first_phase == ae_particle::mpss::MpssPhase::Gas;
 
     // Verify: temperature gradient (first hotter than last)
     let final_first = world.simulation.mpss.temperature[wood_indices[0]];
@@ -228,7 +228,7 @@ fn test_phase_transition_scenario(bounds: WorldBounds) -> bool {
         name: &'static str,
         material: u16,
         temps: [f32; 3],
-        expected: [wasteland_particle::mpss::MpssPhase; 3],
+        expected: [ae_particle::mpss::MpssPhase; 3],
     }
 
     let tests = [
@@ -237,9 +237,9 @@ fn test_phase_transition_scenario(bounds: WorldBounds) -> bool {
             material: 1,
             temps: [200.0, 300.0, 400.0],
             expected: [
-                wasteland_particle::mpss::MpssPhase::Solid, // ice
-                wasteland_particle::mpss::MpssPhase::Liquid, // water
-                wasteland_particle::mpss::MpssPhase::Gas,    // steam
+                ae_particle::mpss::MpssPhase::Solid, // ice
+                ae_particle::mpss::MpssPhase::Liquid, // water
+                ae_particle::mpss::MpssPhase::Gas,    // steam
             ],
         },
         PhaseTest {
@@ -247,9 +247,9 @@ fn test_phase_transition_scenario(bounds: WorldBounds) -> bool {
             material: 3,
             temps: [1500.0, 2000.0, 3500.0],
             expected: [
-                wasteland_particle::mpss::MpssPhase::Solid,  // solid
-                wasteland_particle::mpss::MpssPhase::Liquid, // liquid
-                wasteland_particle::mpss::MpssPhase::Gas,    // gas
+                ae_particle::mpss::MpssPhase::Solid,  // solid
+                ae_particle::mpss::MpssPhase::Liquid, // liquid
+                ae_particle::mpss::MpssPhase::Gas,    // gas
             ],
         },
         PhaseTest {
@@ -257,9 +257,9 @@ fn test_phase_transition_scenario(bounds: WorldBounds) -> bool {
             material: 0,
             temps: [400.0, 600.0, 800.0],
             expected: [
-                wasteland_particle::mpss::MpssPhase::Solid, // solid
-                wasteland_particle::mpss::MpssPhase::Gas,   // pyrolyzed
-                wasteland_particle::mpss::MpssPhase::Gas,   // gas
+                ae_particle::mpss::MpssPhase::Solid, // solid
+                ae_particle::mpss::MpssPhase::Gas,   // pyrolyzed
+                ae_particle::mpss::MpssPhase::Gas,   // gas
             ],
         },
     ];

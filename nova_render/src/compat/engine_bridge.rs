@@ -8,8 +8,8 @@
 //! - 物化生场数据（环境/场/生态/涌现/光学/域隔离）
 //!
 //! 设计：
-//! - 通过 `GameWorldSource` trait 解耦，nova_render 不直接依赖 wasteland_engine
-//! - game crate 负责为 wasteland_engine::GameWorld impl GameWorldSource
+//! - 通过 `GameWorldSource` trait 解耦，nova_render 不直接依赖 ae_engine
+//! - game crate 负责为 ae_engine::GameWorld impl GameWorldSource
 //! - 由 nova_render 的 Extract 阶段调用
 
 // ============================================================================
@@ -157,11 +157,11 @@ impl Default for ExtractedSceneData {
 }
 
 // ============================================================================
-// GameWorldSource trait（解耦 wasteland_engine）
+// GameWorldSource trait（解耦 ae_engine）
 // ============================================================================
 //
-// game crate 负责 impl GameWorldSource for wasteland_engine::GameWorld。
-// nova_render 只依赖此 trait，不依赖 wasteland_engine。
+// game crate 负责 impl GameWorldSource for ae_engine::GameWorld。
+// nova_render 只依赖此 trait，不依赖 ae_engine。
 
 /// 世界统计信息
 #[derive(Debug, Clone, Default)]

@@ -1,0 +1,16 @@
+[package]
+name = "ae_emergence"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+glam.workspace = true
+log.workspace = true
+uuid.workspace = true
+hashbrown.workspace = true
+rand.workspace = true
+rand_distr.workspace = true
+bytemuck.workspace = true
+rayon.workspace = true

@@ -24,7 +24,7 @@ impl Default for ContentDrawerPanel {
         Self {
             visible: false, active_tab: CdTab::Recent,
             recent_items: vec![
-                ContentItem { name: "main_scene.wasteland".into(), path: "scenes/".into(), item_type: "Scene".into(), last_used: "2 min ago".into() },
+                ContentItem { name: "main_scene.ae".into(), path: "scenes/".into(), item_type: "Scene".into(), last_used: "2 min ago".into() },
                 ContentItem { name: "player.fbx".into(), path: "models/".into(), item_type: "Mesh".into(), last_used: "10 min ago".into() },
                 ContentItem { name: "terrain.mat".into(), path: "materials/".into(), item_type: "Material".into(), last_used: "1 hour ago".into() },
             ],

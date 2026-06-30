@@ -1,4 +1,4 @@
-# wasteland_project 技术规格书
+# ae_project 技术规格书
 
 > **版本**: v4.2 — 属性驱动开放世界工厂模拟器
 > **日期**: 2026-06-07
@@ -771,86 +771,86 @@ Java服务存储蓝图的完整元体属性向量：
 ## 十四、Crate清单
 
 ### 14.1 现有crate（13个）
-wasteland_physics, wasteland_chemistry, wasteland_biology, wasteland_metaentity, wasteland_engine, wasteland_field, wasteland_particle, wasteland_emergence, wasteland_timeslice, wasteland_eventbus, wasteland_crafting, wasteland_modding, gdextension
+ae_physics, ae_chemistry, ae_biology, ae_metaentity, ae_engine, ae_field, ae_particle, ae_emergence, ae_timeslice, ae_eventbus, ae_crafting, ae_modding, gdextension
 
 ### 14.2 新增crate（待创建）
 
 | Crate | 职责 | 优先级 |
 |-------|------|--------|
-| wasteland_weave | 织网约束求解器（6种约束+分层迭代+XPBD断裂） | P0 |
-| wasteland_generalizer | 规则泛化器（推理模型+三级缓存） | P0 |
-| wasteland_axiom | 公理引擎（自洽性检查+冲突裁决+实验验证） | P1 |
-| wasteland_materials | 材料科学（微观结构场+制造工艺+疲劳蠕变） | P1 |
-| wasteland_thermo | 热力学（傅里叶传导+对流+辐射+相变） | P1 |
-| wasteland_electro | 静电磁场（泊松方程+安培定律） | P1 |
-| wasteland_fluid | Navier-Stokes流体求解器（GPU加速） | P1 |
-| wasteland_geo | 地质系统（侵蚀+沉积+板块构造+矿山） | P2 |
-| wasteland_weather | 气象系统（简化大气模型+极端天气） | P2 |
-| wasteland_hydro | 水文系统（地表径流+地下水） | P2 |
-| wasteland_eco | 生态系统（动态生态+微生物+基因漂变） | P2 |
-| wasteland_acoustics | 声学交互系统（SoundSource+声场求解器+力反馈+空间化） | P1 |
-| wasteland_optics | 光学（光谱渲染+波动光学+散射） | P2 |
-| wasteland_factory | 工厂系统（传送带物理+熔炉热力学+自动化） | P2 |
-| wasteland_info | 信息传播（传播模型+知识网络+延迟效应） | P3 |
+| ae_weave | 织网约束求解器（6种约束+分层迭代+XPBD断裂） | P0 |
+| ae_generalizer | 规则泛化器（推理模型+三级缓存） | P0 |
+| ae_axiom | 公理引擎（自洽性检查+冲突裁决+实验验证） | P1 |
+| ae_materials | 材料科学（微观结构场+制造工艺+疲劳蠕变） | P1 |
+| ae_thermo | 热力学（傅里叶传导+对流+辐射+相变） | P1 |
+| ae_electro | 静电磁场（泊松方程+安培定律） | P1 |
+| ae_fluid | Navier-Stokes流体求解器（GPU加速） | P1 |
+| ae_geo | 地质系统（侵蚀+沉积+板块构造+矿山） | P2 |
+| ae_weather | 气象系统（简化大气模型+极端天气） | P2 |
+| ae_hydro | 水文系统（地表径流+地下水） | P2 |
+| ae_eco | 生态系统（动态生态+微生物+基因漂变） | P2 |
+| ae_acoustics | 声学交互系统（SoundSource+声场求解器+力反馈+空间化） | P1 |
+| ae_optics | 光学（光谱渲染+波动光学+散射） | P2 |
+| ae_factory | 工厂系统（传送带物理+熔炉热力学+自动化） | P2 |
+| ae_info | 信息传播（传播模型+知识网络+延迟效应） | P3 |
 
 ---
 
 ## 十五、开发路线图
 
 ### 阶段一：织网+泛化（1-2月）
-- [x] 创建 wasteland_weave，实现6种约束类型
-- [x] 创建 wasteland_generalizer，离线训练+运行时推理
+- [x] 创建 ae_weave，实现6种约束类型
+- [x] 创建 ae_generalizer，离线训练+运行时推理
 - [x] 动态边界元体（分裂/融合）
 - [x] 两个元体稳定连接演示
 
 ### 阶段二：热力+电磁+材料（2-4月）
-- [x] 创建 wasteland_thermo，完整热力学
-- [x] 创建 wasteland_electro，静电磁场
-- [x] 创建 wasteland_materials，微观结构场
+- [x] 创建 ae_thermo，完整热力学
+- [x] 创建 ae_electro，静电磁场
+- [x] 创建 ae_materials，微观结构场
 - [x] 制造工艺影响属性
 
 ### 阶段三：流体+声光（3-6月）
-- [x] 创建 wasteland_fluid，Navier-Stokes
-- [x] 创建 wasteland_acoustics，完整声学交互系统（SoundSource+声场求解+力反馈+空间化）
-- [x] 创建 wasteland_optics，光谱渲染
+- [x] 创建 ae_fluid，Navier-Stokes
+- [x] 创建 ae_acoustics，完整声学交互系统（SoundSource+声场求解+力反馈+空间化）
+- [x] 创建 ae_optics，光谱渲染
 
 ### 阶段四：地球系统（4-8月）
-- [x] 创建 wasteland_geo，地质系统
-- [x] 创建 wasteland_weather，气象系统
-- [x] 创建 wasteland_hydro，水文系统
-- [x] 创建 wasteland_eco，生态系统
+- [x] 创建 ae_geo，地质系统
+- [x] 创建 ae_weather，气象系统
+- [x] 创建 ae_hydro，水文系统
+- [x] 创建 ae_eco，生态系统
 
 ### 阶段五：工厂+公理+信息（6-12月）
-- [x] 创建 wasteland_factory，工厂系统
-- [x] 创建 wasteland_axiom，公理引擎
-- [x] 创建 wasteland_info，信息传播
+- [x] 创建 ae_factory，工厂系统
+- [x] 创建 ae_axiom，公理引擎
+- [x] 创建 ae_info，信息传播
 
 ### 阶段六：内存+计算+音频（底层基础设施）
-- [x] 创建 wasteland_memory，Arena/对象池/内存追踪
-- [x] 创建 wasteland_compute，硬件检测/并行算法/任务调度
-- [x] 创建 wasteland_audio，物理音频合成/HRTF空间化
+- [x] 创建 ae_memory，Arena/对象池/内存追踪
+- [x] 创建 ae_compute，硬件检测/并行算法/任务调度
+- [x] 创建 ae_audio，物理音频合成/HRTF空间化
 
 ### 阶段七：存储+网络+性能分析（底层基础设施）
-- [x] 创建 wasteland_storage，快照/增量/RLE压缩/CRC校验/模式迁移
-- [x] 创建 wasteland_network，消息帧/连接管理/锁步/回滚缓冲区
-- [x] 创建 wasteland_profiler，帧计时/内存追踪/系统指标/Chrome Trace导出
+- [x] 创建 ae_storage，快照/增量/RLE压缩/CRC校验/模式迁移
+- [x] 创建 ae_network，消息帧/连接管理/锁步/回滚缓冲区
+- [x] 创建 ae_profiler，帧计时/内存追踪/系统指标/Chrome Trace导出
 
 ### 阶段八：输入+资产+序列化（底层基础设施）
-- [x] 创建 wasteland_io，键盘/鼠标/手柄输入+力反馈+输入映射
-- [x] 创建 wasteland_asset，异步加载/缓存管理/流式传输/热重载
-- [x] 创建 wasteland_serialize，二进制读写/SoA布局/位打包/零拷贝
+- [x] 创建 ae_io，键盘/鼠标/手柄输入+力反馈+输入映射
+- [x] 创建 ae_asset，异步加载/缓存管理/流式传输/热重载
+- [x] 创建 ae_serialize，二进制读写/SoA布局/位打包/零拷贝
 
 ### 阶段九：AI工具链（AI基础设施）
-- [x] 创建 wasteland_ai_tools，3D模型生成/LLM推理/模型管理/RAG/Prompt模板
-- [x] 创建 wasteland_ai_bridge，物理桥接/世界桥接/角色桥接/元桥接
-- [x] 创建 wasteland_character，骨骼/IK/变形/力反馈/表面接触
-- [x] 创建 wasteland_simd，SoA数据结构/AVX2批处理/粒子SoA
-- [x] 创建 wasteland_xpbd，XPBD求解器/距离约束/接触约束/角度约束/体积约束
+- [x] 创建 ae_ai_tools，3D模型生成/LLM推理/模型管理/RAG/Prompt模板
+- [x] 创建 ae_ai_bridge，物理桥接/世界桥接/角色桥接/元桥接
+- [x] 创建 ae_character，骨骼/IK/变形/力反馈/表面接触
+- [x] 创建 ae_simd，SoA数据结构/AVX2批处理/粒子SoA
+- [x] 创建 ae_xpbd，XPBD求解器/距离约束/接触约束/角度约束/体积约束
 
 ### 阶段十：寻路+动画+地形（游戏性基础设施）
-- [x] 创建 wasteland_pathfinding，NavMesh/A*/流场寻路/路径平滑
-- [x] 创建 wasteland_animation，IK/FABRIK/动画混合/步态控制/状态机
-- [x] 创建 wasteland_terrain，噪声生成/高度图/水热侵蚀/Marching Cubes
+- [x] 创建 ae_pathfinding，NavMesh/A*/流场寻路/路径平滑
+- [x] 创建 ae_animation，IK/FABRIK/动画混合/步态控制/状态机
+- [x] 创建 ae_terrain，噪声生成/高度图/水热侵蚀/Marching Cubes
 
 ### 阶段十一：GDExtension桥接（Godot集成）
 - [x] 创建 pathfinding_node，NavMesh构建/A*寻路/流场查询
@@ -1372,7 +1372,7 @@ UI不再是屏幕上固定的界面，而是认知滤网根据玩家当前身体
 
 ---
 
-## 二十四、工厂系统（wasteland_factory）
+## 二十四、工厂系统（ae_factory）
 
 ### 24.1 核心原理
 
@@ -1515,7 +1515,7 @@ effective_speed = min(speed, max_speed) * (1.0 - wear * 0.5)
 
 ---
 
-## 二十五、公理引擎（wasteland_axiom）
+## 二十五、公理引擎（ae_axiom）
 
 ### 25.1 核心原理
 
@@ -1639,7 +1639,7 @@ combat_effectiveness = dominance * Π(1/(1 + |env - optimal| * scale))
 
 ---
 
-## 二十六、信息传播系统（wasteland_info）
+## 二十六、信息传播系统（ae_info）
 
 ### 26.1 核心原理
 
@@ -1739,50 +1739,50 @@ SocialAgent {
 
 | Crate | 阶段 | 状态 | 说明 |
 |-------|------|------|------|
-| wasteland_engine | P0 | 完成 | 核心引擎：ECS、仲裁器、资产质量 |
-| wasteland_physics | P0 | 完成 | 物理：碰撞、MPM、八叉树、定点数 |
-| wasteland_weave | P0 | 完成 | 织网引擎：约束网络、求解器、断裂 |
-| wasteland_metaentity | P0 | 完成 | 元体：统一交互、边界管理、结构场 |
-| wasteland_materials | P0 | 完成 | 材料学：腐蚀、疲劳、蠕变、制造 |
-| wasteland_chemistry | P0 | 完成 | 化学：热力学、反应匹配 |
-| wasteland_biology | P0 | 完成 | 生物：基因组、突变、组合 |
-| wasteland_timeslice | P0 | 完成 | 时间切片：差分图、事件源 |
-| wasteland_frequency | P0 | 完成 | 频率调度：5级频率、滞后 |
-| wasteland_generalizer | P0 | 完成 | 规则泛化：属性空间、推理、缓存 |
-| wasteland_electro | P0 | 完成 | 电磁学：静电、静磁 |
-| wasteland_field | P0 | 完成 | 统一场：标量场、耦合系统 |
-| wasteland_eventbus | P0 | 完成 | 事件总线：发布/订阅、历史 |
-| wasteland_particle | P0 | 完成 | 粒子系统 |
-| wasteland_emergence | P0 | 完成 | 涌现系统 |
-| wasteland_crafting | P0 | 完成 | 制造系统：功能推导 |
-| wasteland_modding | P0 | 完成 | 模组：沙盒、配置 |
-| wasteland_thermo | P1 | 完成 | 热力学：传导、对流、辐射、相变 |
-| wasteland_acoustics | P1 | 完成 | 声学：波动方程、声场求解 |
-| wasteland_fluid | P1 | 完成 | 流体：Navier-Stokes |
-| wasteland_optics | P1 | 完成 | 光学：光谱渲染、黑体辐射 |
-| wasteland_geo | P2 | 完成 | 地质：岩石、矿物、侵蚀、构造 |
-| wasteland_weather | P2 | 完成 | 气象：风、降水、大气、气候 |
-| wasteland_hydro | P2 | 完成 | 水文：径流、入渗、含水层、蒸发、河流 |
-| wasteland_eco | P2 | 完成 | 生态：种群、食物网、演替、竞争 |
-| wasteland_factory | P3 | 完成 | 工厂：传送带、熔炉、装配机、管道、自动化、能源 |
-| wasteland_axiom | P3 | 完成 | 公理引擎：自洽性、冲突裁决、分叉、实验验证 |
-| wasteland_info | P3 | 完成 | 信息传播：知识图谱、信号传播、失真、社交网络 |
-| wasteland_gdextension | - | 完成 | Godot GDExtension 桥接层（44个节点） |
-| wasteland_simd | P0 | 完成 | SIMD：批量运算、SoA布局、三角函数 |
-| wasteland_xpbd | P0 | 完成 | XPBD：粒子求解器、约束系统、拉格朗日乘子 |
-| wasteland_character | P0 | 完成 | 角色：表面约束网络、骨骼、塑性变形、力反馈 |
-| wasteland_ai | P0 | 完成 | AI：GOAP、Utility AI、行为树、记忆、情感 |
-| wasteland_memory | P4 | 完成 | 内存：Arena分配器、对象池、追踪、预算 |
-| wasteland_compute | P4 | 完成 | 计算：硬件检测、并行算法、任务调度 |
-| wasteland_audio | P4 | 完成 | 音频：冲击/摩擦/断裂合成、HRTF空间化、混响 |
-| wasteland_storage | P5 | 完成 | 存储：快照/增量、RLE压缩、CRC校验、模式迁移 |
-| wasteland_network | P5 | 完成 | 网络：消息帧、连接管理、锁步、回滚缓冲区 |
-| wasteland_profiler | P5 | 完成 | 性能：帧计时、内存追踪、系统指标、Chrome Trace导出 |
-| wasteland_io | P8 | 完成 | 输入：键盘、鼠标、手柄、力反馈、输入映射 |
-| wasteland_asset | P8 | 完成 | 资产：异步加载、缓存、流式传输、热重载、LOD管线 |
-| wasteland_serialize | P8 | 完成 | 序列化：二进制读写、SoA布局、位打包、零拷贝、模式注册 |
-| wasteland_ai_tools | P9 | 完成 | AI工具链：3D模型生成、LLM推理、量化、SIMD加速、内存池、RAG知识库、Prompt模板、动画生成、世界生成、NPC知识注入 |
-| wasteland_ai_bridge | P10 | 完成 | AI桥接层：物理/世界/角色/元体四桥接模块 |
+| ae_engine | P0 | 完成 | 核心引擎：ECS、仲裁器、资产质量 |
+| ae_physics | P0 | 完成 | 物理：碰撞、MPM、八叉树、定点数 |
+| ae_weave | P0 | 完成 | 织网引擎：约束网络、求解器、断裂 |
+| ae_metaentity | P0 | 完成 | 元体：统一交互、边界管理、结构场 |
+| ae_materials | P0 | 完成 | 材料学：腐蚀、疲劳、蠕变、制造 |
+| ae_chemistry | P0 | 完成 | 化学：热力学、反应匹配 |
+| ae_biology | P0 | 完成 | 生物：基因组、突变、组合 |
+| ae_timeslice | P0 | 完成 | 时间切片：差分图、事件源 |
+| ae_frequency | P0 | 完成 | 频率调度：5级频率、滞后 |
+| ae_generalizer | P0 | 完成 | 规则泛化：属性空间、推理、缓存 |
+| ae_electro | P0 | 完成 | 电磁学：静电、静磁 |
+| ae_field | P0 | 完成 | 统一场：标量场、耦合系统 |
+| ae_eventbus | P0 | 完成 | 事件总线：发布/订阅、历史 |
+| ae_particle | P0 | 完成 | 粒子系统 |
+| ae_emergence | P0 | 完成 | 涌现系统 |
+| ae_crafting | P0 | 完成 | 制造系统：功能推导 |
+| ae_modding | P0 | 完成 | 模组：沙盒、配置 |
+| ae_thermo | P1 | 完成 | 热力学：传导、对流、辐射、相变 |
+| ae_acoustics | P1 | 完成 | 声学：波动方程、声场求解 |
+| ae_fluid | P1 | 完成 | 流体：Navier-Stokes |
+| ae_optics | P1 | 完成 | 光学：光谱渲染、黑体辐射 |
+| ae_geo | P2 | 完成 | 地质：岩石、矿物、侵蚀、构造 |
+| ae_weather | P2 | 完成 | 气象：风、降水、大气、气候 |
+| ae_hydro | P2 | 完成 | 水文：径流、入渗、含水层、蒸发、河流 |
+| ae_eco | P2 | 完成 | 生态：种群、食物网、演替、竞争 |
+| ae_factory | P3 | 完成 | 工厂：传送带、熔炉、装配机、管道、自动化、能源 |
+| ae_axiom | P3 | 完成 | 公理引擎：自洽性、冲突裁决、分叉、实验验证 |
+| ae_info | P3 | 完成 | 信息传播：知识图谱、信号传播、失真、社交网络 |
+| ae_gdextension | - | 完成 | Godot GDExtension 桥接层（44个节点） |
+| ae_simd | P0 | 完成 | SIMD：批量运算、SoA布局、三角函数 |
+| ae_xpbd | P0 | 完成 | XPBD：粒子求解器、约束系统、拉格朗日乘子 |
+| ae_character | P0 | 完成 | 角色：表面约束网络、骨骼、塑性变形、力反馈 |
+| ae_ai | P0 | 完成 | AI：GOAP、Utility AI、行为树、记忆、情感 |
+| ae_memory | P4 | 完成 | 内存：Arena分配器、对象池、追踪、预算 |
+| ae_compute | P4 | 完成 | 计算：硬件检测、并行算法、任务调度 |
+| ae_audio | P4 | 完成 | 音频：冲击/摩擦/断裂合成、HRTF空间化、混响 |
+| ae_storage | P5 | 完成 | 存储：快照/增量、RLE压缩、CRC校验、模式迁移 |
+| ae_network | P5 | 完成 | 网络：消息帧、连接管理、锁步、回滚缓冲区 |
+| ae_profiler | P5 | 完成 | 性能：帧计时、内存追踪、系统指标、Chrome Trace导出 |
+| ae_io | P8 | 完成 | 输入：键盘、鼠标、手柄、力反馈、输入映射 |
+| ae_asset | P8 | 完成 | 资产：异步加载、缓存、流式传输、热重载、LOD管线 |
+| ae_serialize | P8 | 完成 | 序列化：二进制读写、SoA布局、位打包、零拷贝、模式注册 |
+| ae_ai_tools | P9 | 完成 | AI工具链：3D模型生成、LLM推理、量化、SIMD加速、内存池、RAG知识库、Prompt模板、动画生成、世界生成、NPC知识注入 |
+| ae_ai_bridge | P10 | 完成 | AI桥接层：物理/世界/角色/元体四桥接模块 |
 
 ### 27.2 测试统计
 - 总测试数：400+
@@ -1804,10 +1804,10 @@ SocialAgent {
 
 ---
 
-## 二十八、角色物理系统（wasteland_character）
+## 二十八、角色物理系统（ae_character）
 
-> **实现**: `wasteland_character` crate | **测试**: 16 tests passing
-> **依赖**: `wasteland_physics`, `wasteland_weave`
+> **实现**: `ae_character` crate | **测试**: 16 tests passing
+> **依赖**: `ae_physics`, `ae_weave`
 
 ### 28.1 表面约束网络
 
@@ -1884,7 +1884,7 @@ Weave 约束系统新增 **ConstraintType::Surface**:
 
 ForceFeedbackBus 维护活跃事件列表，get_combined_force(time) 返回当前时刻的总反馈力向量。
 
-### 28.7 织网约束系统扩展（wasteland_weave）
+### 28.7 织网约束系统扩展（ae_weave）
 
 **SurfaceParams**（新增到 ConstraintEdge）:
 ```rust
@@ -1903,10 +1903,10 @@ SurfaceParams {
 
 ---
 
-## 二十九、NPC AI 系统（wasteland_ai）
+## 二十九、NPC AI 系统（ae_ai）
 
-> **实现**: `wasteland_ai` crate | **测试**: 16 tests passing
-> **依赖**: `wasteland_physics`, `wasteland_info`
+> **实现**: `ae_ai` crate | **测试**: 16 tests passing
+> **依赖**: `ae_physics`, `ae_info`
 
 ### 29.1 三层决策架构
 
@@ -2161,9 +2161,9 @@ engine.dominant_emotion()
 
 ---
 
-## 三十、存储系统（wasteland_storage）
+## 三十、存储系统（ae_storage）
 
-> **实现**: `wasteland_storage` crate | **测试**: 24 tests passing
+> **实现**: `ae_storage` crate | **测试**: 24 tests passing
 > **依赖**: `serde`, `serde_json`, `bincode`
 
 ### 30.1 快照系统（snapshot.rs）
@@ -2219,9 +2219,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十一、网络系统（wasteland_network）
+## 三十一、网络系统（ae_network）
 
-> **实现**: `wasteland_network` crate | **测试**: 23 tests passing
+> **实现**: `ae_network` crate | **测试**: 23 tests passing
 > **依赖**: `serde`, `bincode`, `rand`
 
 ### 31.1 消息帧（frame.rs）
@@ -2272,9 +2272,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十二、性能分析系统（wasteland_profiler）
+## 三十二、性能分析系统（ae_profiler）
 
-> **实现**: `wasteland_profiler` crate | **测试**: 18 tests passing
+> **实现**: `ae_profiler` crate | **测试**: 18 tests passing
 > **依赖**: `serde`, `serde_json`
 
 ### 32.1 帧计时（timing.rs）
@@ -2333,9 +2333,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十三、输入系统（wasteland_io）
+## 三十三、输入系统（ae_io）
 
-> **实现**: `wasteland_io` crate | **依赖**: `serde`, `serde_json`
+> **实现**: `ae_io` crate | **依赖**: `serde`, `serde_json`
 > **Phase**: P8
 
 ### 33.1 键盘输入（keyboard.rs）
@@ -2400,9 +2400,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十四、资产管线（wasteland_asset）
+## 三十四、资产管线（ae_asset）
 
-> **实现**: `wasteland_asset` crate | **依赖**: `serde`, `serde_json`, `bincode`
+> **实现**: `ae_asset` crate | **依赖**: `serde`, `serde_json`, `bincode`
 > **Phase**: P8
 
 ### 34.1 资产加载（loader.rs）
@@ -2465,9 +2465,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十五、高性能序列化（wasteland_serialize）
+## 三十五、高性能序列化（ae_serialize）
 
-> **实现**: `wasteland_serialize` crate | **依赖**: `serde`, `bincode`
+> **实现**: `ae_serialize` crate | **依赖**: `serde`, `bincode`
 > **Phase**: P8
 
 ### 35.1 二进制读写（binary.rs）
@@ -2524,9 +2524,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十六、AI工具链（wasteland_ai_tools）
+## 三十六、AI工具链（ae_ai_tools）
 
-> **实现**: `wasteland_ai_tools` crate | **依赖**: `serde`, `serde_json`, `rand`
+> **实现**: `ae_ai_tools` crate | **依赖**: `serde`, `serde_json`, `rand`
 > **Phase**: P9
 > **硬件约束**: i5-7000, RTX 4060 8G VRAM, 10GB RAM
 
@@ -2770,9 +2770,9 @@ SchemaVersion (major.minor.patch) 管理兼容性和升级路径：
 
 ---
 
-## 三十八、动画生成系统（wasteland_ai_tools::animation_gen）
+## 三十八、动画生成系统（ae_ai_tools::animation_gen）
 
-> **实现**: `wasteland_ai_tools/src/animation_gen.rs` | **测试**: 4 tests passing
+> **实现**: `ae_ai_tools/src/animation_gen.rs` | **测试**: 4 tests passing
 > **依赖**: `serde`, `rand`
 
 ### 38.1 核心原理
@@ -2846,9 +2846,9 @@ blend_animations(from, to, blend_time):
 
 ---
 
-## 三十九、世界生成系统（wasteland_ai_tools::world_gen）
+## 三十九、世界生成系统（ae_ai_tools::world_gen）
 
-> **实现**: `wasteland_ai_tools/src/world_gen.rs` | **测试**: 5 tests passing
+> **实现**: `ae_ai_tools/src/world_gen.rs` | **测试**: 5 tests passing
 > **依赖**: `serde`, `rand`
 
 ### 39.1 核心原理
@@ -2934,9 +2934,9 @@ pub enum BiomeType {
 
 ---
 
-## 四十、NPC知识注入系统（wasteland_ai_tools::npc_knowledge）
+## 四十、NPC知识注入系统（ae_ai_tools::npc_knowledge）
 
-> **实现**: `wasteland_ai_tools/src/npc_knowledge.rs` | **测试**: 4 tests passing
+> **实现**: `ae_ai_tools/src/npc_knowledge.rs` | **测试**: 4 tests passing
 > **依赖**: `serde`, `rand`, `uuid`
 
 ### 40.1 核心原理
@@ -3071,18 +3071,18 @@ generate_dialogue_context(npc, player_name, topic):
 
 ---
 
-## 四十一、AI桥接层（wasteland_ai_bridge）
+## 四十一、AI桥接层（ae_ai_bridge）
 
-> **实现**: `wasteland_ai_bridge` crate | **测试**: 12 tests passing
-> **依赖**: `serde`, `serde_json`, `wasteland_ai_tools`
+> **实现**: `ae_ai_bridge` crate | **测试**: 12 tests passing
+> **依赖**: `serde`, `serde_json`, `ae_ai_tools`
 > **Phase**: P10 — AI与底层引擎的桥接（已完成）
 
 ### 41.1 核心原理
 
-AI生成的决策和内容不能直接写入引擎——需要通过桥接层翻译、验证和限幅。wasteland_ai_bridge 提供四个桥接模块，将AI输出转换为引擎兼容的格式，确保AI生成的物理动作、世界内容、NPC行为和元实体属性都在引擎的安全边界内。
+AI生成的决策和内容不能直接写入引擎——需要通过桥接层翻译、验证和限幅。ae_ai_bridge 提供四个桥接模块，将AI输出转换为引擎兼容的格式，确保AI生成的物理动作、世界内容、NPC行为和元实体属性都在引擎的安全边界内。
 
 ```
-AI决策层(wasteland_ai_tools) → 桥接层(wasteland_ai_bridge) → 引擎层(wasteland_physics/wasteland_weave/...)
+AI决策层(ae_ai_tools) → 桥接层(ae_ai_bridge) → 引擎层(ae_physics/ae_weave/...)
                                       │
                           ┌───────────┼───────────┐
                     physics_bridge  world_bridge  character_bridge  meta_bridge
@@ -3261,53 +3261,53 @@ pub struct GenerationRule {
 
 | Crate | 阶段 | 状态 | 说明 |
 |-------|------|------|------|
-| wasteland_engine | P0 | 完成 | 核心引擎：ECS、仲裁器、资产质量 |
-| wasteland_physics | P0 | 完成 | 物理：碰撞、MPM、八叉树、定点数 |
-| wasteland_weave | P0 | 完成 | 织网引擎：约束网络、求解器、断裂 |
-| wasteland_metaentity | P0 | 完成 | 元体：统一交互、边界管理、结构场 |
-| wasteland_materials | P0 | 完成 | 材料学：腐蚀、疲劳、蠕变、制造 |
-| wasteland_chemistry | P0 | 完成 | 化学：热力学、反应匹配 |
-| wasteland_biology | P0 | 完成 | 生物：基因组、突变、组合 |
-| wasteland_timeslice | P0 | 完成 | 时间切片：差分图、事件源 |
-| wasteland_frequency | P0 | 完成 | 频率调度：5级频率、滞后 |
-| wasteland_generalizer | P0 | 完成 | 规则泛化：属性空间、推理、缓存 |
-| wasteland_electro | P0 | 完成 | 电磁学：静电、静磁 |
-| wasteland_field | P0 | 完成 | 统一场：标量场、耦合系统 |
-| wasteland_eventbus | P0 | 完成 | 事件总线：发布/订阅、历史 |
-| wasteland_particle | P0 | 完成 | 粒子系统 |
-| wasteland_emergence | P0 | 完成 | 涌现系统 |
-| wasteland_crafting | P0 | 完成 | 制造系统：功能推导 |
-| wasteland_modding | P0 | 完成 | 模组：沙盒、配置 |
-| wasteland_thermo | P1 | 完成 | 热力学：传导、对流、辐射、相变 |
-| wasteland_acoustics | P1 | 完成 | 声学：波动方程、声场求解 |
-| wasteland_fluid | P1 | 完成 | 流体：Navier-Stokes |
-| wasteland_optics | P1 | 完成 | 光学：光谱渲染、黑体辐射 |
-| wasteland_geo | P2 | 完成 | 地质：岩石、矿物、侵蚀、构造 |
-| wasteland_weather | P2 | 完成 | 气象：风、降水、大气、气候 |
-| wasteland_hydro | P2 | 完成 | 水文：径流、入渗、含水层、蒸发、河流 |
-| wasteland_eco | P2 | 完成 | 生态：种群、食物网、演替、竞争 |
-| wasteland_factory | P3 | 完成 | 工厂：传送带、熔炉、装配机、管道、自动化、能源 |
-| wasteland_axiom | P3 | 完成 | 公理引擎：自洽性、冲突裁决、分叉、实验验证 |
-| wasteland_info | P3 | 完成 | 信息传播：知识图谱、信号传播、失真、社交网络 |
-| wasteland_gdextension | - | 完成 | Godot GDExtension 桥接层（44个节点） |
-| wasteland_simd | P0 | 完成 | SIMD：批量运算、SoA布局、三角函数 |
-| wasteland_xpbd | P0 | 完成 | XPBD：粒子求解器、约束系统、拉格朗日乘子 |
-| wasteland_character | P0 | 完成 | 角色：表面约束网络、骨骼、塑性变形、力反馈 |
-| wasteland_ai | P0 | 完成 | AI：GOAP、Utility AI、行为树、记忆、情感 |
-| wasteland_memory | P4 | 完成 | 内存：Arena分配器、对象池、追踪、预算 |
-| wasteland_compute | P4 | 完成 | 计算：硬件检测、并行算法、任务调度 |
-| wasteland_audio | P4 | 完成 | 音频：冲击/摩擦/断裂合成、HRTF空间化、混响 |
-| wasteland_storage | P5 | 完成 | 存储：快照/增量、RLE压缩、CRC校验、模式迁移 |
-| wasteland_network | P5 | 完成 | 网络：消息帧、连接管理、锁步、回滚缓冲区 |
-| wasteland_profiler | P5 | 完成 | 性能：帧计时、内存追踪、系统指标、Chrome Trace导出 |
-| wasteland_io | P8 | 完成 | 输入：键盘、鼠标、手柄、力反馈、输入映射 |
-| wasteland_asset | P8 | 完成 | 资产：异步加载、缓存、流式传输、热重载、LOD管线 |
-| wasteland_serialize | P8 | 完成 | 序列化：二进制读写、SoA布局、位打包、零拷贝、模式注册 |
-| wasteland_ai_tools | P9 | 完成 | AI工具链：3D模型生成、LLM推理、量化、SIMD加速、内存池、动画生成、世界生成、NPC知识 |
-| wasteland_ai_bridge | P10 | 完成 | AI桥接：物理/世界/角色/元实体桥接，安全边界 |
-| wasteland_model_optimizer | P9 | 完成 | 模型优化：INT4/INT8量化、VRAM预估、自适应配置（合入ai_tools） |
-| wasteland_rag | P9 | 完成 | RAG知识库：余弦相似度检索、LRU淘汰、标签/来源检索（合入ai_tools） |
-| wasteland_prompt | P9 | 完成 | Prompt模板：NPC对话/战斗/环境/物品/任务/背景模板（合入ai_tools） |
+| ae_engine | P0 | 完成 | 核心引擎：ECS、仲裁器、资产质量 |
+| ae_physics | P0 | 完成 | 物理：碰撞、MPM、八叉树、定点数 |
+| ae_weave | P0 | 完成 | 织网引擎：约束网络、求解器、断裂 |
+| ae_metaentity | P0 | 完成 | 元体：统一交互、边界管理、结构场 |
+| ae_materials | P0 | 完成 | 材料学：腐蚀、疲劳、蠕变、制造 |
+| ae_chemistry | P0 | 完成 | 化学：热力学、反应匹配 |
+| ae_biology | P0 | 完成 | 生物：基因组、突变、组合 |
+| ae_timeslice | P0 | 完成 | 时间切片：差分图、事件源 |
+| ae_frequency | P0 | 完成 | 频率调度：5级频率、滞后 |
+| ae_generalizer | P0 | 完成 | 规则泛化：属性空间、推理、缓存 |
+| ae_electro | P0 | 完成 | 电磁学：静电、静磁 |
+| ae_field | P0 | 完成 | 统一场：标量场、耦合系统 |
+| ae_eventbus | P0 | 完成 | 事件总线：发布/订阅、历史 |
+| ae_particle | P0 | 完成 | 粒子系统 |
+| ae_emergence | P0 | 完成 | 涌现系统 |
+| ae_crafting | P0 | 完成 | 制造系统：功能推导 |
+| ae_modding | P0 | 完成 | 模组：沙盒、配置 |
+| ae_thermo | P1 | 完成 | 热力学：传导、对流、辐射、相变 |
+| ae_acoustics | P1 | 完成 | 声学：波动方程、声场求解 |
+| ae_fluid | P1 | 完成 | 流体：Navier-Stokes |
+| ae_optics | P1 | 完成 | 光学：光谱渲染、黑体辐射 |
+| ae_geo | P2 | 完成 | 地质：岩石、矿物、侵蚀、构造 |
+| ae_weather | P2 | 完成 | 气象：风、降水、大气、气候 |
+| ae_hydro | P2 | 完成 | 水文：径流、入渗、含水层、蒸发、河流 |
+| ae_eco | P2 | 完成 | 生态：种群、食物网、演替、竞争 |
+| ae_factory | P3 | 完成 | 工厂：传送带、熔炉、装配机、管道、自动化、能源 |
+| ae_axiom | P3 | 完成 | 公理引擎：自洽性、冲突裁决、分叉、实验验证 |
+| ae_info | P3 | 完成 | 信息传播：知识图谱、信号传播、失真、社交网络 |
+| ae_gdextension | - | 完成 | Godot GDExtension 桥接层（44个节点） |
+| ae_simd | P0 | 完成 | SIMD：批量运算、SoA布局、三角函数 |
+| ae_xpbd | P0 | 完成 | XPBD：粒子求解器、约束系统、拉格朗日乘子 |
+| ae_character | P0 | 完成 | 角色：表面约束网络、骨骼、塑性变形、力反馈 |
+| ae_ai | P0 | 完成 | AI：GOAP、Utility AI、行为树、记忆、情感 |
+| ae_memory | P4 | 完成 | 内存：Arena分配器、对象池、追踪、预算 |
+| ae_compute | P4 | 完成 | 计算：硬件检测、并行算法、任务调度 |
+| ae_audio | P4 | 完成 | 音频：冲击/摩擦/断裂合成、HRTF空间化、混响 |
+| ae_storage | P5 | 完成 | 存储：快照/增量、RLE压缩、CRC校验、模式迁移 |
+| ae_network | P5 | 完成 | 网络：消息帧、连接管理、锁步、回滚缓冲区 |
+| ae_profiler | P5 | 完成 | 性能：帧计时、内存追踪、系统指标、Chrome Trace导出 |
+| ae_io | P8 | 完成 | 输入：键盘、鼠标、手柄、力反馈、输入映射 |
+| ae_asset | P8 | 完成 | 资产：异步加载、缓存、流式传输、热重载、LOD管线 |
+| ae_serialize | P8 | 完成 | 序列化：二进制读写、SoA布局、位打包、零拷贝、模式注册 |
+| ae_ai_tools | P9 | 完成 | AI工具链：3D模型生成、LLM推理、量化、SIMD加速、内存池、动画生成、世界生成、NPC知识 |
+| ae_ai_bridge | P10 | 完成 | AI桥接：物理/世界/角色/元实体桥接，安全边界 |
+| ae_model_optimizer | P9 | 完成 | 模型优化：INT4/INT8量化、VRAM预估、自适应配置（合入ai_tools） |
+| ae_rag | P9 | 完成 | RAG知识库：余弦相似度检索、LRU淘汰、标签/来源检索（合入ai_tools） |
+| ae_prompt | P9 | 完成 | Prompt模板：NPC对话/战斗/环境/物品/任务/背景模板（合入ai_tools） |
 
 ### 42.2 测试统计
 - 总测试数：500+
@@ -3332,49 +3332,49 @@ pub struct GenerationRule {
 
 | 节点类 | 所属模块 | 说明 |
 |--------|---------|------|
-| WastelandWorld | wasteland_engine | 世界根节点：ECS、粒子、体素、NPC、生态系统 |
-| WastelandPhysics | wasteland_physics | 物理：刚体、碰撞、约束、关节 |
-| WastelandAI | wasteland_ai | AI：NPC注册、对话、行为决策、情感注入 |
-| WastelandCharacter | wasteland_character | 角色：骨骼、塑性变形、力反馈 |
-| WastelandMetaEntity | wasteland_metaentity | 元体：属性映射、交互规则、生成规则 |
-| WastelandChemistry | wasteland_chemistry | 化学：元素属性、反应预测、溶解度、腐蚀 |
-| WastelandThermo | wasteland_thermo | 热力学：温度场、热传导、相变、潜热、辐射 |
-| WastelandElectro | wasteland_electro | 电磁学：点电荷、电流元、库仑力、洛伦兹力、毕奥-萨伐尔 |
-| WastelandBiology | wasteland_biology | 生物：物种信息、基因组序列、遗传距离、代谢率、疾病抗性 |
-| WastelandMaterials | wasteland_materials | 材料：属性查询、疲劳损伤、蠕变、腐蚀、结构完整性 |
-| WastelandParticle | wasteland_particle | 粒子：生成、相变查询、自组织计算、涌现模式 |
-| WastelandField | wasteland_field | 场论：场值查询、梯度、散度、拉普拉斯、反应扩散 |
-| WastelandGeneralizer | wasteland_generalizer | 规则泛化：属性推理、反应推理、相似度、缓存统计 |
-| WastelandEmergence | wasteland_emergence | 涌现：裂纹、锈蚀、生长环、形态发生、全息材料 |
-| WastelandInfo | wasteland_info | 信息传播：知识图谱、信号传播 |
-| WastelandNPC | wasteland_npc | NPC：对话、行为、记忆 |
-| WastelandWeather | wasteland_weather | 气象：风场、大气物理 |
-| WastelandEco | wasteland_eco | 生态：生态系统管理 |
-| WastelandAudio | wasteland_audio | 音频：冲击/摩擦/断裂合成 |
-| WastelandFactory | wasteland_factory | 工厂：装配线、机器管理 |
-| WastelandCrafting | wasteland_crafting | 制造：功能推导引擎 |
-| WastelandModding | wasteland_modding | 模组：沙盒配置 |
-| WastelandProfiler | wasteland_profiler | 性能分析：帧计时、内存追踪 |
-| WastelandStorage | wasteland_storage | 存储：快照/增量 |
-| WastelandNetwork | wasteland_network | 网络：消息帧、连接管理 |
-| WastelandCompute | wasteland_compute | 计算：硬件检测、并行调度 |
-| WastelandMemory | wasteland_memory | 内存：Arena分配器、对象池 |
-| WastelandAxiom | wasteland_axiom | 公理引擎：自洽性检查 |
-| WastelandFluid | wasteland_fluid | 流体：Navier-Stokes |
-| WastelandOptics | wasteland_optics | 光学：光谱渲染 |
-| WastelandAcoustics | wasteland_acoustics | 声学：波动方程 |
-| WastelandGeo | wasteland_geo | 地质：岩石、矿物、侵蚀 |
-| WastelandHydro | wasteland_hydro | 水文：径流、入渗 |
-| WastelandTimeslice | wasteland_timeslice | 时间切片：差分图 |
-| WastelandFrequency | wasteland_frequency | 频率调度：5级频率 |
-| WastelandEventBus | wasteland_eventbus | 事件总线：发布/订阅 |
-| WastelandWeave | wasteland_weave | 织网：约束网络、断裂 |
-| WastelandXPBD | wasteland_xpbd | XPBD：粒子求解器 |
-| WastelandSIMD | wasteland_simd | SIMD：批量运算 |
-| WastelandIO | wasteland_io | 输入：键盘、鼠标、手柄 |
-| WastelandAsset | wasteland_asset | 资产：异步加载、缓存 |
-| WastelandSerialize | wasteland_serialize | 序列化：二进制读写 |
-| WastelandAITools | wasteland_ai_tools | AI工具：3D生成、LLM推理 |
-| WastelandAIBridge | wasteland_ai_bridge | AI桥接：安全边界 |
+| WastelandWorld | ae_engine | 世界根节点：ECS、粒子、体素、NPC、生态系统 |
+| WastelandPhysics | ae_physics | 物理：刚体、碰撞、约束、关节 |
+| WastelandAI | ae_ai | AI：NPC注册、对话、行为决策、情感注入 |
+| WastelandCharacter | ae_character | 角色：骨骼、塑性变形、力反馈 |
+| WastelandMetaEntity | ae_metaentity | 元体：属性映射、交互规则、生成规则 |
+| WastelandChemistry | ae_chemistry | 化学：元素属性、反应预测、溶解度、腐蚀 |
+| WastelandThermo | ae_thermo | 热力学：温度场、热传导、相变、潜热、辐射 |
+| WastelandElectro | ae_electro | 电磁学：点电荷、电流元、库仑力、洛伦兹力、毕奥-萨伐尔 |
+| WastelandBiology | ae_biology | 生物：物种信息、基因组序列、遗传距离、代谢率、疾病抗性 |
+| WastelandMaterials | ae_materials | 材料：属性查询、疲劳损伤、蠕变、腐蚀、结构完整性 |
+| WastelandParticle | ae_particle | 粒子：生成、相变查询、自组织计算、涌现模式 |
+| WastelandField | ae_field | 场论：场值查询、梯度、散度、拉普拉斯、反应扩散 |
+| WastelandGeneralizer | ae_generalizer | 规则泛化：属性推理、反应推理、相似度、缓存统计 |
+| WastelandEmergence | ae_emergence | 涌现：裂纹、锈蚀、生长环、形态发生、全息材料 |
+| WastelandInfo | ae_info | 信息传播：知识图谱、信号传播 |
+| WastelandNPC | ae_npc | NPC：对话、行为、记忆 |
+| WastelandWeather | ae_weather | 气象：风场、大气物理 |
+| WastelandEco | ae_eco | 生态：生态系统管理 |
+| WastelandAudio | ae_audio | 音频：冲击/摩擦/断裂合成 |
+| WastelandFactory | ae_factory | 工厂：装配线、机器管理 |
+| WastelandCrafting | ae_crafting | 制造：功能推导引擎 |
+| WastelandModding | ae_modding | 模组：沙盒配置 |
+| WastelandProfiler | ae_profiler | 性能分析：帧计时、内存追踪 |
+| WastelandStorage | ae_storage | 存储：快照/增量 |
+| WastelandNetwork | ae_network | 网络：消息帧、连接管理 |
+| WastelandCompute | ae_compute | 计算：硬件检测、并行调度 |
+| WastelandMemory | ae_memory | 内存：Arena分配器、对象池 |
+| WastelandAxiom | ae_axiom | 公理引擎：自洽性检查 |
+| WastelandFluid | ae_fluid | 流体：Navier-Stokes |
+| WastelandOptics | ae_optics | 光学：光谱渲染 |
+| WastelandAcoustics | ae_acoustics | 声学：波动方程 |
+| WastelandGeo | ae_geo | 地质：岩石、矿物、侵蚀 |
+| WastelandHydro | ae_hydro | 水文：径流、入渗 |
+| WastelandTimeslice | ae_timeslice | 时间切片：差分图 |
+| WastelandFrequency | ae_frequency | 频率调度：5级频率 |
+| WastelandEventBus | ae_eventbus | 事件总线：发布/订阅 |
+| WastelandWeave | ae_weave | 织网：约束网络、断裂 |
+| WastelandXPBD | ae_xpbd | XPBD：粒子求解器 |
+| WastelandSIMD | ae_simd | SIMD：批量运算 |
+| WastelandIO | ae_io | 输入：键盘、鼠标、手柄 |
+| WastelandAsset | ae_asset | 资产：异步加载、缓存 |
+| WastelandSerialize | ae_serialize | 序列化：二进制读写 |
+| WastelandAITools | ae_ai_tools | AI工具：3D生成、LLM推理 |
+| WastelandAIBridge | ae_ai_bridge | AI桥接：安全边界 |
 
 **总计：44个GDExtension节点，覆盖全部Rust crate。**

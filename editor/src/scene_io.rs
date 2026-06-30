@@ -1,7 +1,7 @@
 //! Scene I/O: load and save scene files as JSON.
 //!
 //! Supports:
-//! - Native `.wasteland` JSON scene format
+//! - Native `.ae` JSON scene format
 //! - glTF import stub (placeholder for P1)
 
 use crate::scene::Scene;

@@ -1,8 +1,8 @@
 use godot::prelude::*;
 
-use wasteland_simd::batch;
-use wasteland_simd::simd_vec::has_avx2;
-use wasteland_simd::soa::SoaVec3;
+use ae_simd::batch;
+use ae_simd::simd_vec::has_avx2;
+use ae_simd::soa::SoaVec3;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

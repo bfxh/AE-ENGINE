@@ -1,6 +1,6 @@
 //! V1 Adapter
 //!
-//! 将 v1 wasteland_render 的资源类型转换为 nova_render 类型
+//! 将 v1 ae_render 的资源类型转换为 nova_render 类型
 
 use crate::assets::{Mesh, MeshData, Vertex};
 

@@ -2,8 +2,8 @@ use godot::prelude::*;
 use std::collections::HashMap;
 use std::sync::Mutex;
 use uuid::Uuid;
-use wasteland_chemistry::reactions::{ChemicalReaction, ReactionSystem};
-use wasteland_metaentity::prelude::*;
+use ae_chemistry::reactions::{ChemicalReaction, ReactionSystem};
+use ae_metaentity::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

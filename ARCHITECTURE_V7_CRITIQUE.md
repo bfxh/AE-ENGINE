@@ -73,7 +73,7 @@
   - Window creation moved to `resumed()` callback
   - Event handling moved to `window_event()` callback
   - Render loop moved to `about_to_wait()` callback
-- **Result**: Zero deprecation warnings in wasteland-game binary
+- **Result**: Zero deprecation warnings in ae-game binary
 
 ## Test Results (Headless Test, 10058 particles, 10 seconds @ 60Hz)
 
@@ -128,8 +128,8 @@ Total elapsed: 35.8 seconds (3.5x realtime)
 
 ### 6. Architecture Consistency
 - **Issue**: Two PhysicsWorld implementations exist
-  - `wasteland_physics::world::PhysicsWorld` (fixed-point, used by SimulationManager)
-  - `wasteland_rapier_bridge::PhysicsWorld` (f32, used by UnifiedEngine)
+  - `ae_physics::world::PhysicsWorld` (fixed-point, used by SimulationManager)
+  - `ae_rapier_bridge::PhysicsWorld` (f32, used by UnifiedEngine)
 - **Risk**: Inconsistent physics behavior between code paths
 - **Recommendation**: Consolidate to single implementation
 
@@ -159,7 +159,7 @@ Additional:
 1. ✅ **Performance optimization**: Sparse MPM grid, parallel solving, near-field culling (DONE 2026-06-24: 100k particles 37.66s→3.01s, 278fps)
 2. ✅ **EventBus investigation**: Ensure collision events publish when particles collide (DONE 2026-06-26: 2732/2732 events published/processed)
 3. ✅ **Phase transition restoration**: Material-specific phase temperatures (DONE 2026-06-26: MpssBuffer.phase field added; water 273/373K, iron 1811/3134K, concrete 1923K decompose, wood 500K pyrolysis; 5 unit tests + headless test verify Solid=27/Liquid=9/Gas=19 distribution)
-4. ✅ **Architecture consolidation**: Merge two PhysicsWorld implementations (DONE 2026-06-27: PhysicsWorld unified to fixed-point version in wasteland_physics/src/world.rs; rapier_bridge version removed from workspace — zero production dependents, 1273 lines dead code backed up to storage/CC/2_Old/wasteland_rapier_bridge_20260627_removed/)
+4. ✅ **Architecture consolidation**: Merge two PhysicsWorld implementations (DONE 2026-06-27: PhysicsWorld unified to fixed-point version in ae_physics/src/world.rs; rapier_bridge version removed from workspace — zero production dependents, 1273 lines dead code backed up to storage/CC/2_Old/ae_rapier_bridge_20260627_removed/)
 5. ✅ **Boundary conditions**: Prevent particles from drifting infinitely far (DONE 2026-06-26: MpssBuffer.apply_boundary_conditions with reflecting bounds; LOD stable 25/18/12)
 6. ✅ **Dynamic body test**: Add Dynamic rigid bodies to verify Phase 6 Step 2 sync (DONE 2026-06-26: dynamic_body_test.rs — drift=0.000000m over 60 ticks, gravity fall 4.9194m matches expected 4.9m for g=9.8)
 7. **Thermal feedback fix**: Global temperature stable at 296.4K (DONE 2026-06-26: solar_radiation 200->20, atmosphere cooling_rate 0.0001->0.5, removed 4 global_temperature += feedback loops, combustion heat +50K->+10K, energy bundle coef 0.0001->0.00001)
@@ -174,8 +174,8 @@ Additional:
 ```
 cargo test --workspace --release
 Total: 1421 tests passed, 0 failed
-  - wasteland_engine: 36 (28 lib + 8 integration)
-  - wasteland_particle: 113 (106 lib + 7 integration)
+  - ae_engine: 36 (28 lib + 8 integration)
+  - ae_particle: 113 (106 lib + 7 integration)
   - slime-editor: 44 (5 lib + 5 doc + 34 mcp_tools)
   - Other crates: 1228
 ```
@@ -190,7 +190,7 @@ Total: 1421 tests passed, 0 failed
 21. ✅ **detect_and_create near_indices optimization**: (DONE 2026-06-27: detect_and_create从扫描全部1M粒子改为只扫描near_indices(10k),与update()保持一致. 域隔离是极端局部事件(爆炸/冲击/等离子体),远场粒子(200m+)触发区域对玩家不可见且update()无法处理. 100x扫描量减少. 性能验证:1M粒子59.1→64.6 FPS(+5.5 FPS,+9.3%). 1445 tests 0 failed. 备份到CC/2_Old/domain_isolation_rs_20260627_detect_optimize.rs)
 22. ✅ **swap_slots 5-field bug fix**: (DONE 2026-06-27: MpssBuffer::swap_slots缺失5个字段交换(c/force/grid_vel/charge/phase),导致compact()后APIC C矩阵/力缓冲/网格速度/电荷/相态数据错乱. 修复:添加5个.swap()调用. 新增回归测试test_swap_slots_all_fields验证compact()后所有字段正确迁移(c[0]=1.1,force=[10,20,30],grid_vel=[40,50,60],charge=777,phase=Plasma,material_idx=42,temperature=5000). 备份到CC/2_Old/mpss_rs_20260627_swap_slots.rs)
 23. ✅ **EnergyBundle full activation on recovery**: (DONE 2026-06-27: §4.4延伸—激活恢复时4个未使用字段+total_energy同步+domain tag. EnergyBundle新增domain:IsolationDomain字段(IsolationDomain加#[derive(Default)]+#[default]Thermal). update()每tick同步zone.energy_bundle.domain=zone.domain. Thermal/Chemical域total_energy根据temperature衰减同步更新(ratio Thermal=1000/Chemical=100). lib.rs恢复代码激活4个字段:(1)total_energy域特定释放—Mechanical→径向动能(径向push,speed=sqrt(2*E/m),系数0.001),EM→电荷沉积(系数1e-4避免charge爆炸); (2)fragment_velocity_std→速度扰动(伪随机hash方向wrapping_mul(2654435761),系数0.1模拟ejecta散布); (3)total_mass→质量沉积(系数1e-3避免质量爆炸); (4)fragment_count→化学沉积缩放(1.0+min(100,count)*0.01,1.0-2.0倍). EnergyBundle现在10字段全部激活(9数据字段+1domain tag). 1446 tests 0 failed(+1回归测试). 性能64.4 FPS(目标60达成). 备份到CC/2_Old/domain_isolation_rs_20260627_full_activate.rs)
-24. ✅ **Batch dead code cleanup (B1-B7)**: (DONE 2026-06-27: 7项死代码清理. B1: gpu_render.rs整个文件归档到CC/3_Unused(未在mod.rs声明). B2-B3: 删除simulation.rs update_electro(~85行,结果用let _=丢弃)+collect_electrostatic_forces(~35行,零调用者)两个死方法. B4: 决定保留update_thermal桩函数(实际设置solver参数,非桩). B5: 删除simulation.rs 11个未使用字段(phase_solver/phase_states/microstructures/fatigue_states热力学4个+vram_budget+memory_budget/script_system/npc_ai_optimizer/building_editor/combat_optimizer/combat_monitor优化系统6个),保留interaction_system和reinforcement_system(有调用者). 清理uuid::Uuid和wasteland_materials::prelude::*两个unused import+stale注释. B6: 删除domain_isolation.rs chemical_rate_threshold(1e6)和strain_rate_threshold(1e4)两个死字段(detect_and_create使用本地常量CHEMICAL_TEMP_THRESHOLD=1000K和MECHANICAL_STRAIN_THRESHOLD=0.5作proxy). 更新引用strain_rate_threshold的注释. B7: 删除data.rs asset_pipeline字段+Debug引用+初始化+preload_resources桩方法(只log不实际加载)+AssetPipeline import. 验证:cargo build --workspace --release 3m13s 0 warnings(修复了一个unused import warning), cargo test --workspace --release 1446 tests 0 failed. 备份:CC/2_Old/wasteland_engine_src_managers_simulation.rs_20260627_batch.rs等6个批量备份文件)
+24. ✅ **Batch dead code cleanup (B1-B7)**: (DONE 2026-06-27: 7项死代码清理. B1: gpu_render.rs整个文件归档到CC/3_Unused(未在mod.rs声明). B2-B3: 删除simulation.rs update_electro(~85行,结果用let _=丢弃)+collect_electrostatic_forces(~35行,零调用者)两个死方法. B4: 决定保留update_thermal桩函数(实际设置solver参数,非桩). B5: 删除simulation.rs 11个未使用字段(phase_solver/phase_states/microstructures/fatigue_states热力学4个+vram_budget+memory_budget/script_system/npc_ai_optimizer/building_editor/combat_optimizer/combat_monitor优化系统6个),保留interaction_system和reinforcement_system(有调用者). 清理uuid::Uuid和ae_materials::prelude::*两个unused import+stale注释. B6: 删除domain_isolation.rs chemical_rate_threshold(1e6)和strain_rate_threshold(1e4)两个死字段(detect_and_create使用本地常量CHEMICAL_TEMP_THRESHOLD=1000K和MECHANICAL_STRAIN_THRESHOLD=0.5作proxy). 更新引用strain_rate_threshold的注释. B7: 删除data.rs asset_pipeline字段+Debug引用+初始化+preload_resources桩方法(只log不实际加载)+AssetPipeline import. 验证:cargo build --workspace --release 3m13s 0 warnings(修复了一个unused import warning), cargo test --workspace --release 1446 tests 0 failed. 备份:CC/2_Old/ae_engine_src_managers_simulation.rs_20260627_batch.rs等6个批量备份文件)
 25. ✅ **Critical bug fix batch (C1-C6) + small fixes (D1-D2)**: (DONE 2026-06-27 Session 15: 6个CRITICAL/HIGH级bug修复+2个小修复. **C1**: domain_isolation.rs update()在lifetime>0.5时直接retain移除Recovering zone,但collect_energy_bundles()在update()之后调用已找不到该zone,导致EnergyBundle全字段激活效果被静默丢弃. 修复:update()不再移除Recovering zone(改为空match分支+注释),collect_energy_bundles()加lifetime>0.5检查,删除update()中to_resolve死代码(3行). **C2**: particles.rs apply_force() line 172执行age+=dt,step() line 383再次执行,导致粒子寿命消耗速度翻倍. 修复:删除step()中重复递增,只保留apply_force()中的唯一递增点. **C3**: ecs.rs set_component每次调用都push entity_id不检查已存在,导致component_index无限增长+query_entities_with返回重复结果. 修复:添加contains检查. **C4**: systems.rs predictive_cache持读锁取写锁导致std RwLock死锁(非重入). 修复:先收集to_cache IDs drop读锁再取写锁. **C5**: systems.rs remove_oldest_memory持读锁取写锁死锁+add_memory持写锁调用remove_oldest_memory死锁. 修复:remove_oldest_memory用写锁直接查找+clone数据后drop锁再取写锁移除;add_memory改用读锁检查容量drop后调用remove_oldest_memory再取写锁插入. **C6**: mpm_solver.rs mpm_substep_parallel_with_indices边界检查用[0,grid_max]而非[origin,origin+grid_max],player远离原点时粒子被夹到错误位置. 修复:x/z轴边界检查加origin偏移(y轴保持0.0地面). **D1**: animation_manager.rs step()中`if !loop_animation && state_time>2.0 {}`空if块(只有注释). 修复:删除空if块保留说明注释. **D2**: constitutive.rs lambda()/mu()/bulk_modulus()在poisson_ratio=0.5时除零(不可压缩材料),=-1时除零. 修复:新增clamped_nu()辅助方法clamp到[-0.999,0.4999],三个方法统一调用. **D3评估**: emergent_rules.rs `collision_count-1`经分析非bug(line 102先+=1,最小值1,减1不溢出),跳过. 验证:cargo build 3m12s 0 warnings, cargo test 1446 tests 0 failed(无回归). 备份:CC/2_Old/下8个*_20260627_critical.rs文件)
 
 ## Scenario Test Results (2026-06-26 Session 3)
@@ -241,26 +241,26 @@ y-axis momentum not conserved due to gravity impulse (m·g·Δt·N), as expected
 
 **XpbdSolver removed from engine core**
 - Removed `xpbd_solver: XpbdSolver` field from SimulationManager (simulation.rs:69)
-- Removed `use wasteland_xpbd::*;` import (simulation.rs:24)
+- Removed `use ae_xpbd::*;` import (simulation.rs:24)
 - Removed `xpbd_solver: XpbdSolver::new(XpbdConfig::default())` init (simulation.rs:288)
-- Removed `wasteland_xpbd` dependency from wasteland_engine/Cargo.toml
+- Removed `ae_xpbd` dependency from ae_engine/Cargo.toml
 - **Rationale**: MPM (7 constitutive models: NeoHookean/NewtonianFluid/DruckerPrager/VonMises/etc) already covers soft body; XPBD was 4th position storage violating V7 §1.1; main loop never called step()
-- **Preserved**: `wasteland_xpbd` crate remains in workspace for `gdextension/src/xpbd_node.rs` (Godot node)
+- **Preserved**: `ae_xpbd` crate remains in workspace for `gdextension/src/xpbd_node.rs` (Godot node)
 
 **UnifiedEngine removed**
-- Deleted `wasteland_engine/src/unified/mod.rs` (220 lines, 9 unit tests)
-- Deleted `wasteland_engine/examples/meta_entity_connection_demo.rs`
+- Deleted `ae_engine/src/unified/mod.rs` (220 lines, 9 unit tests)
+- Deleted `ae_engine/examples/meta_entity_connection_demo.rs`
 - Removed `pub mod unified;` + `pub use unified::*;` from lib.rs
-- Rewrote `wasteland_engine/tests/integration_tests.rs`: 8 tests → 4 tests
+- Rewrote `ae_engine/tests/integration_tests.rs`: 8 tests → 4 tests
   - Removed 3 UnifiedEngine-dependent tests (full_pipeline, engine_with_all_systems, large_scale_simulation)
-  - Removed test_physics_collision_response (rapier_bridge-specific, no equivalent in wasteland_physics)
-  - Rewrote test_deterministic_physics → test_deterministic_physics_fixed_point (uses wasteland_physics::PhysicsWorld)
+  - Removed test_physics_collision_response (rapier_bridge-specific, no equivalent in ae_physics)
+  - Rewrote test_deterministic_physics → test_deterministic_physics_fixed_point (uses ae_physics::PhysicsWorld)
   - Kept test_scheduler_with_registry, test_asset_import_to_entity, test_save_load_roundtrip
-- wasteland_engine/Cargo.toml: removed wasteland_rapier_bridge main dep; moved scheduler/registry/unified_interface to [dev-dependencies]
+- ae_engine/Cargo.toml: removed ae_rapier_bridge main dep; moved scheduler/registry/unified_interface to [dev-dependencies]
 - **Rationale**: Production path (game/editor/gdextension/benches) all use GameWorld; UnifiedEngine only served tests + 1 demo; GameWorld's 60/6/1Hz multi-rate scheduler is strict superset of UnifiedEngine's fixed_dt accumulator
-- **Preserved**: wasteland_save_system still depends on wasteland_unified_interface (WorldStorage)
+- **Preserved**: ae_save_system still depends on ae_unified_interface (WorldStorage)
 
-**Flaky test fix (wasteland_asset LRU)**
+**Flaky test fix (ae_asset LRU)**
 - Problem: `cache::tests::test_eviction_policy_lru` failed in release mode on Windows
 - Root cause: `Instant::now()` precision insufficient; 3 operations had identical timestamps, LRU `min_by_key` returned random victim (HashMap iteration order)
 - Fix: Added `access_seq: u64` monotonic counter to CacheEntry; LRU now uses `access_seq` instead of `last_access`
@@ -283,8 +283,8 @@ LOD(n/m/f):     10000/490045/500010
 
 ## §6.2 BVH Acceleration Structure (2026-06-26 Session 5)
 
-**New crate: `wasteland_bvh`**
-- Implementation: `wasteland_bvh/src/lib.rs` (~600 lines, 14 unit tests)
+**New crate: `ae_bvh`**
+- Implementation: `ae_bvh/src/lib.rs` (~600 lines, 14 unit tests)
 - Design: Median-split build (simple, fast construction), leaf size 4
 - API:
   - `Bvh::build(&[(id, Aabb)])` — O(n log n) construction
@@ -293,7 +293,7 @@ LOD(n/m/f):     10000/490045/500010
   - `Bvh::frustum_query(&[Plane; 6]) -> Vec<u32>` — view-frustum culling
   - `Bvh::refit_primitive(id, new_aabb)` — incremental update (no restructure)
   - `frustum_from_view_proj(Mat4) -> [Plane; 6]` — Gribb-Hartmann plane extraction (normalized)
-- Aabb type: independent (no wasteland_physics dependency), structurally compatible with `wasteland_physics::broad_phase::Aabb` for future From/Into impl
+- Aabb type: independent (no ae_physics dependency), structurally compatible with `ae_physics::broad_phase::Aabb` for future From/Into impl
 - 14/14 tests pass: empty/basic build, aabb hit/miss, ray query, ray max_t, frustum all-in/partial, frustum_from_view_proj identity/perspective/inward-normals, refit primitive, refit missing, large-scale (1000 primitives)
 
 ### §6.2.1 Editor Frustum Culling Integration (2026-06-26 Session 6) — DONE
@@ -317,9 +317,9 @@ LOD(n/m/f):     10000/490045/500010
 - `cargo test --workspace --release` — 615 tests, 0 failed (14 BVH + 601 existing)
 
 **Integration plan (remaining)**
-1. ~~wasteland_render frustum culling~~ — DONE (editor path; runtime path uses GameWorld, separate)
+1. ~~ae_render frustum culling~~ — DONE (editor path; runtime path uses GameWorld, separate)
 2. ~~editor viewport picking~~ — DONE (`viewport.rs:206-235`): replaced O(n) ray-sphere scan with BVH `ray_query`; extracted shared `build_scene_bvh` helper in `scene_renderer.rs:278` used by both render_scene and handle_picking
-3. ~~wasteland_physics broad_phase query_ray~~ — SKIPPED: `query_ray` has zero production callers (only test usage). Migrating to BVH adds no value without callers.
+3. ~~ae_physics broad_phase query_ray~~ — SKIPPED: `query_ray` has zero production callers (only test usage). Migrating to BVH adds no value without callers.
 4. ~~combat AoE~~ — SKIPPED: `DamageZoneOptimizer` is a dead field in `simulation.rs:142` (created at line 304, no methods ever called). Its internal `SpatialHashGrid` is never exercised in production.
 5. ~~Unify 3 SpatialHashGrid implementations~~ — SKIPPED as trait abstraction (over-engineering for 1 active user). Replaced by dead code cleanup below.
 
@@ -329,27 +329,27 @@ Found 5 `SpatialHashGrid`/`HashGrid` implementations across the workspace:
 
 | File | Key type | Status | Action |
 |------|----------|--------|--------|
-| `wasteland_engine/src/architecture/spatial_hash.rs` | usize | ACTIVE (`lib.rs:1514,1525` build+query_neighbors) | Keep |
-| `wasteland_engine/src/architecture/hashgrid.rs` | usize | DEAD (no callers, duplicate of spatial_hash.rs with fewer features) | **DELETED** (backed up to `storage/CC/2_Old/hashgrid_rs_20260626_183027.rs`) |
-| `wasteland_game/src/combat/optimizer.rs` | u64 | DEAD field (`DamageZoneOptimizer` created but no methods called) | Keep (serde struct compat; future §5.1 EventBus may activate) |
-| `wasteland_physics/src/broad_phase.rs` | Uuid | TEST ONLY (`query_ray` has no production callers) | Keep (needed when physics integration lands) |
-| `wasteland_rapier_bridge/src/lib.rs` | Uuid (FixedPoint) | ORPHANED (rapier_bridge no longer core dependency) | Leave (separate crate) |
+| `ae_engine/src/architecture/spatial_hash.rs` | usize | ACTIVE (`lib.rs:1514,1525` build+query_neighbors) | Keep |
+| `ae_engine/src/architecture/hashgrid.rs` | usize | DEAD (no callers, duplicate of spatial_hash.rs with fewer features) | **DELETED** (backed up to `storage/CC/2_Old/hashgrid_rs_20260626_183027.rs`) |
+| `ae_game/src/combat/optimizer.rs` | u64 | DEAD field (`DamageZoneOptimizer` created but no methods called) | Keep (serde struct compat; future §5.1 EventBus may activate) |
+| `ae_physics/src/broad_phase.rs` | Uuid | TEST ONLY (`query_ray` has no production callers) | Keep (needed when physics integration lands) |
+| `ae_rapier_bridge/src/lib.rs` | Uuid (FixedPoint) | ORPHANED (rapier_bridge no longer core dependency) | Leave (separate crate) |
 
-Cleanup: removed `pub mod hashgrid;` from `architecture/mod.rs`. `cargo build -p wasteland_engine --release` clean.
+Cleanup: removed `pub mod hashgrid;` from `architecture/mod.rs`. `cargo build -p ae_engine --release` clean.
 
 **Not replaced (intentional)**
 - LOD classification (`simulation.rs:389`): 1M particles rebuilt every 8 frames — BVH rebuild cost too high, HashGrid + cached index lists preferred
 - domain_isolation weight_at: already converged to near-field (~10k particles), no bottleneck
 
-**Workspace change**: Added `wasteland_bvh` to `Cargo.toml` members list (line 57); added `wasteland_bvh` dep to `editor/Cargo.toml:31`
+**Workspace change**: Added `ae_bvh` to `Cargo.toml` members list (line 57); added `ae_bvh` dep to `editor/Cargo.toml:31`
 
 ### §5.1 EventBus Dead Code Cleanup (2026-06-26 Session 6) — DONE
 
 **Investigation findings**
 
 EventBus has dual implementations:
-- `wasteland_eventbus` crate (full-featured, idle)
-- `wasteland_engine::architecture::event::EventBus` (minimal, used as FIFO queue)
+- `ae_eventbus` crate (full-featured, idle)
+- `ae_engine::architecture::event::EventBus` (minimal, used as FIFO queue)
 
 Production usage of `architecture::EventBus` methods (verified via grep):
 - `publish()` — 4 call sites in `lib.rs:920,923,940,980` (collision damage + chemical reaction events)
@@ -379,8 +379,8 @@ Grep across workspace confirmed zero `Box::new(RadiationUpdateEvent|ThermalUpdat
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.4s)
-- `cargo test -p wasteland_engine --release` — 19 unit + 4 integration tests pass
+- `cargo build -p ae_engine --release` — clean (10.4s)
+- `cargo test -p ae_engine --release` — 19 unit + 4 integration tests pass
 - `cargo test --workspace --release` — ~1468 tests, 0 failed (no regression)
 
 **Preserved (intentional)**
@@ -423,7 +423,7 @@ Grep across workspace confirmed zero `Box::new(RadiationUpdateEvent|ThermalUpdat
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.2s)
+- `cargo build -p ae_engine --release` — clean (10.2s)
 - `cargo test --workspace --release` — ~1468 tests, 0 failed (no regression)
 - 6Hz block (`lib.rs:374`) still calls `update_fluid_acoustic_geo` (unchanged signature)
 - 0.1Hz block (`lib.rs:522`) calls new `update_geology`
@@ -523,12 +523,12 @@ Previously mid and far particles only got gravity+position integration with no f
 - **FTCS stability**: `alpha * dt / dx² <= 1/6` for 3D. With `alpha=10, dt=1, dx=50`: `4e-5 << 1/6`. Even with `dt=60` (1Hz accumulated): `2.4e-3 << 1/6`. Stable across all reasonable parameters.
 
 **Files modified**:
-- `wasteland_particle/src/mpm_solver.rs`: +200 lines (new `mpm_step_velocity_only_parallel` + `mpm_substep_velocity_only`)
-- `wasteland_engine/src/managers/simulation.rs`: +130 lines (new fields, init, origin tracking, mid update switch, far temperature sampling, `update_coarse_field` method)
+- `ae_particle/src/mpm_solver.rs`: +200 lines (new `mpm_step_velocity_only_parallel` + `mpm_substep_velocity_only`)
+- `ae_engine/src/managers/simulation.rs`: +130 lines (new fields, init, origin tracking, mid update switch, far temperature sampling, `update_coarse_field` method)
 
 **Backup**: `storage/CC/2_Old/mpm_solver_rs_20260626_214324.rs`, `storage/CC/2_Old/simulation_rs_20260626_214324.rs`
 
-**Verification**: `cargo build -p wasteland_engine --release` clean (10.62s). `cargo test --workspace --release` all passed (0 failed).
+**Verification**: `cargo build -p ae_engine --release` clean (10.62s). `cargo test --workspace --release` all passed (0 failed).
 
 ### §3.2 Performance Optimization (2026-06-27 Session 12) — DONE
 
@@ -590,8 +590,8 @@ Previously mid and far particles only got gravity+position integration with no f
    - `SendPtrMut`/`SendPtrConst` wrappers ensure unsafe blocks are isolated and documented.
 
 **Files modified (optimization)**:
-- `wasteland_particle/src/mpm_solver.rs`: `mpm_step_velocity_only_parallel` rewritten — P2G serial loop with unsafe ptr, G2P parallel with b_spline precompute.
-- `wasteland_engine/src/managers/simulation.rs`: `MID_INTERVAL` 6→12 (line 520), `update_coarse_field` Phase 1 samples near only (line 672-702), `PhysicsLod::default()` CFL comment (line 42-44).
+- `ae_particle/src/mpm_solver.rs`: `mpm_step_velocity_only_parallel` rewritten — P2G serial loop with unsafe ptr, G2P parallel with b_spline precompute.
+- `ae_engine/src/managers/simulation.rs`: `MID_INTERVAL` 6→12 (line 520), `update_coarse_field` Phase 1 samples near only (line 672-702), `PhysicsLod::default()` CFL comment (line 42-44).
 
 **Lessons learned**:
 - **rayon fold+reduce is not free**: For data structures >L2 cache (896KB Grid), allocation + merge cost can dominate. Always benchmark serial vs parallel.
@@ -618,7 +618,7 @@ But the actual implementation had mid (50-200m) and far (200m+) particles both r
 
 For 1M particles with ~490k mid + ~500k far, this wasted significant CPU on particles that are visually imperceptible.
 
-**Investigation**: The existing `FrequencyScheduler` (wasteland_frequency crate) uses `HashMap<Uuid, EntitySchedule>` keyed by Uuid, designed for meta_entities (~100s). Extending it to particles (1M+) would require:
+**Investigation**: The existing `FrequencyScheduler` (ae_frequency crate) uses `HashMap<Uuid, EntitySchedule>` keyed by Uuid, designed for meta_entities (~100s). Extending it to particles (1M+) would require:
 - Uuid generation per particle (memory + hash overhead)
 - `EntitySchedule` fields (`is_player`/`is_combat`) are meaningless for particles
 - `max_scheduled_entities=10000` budget would be exceeded 100x
@@ -658,7 +658,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.58s)
+- `cargo build -p ae_engine --release` — clean (10.58s)
 - `cargo test --workspace --release` — 1468 tests passed, 0 failed
 
 ### §3.1 Moving Window MPM (2026-06-27 Session 11) — DONE
@@ -700,8 +700,8 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_particle --release` — clean (8.90s)
-- `cargo build -p wasteland_engine --release` — clean (11.97s)
+- `cargo build -p ae_particle --release` — clean (8.90s)
+- `cargo build -p ae_engine --release` — clean (11.97s)
 - `cargo test --workspace --release` — 1468 tests passed, 0 failed
 - Backed up `mpm_solver.rs` to `storage/CC/2_Old/mpm_solver_rs_20260627_moving_window.rs`
 
@@ -733,7 +733,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.1s)
+- `cargo build -p ae_engine --release` — clean (10.1s)
 - `cargo test --workspace --release` — ~1468 tests, 0 failed (no regression)
 - `chemical_rate_threshold` and `strain_rate_threshold` fields still exist on `DomainIsolationManager` (line 69-70) for future activation when MpssBuffer gains `reaction_rate`/`strain_rate` fields
 
@@ -783,7 +783,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.0s)
+- `cargo build -p ae_engine --release` — clean (10.0s)
 - `cargo test --workspace --release` — all tests passed, 0 failed (no regression)
 - `EnergyBundle` fields now actively used: `total_energy` (created), `temperature` (evolved + applied), `chemical_residue` (created + applied), `radiation_level` (evolved + applied)
 - `EnergyBundle` fields still unused: `total_momentum`, `total_mass`, `fragment_count`, `fragment_velocity_mean`, `fragment_velocity_std` — would need per-particle velocity collection during isolation (deferred until `update()` gains `velocities` parameter)
@@ -792,7 +792,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Problem**: `em_field_threshold` (1e8) field on `DomainIsolationManager` was the last dead configuration. `detect_and_create` had no EM domain branch. The EM domain is meant to isolate extreme electromagnetic states (lightning, arc flashes, intense charge accumulation) where Maxwell's equations replace the quasi-static approximation.
 
-**Investigation**: `MpssBuffer` has `charge: Vec<f32>` field (mpss.rs:137, units: Coulombs) updated by EM coupling. `wasteland_electro` crate has `ElectrostaticSolver` with `electric_field_from_charges()` but no per-particle field strength cache. True em_field (V/m) would require calling the solver per-particle each tick (expensive). As a pragmatic approximation, used **|charge|** as a proxy for EM field strength (E = k·q/r², so extreme |q| implies extreme field at any reasonable r).
+**Investigation**: `MpssBuffer` has `charge: Vec<f32>` field (mpss.rs:137, units: Coulombs) updated by EM coupling. `ae_electro` crate has `ElectrostaticSolver` with `electric_field_from_charges()` but no per-particle field strength cache. True em_field (V/m) would require calling the solver per-particle each tick (expensive). As a pragmatic approximation, used **|charge|** as a proxy for EM field strength (E = k·q/r², so extreme |q| implies extreme field at any reasonable r).
 
 **Cleanup actions**
 
@@ -818,7 +818,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.3s)
+- `cargo build -p ae_engine --release` — clean (10.3s)
 - `cargo test --workspace --release` — all tests passed, 0 failed (no regression)
 - Phase 4.1 fully complete: all 4 domain triggers (Thermal/Chemical/Mechanical/EM) now implemented with pragmatic proxies. True field-based triggers deferred until MpssBuffer gains `reaction_rate`/`strain_rate`/`em_field` fields (requires deeper system integration).
 
@@ -851,7 +851,7 @@ Based on §9.3 performance test (1M particles: 10k near / 490k mid / 500k far):
 
 **Verification**
 
-- `cargo build -p wasteland_engine --release` — clean (10.3s)
+- `cargo build -p ae_engine --release` — clean (10.3s)
 - `cargo test --workspace --release` — all tests passed, 0 failed (no regression)
 - `strain_rate_threshold` (1e4) field still exists on `DomainIsolationManager` (line 70) for future activation when MpssBuffer gains true `strain_rate` (dF/dt) field — current implementation uses strain intensity as a more practical proxy
 - Initial compile error: trailing comma in Frobenius norm expression created single-element tuple `(f32,)` without `.sqrt()` method. Fixed by removing trailing comma in both `detect_and_create` (line 198-199) and `update` (line 263) — Rust's liberal expression syntax can turn `(\n  expr,\n).sqrt()` into `((expr,)).sqrt()` where `(expr,)` is a 1-tuple, not a parenthesized expression.

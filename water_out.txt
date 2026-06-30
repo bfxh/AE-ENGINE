@@ -1,11 +1,11 @@
-﻿cargo : [1m[93mwarning[0m[1m[97m: unused variable: `params`[0m
+cargo : [1m[93mwarning[0m[1m[97m: unused variable: `params`[0m
 At line:16 char:1
-+ cargo test -p wasteland_particle --lib mpm_solver::tests::test_water_ ...
++ cargo test -p ae_particle --lib mpm_solver::tests::test_water_ ...
 + ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     + CategoryInfo          : NotSpecified: ([1m[93mwarnin...e: `params`[0m:String) [], RemoteException
     + FullyQualifiedErrorId : NativeCommandError
  
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:356:31
+   [1m[96m--> [0mae_particle\src\constitutive.rs:356:31
     [1m[96m|[0m
 [1m[96m356[0m [1m[96m|[0m fn rigid_stress(F: &[f32; 9], params: &MaterialParams) -> ([f32; 9], f32, [f32; 9], boo
 l) {
@@ -15,35 +15,35 @@ ith an underscore: `_params`[0m
     [1m[96m= [0m[1m[97mnote[0m: `#[warn(unused_variables)]` (part of `#[warn(unused)]`) on by default
 
 [1m[93mwarning[0m[1m[97m: unused variable: `trace_b`[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:367:9
+   [1m[96m--> [0mae_particle\src\constitutive.rs:367:9
     [1m[96m|[0m
 [1m[96m367[0m [1m[96m|[0m     let trace_b = trace(&b);
     [1m[96m|[0m         [1m[93m^^^^^^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_
 trace_b`[0m
 
 [1m[93mwarning[0m[1m[97m: unused variable: `s`[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:385:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:385:13
     [1m[96m|[0m
 [1m[96m385[0m [1m[96m|[0m     let (r, s) = polar_decomp(F);
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_s`
 [0m
 
 [1m[93mwarning[0m[1m[97m: unused variable: `s`[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:403:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:403:13
     [1m[96m|[0m
 [1m[96m403[0m [1m[96m|[0m     let (r, s) = polar_decomp(F);
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_s`
 [0m
 
 [1m[93mwarning[0m[1m[97m: unused variable: `F`[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:612:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:612:13
     [1m[96m|[0m
 [1m[96m612[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_F`
 [0m
 
 [1m[93mwarning[0m[1m[97m: value assigned to `new_vel` is never read[0m
-   [1m[96m--> [0mwasteland_particle\src\mpm_solver.rs:337:17
+   [1m[96m--> [0mae_particle\src\mpm_solver.rs:337:17
     [1m[96m|[0m
 [1m[96m337[0m [1m[96m|[0m                 new_vel[1] = -new_vel[1] * 0.3; // damped reflection
     [1m[96m|[0m                 [1m[93m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
@@ -52,28 +52,28 @@ trace_b`[0m
     [1m[96m= [0m[1m[97mnote[0m: `#[warn(unused_assignments)]` (part of `#[warn(unused)]`) on by default
 
 [1m[93mwarning[0m[1m[97m: unused variable: `i1`[0m
-   [1m[96m--> [0mwasteland_particle\src\mpss.rs:380:13
+   [1m[96m--> [0mae_particle\src\mpss.rs:380:13
     [1m[96m|[0m
 [1m[96m380[0m [1m[96m|[0m         let i1 = buf.spawn().unwrap();
     [1m[96m|[0m             [1m[93m^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_i
 1`[0m
 
 [1m[93mwarning[0m[1m[97m: unused variable: `i0`[0m
-   [1m[96m--> [0mwasteland_particle\src\mpss.rs:416:13
+   [1m[96m--> [0mae_particle\src\mpss.rs:416:13
     [1m[96m|[0m
 [1m[96m416[0m [1m[96m|[0m         let i0 = buf.spawn().unwrap();
     [1m[96m|[0m             [1m[93m^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_i
 0`[0m
 
 [1m[93mwarning[0m[1m[97m: unused variable: `i2`[0m
-   [1m[96m--> [0mwasteland_particle\src\mpss.rs:418:13
+   [1m[96m--> [0mae_particle\src\mpss.rs:418:13
     [1m[96m|[0m
 [1m[96m418[0m [1m[96m|[0m         let i2 = buf.spawn().unwrap();
     [1m[96m|[0m             [1m[93m^^[0m [1m[93mhelp: if this is intentional, prefix it with an underscore: `_i
 2`[0m
 
 [1m[93mwarning[0m[1m[97m: function `eig_sym_3x3` is never used[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:317:4
+   [1m[96m--> [0mae_particle\src\constitutive.rs:317:4
     [1m[96m|[0m
 [1m[96m317[0m [1m[96m|[0m fn eig_sym_3x3(m: &[f32; 9]) -> [f32; 3] {
     [1m[96m|[0m    [1m[93m^^^^^^^^^^^[0m
@@ -81,7 +81,7 @@ trace_b`[0m
     [1m[96m= [0m[1m[97mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:226:5
+   [1m[96m--> [0mae_particle\src\constitutive.rs:226:5
     [1m[96m|[0m
 [1m[96m226[0m [1m[96m|[0m     F: &[f32; 9],
     [1m[96m|[0m     [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitalization): 
@@ -90,20 +90,20 @@ trace_b`[0m
     [1m[96m= [0m[1m[97mnote[0m: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:227:5
+   [1m[96m--> [0mae_particle\src\constitutive.rs:227:5
     [1m[96m|[0m
 [1m[96m227[0m [1m[96m|[0m     J: f32,   // current volume ratio (det(F))
     [1m[96m|[0m     [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case: `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:273:17
+   [1m[96m--> [0mae_particle\src\constitutive.rs:273:17
     [1m[96m|[0m
 [1m[96m273[0m [1m[96m|[0m fn polar_decomp(F: &[f32; 9]) -> ([f32; 9], [f32; 9]) {
     [1m[96m|[0m                 [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capit
 alization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:356:17
+   [1m[96m--> [0mae_particle\src\constitutive.rs:356:17
     [1m[96m|[0m
 [1m[96m356[0m [1m[96m|[0m fn rigid_stress(F: &[f32; 9], params: &MaterialParams) -> ([f32; 9], f32, [f32; 9], boo
 l) {
@@ -111,7 +111,7 @@ l) {
 alization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:361:16
+   [1m[96m--> [0mae_particle\src\constitutive.rs:361:16
     [1m[96m|[0m
 [1m[96m361[0m [1m[96m|[0m fn neo_hookean(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f32; 
 9], bool) {
@@ -119,7 +119,7 @@ alization): `f`[0m
 lization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:361:30
+   [1m[96m--> [0mae_particle\src\constitutive.rs:361:30
     [1m[96m|[0m
 [1m[96m361[0m [1m[96m|[0m fn neo_hookean(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f32; 
 9], bool) {
@@ -127,7 +127,7 @@ lization): `f`[0m
 [0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:381:22
+   [1m[96m--> [0mae_particle\src\constitutive.rs:381:22
     [1m[96m|[0m
 [1m[96m381[0m [1m[96m|[0m fn corotated_elastic(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, 
 [f32; 9], bool) {
@@ -135,7 +135,7 @@ lization): `f`[0m
 capitalization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:381:36
+   [1m[96m--> [0mae_particle\src\constitutive.rs:381:36
     [1m[96m|[0m
 [1m[96m381[0m [1m[96m|[0m fn corotated_elastic(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, 
 [f32; 9], bool) {
@@ -143,7 +143,7 @@ capitalization): `f`[0m
 e: `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:399:20
+   [1m[96m--> [0mae_particle\src\constitutive.rs:399:20
     [1m[96m|[0m
 [1m[96m399[0m [1m[96m|[0m fn fixed_corotated(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f
 32; 9], bool) {
@@ -151,7 +151,7 @@ e: `j`[0m
 pitalization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:399:34
+   [1m[96m--> [0mae_particle\src\constitutive.rs:399:34
     [1m[96m|[0m
 [1m[96m399[0m [1m[96m|[0m fn fixed_corotated(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f
 32; 9], bool) {
@@ -159,7 +159,7 @@ pitalization): `f`[0m
  `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:421:19
+   [1m[96m--> [0mae_particle\src\constitutive.rs:421:19
     [1m[96m|[0m
 [1m[96m421[0m [1m[96m|[0m fn drucker_prager(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f3
 2; 9], bool) {
@@ -167,7 +167,7 @@ pitalization): `f`[0m
 italization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:421:33
+   [1m[96m--> [0mae_particle\src\constitutive.rs:421:33
     [1m[96m|[0m
 [1m[96m421[0m [1m[96m|[0m fn drucker_prager(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f3
 2; 9], bool) {
@@ -175,14 +175,14 @@ italization): `f`[0m
 `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `new_F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:471:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:471:13
     [1m[96m|[0m
 [1m[96m471[0m [1m[96m|[0m         let new_F = mat_mul(&r, &new_s);
     [1m[96m|[0m             [1m[93m^^^^^[0m [1m[93mhelp: convert the identifier to snake case (notice the capit
 alization): `new_f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:501:14
+   [1m[96m--> [0mae_particle\src\constitutive.rs:501:14
     [1m[96m|[0m
 [1m[96m501[0m [1m[96m|[0m fn von_mises(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f32; 9]
 , bool) {
@@ -190,7 +190,7 @@ alization): `new_f`[0m
 zation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:501:28
+   [1m[96m--> [0mae_particle\src\constitutive.rs:501:28
     [1m[96m|[0m
 [1m[96m501[0m [1m[96m|[0m fn von_mises(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f32; 9]
 , bool) {
@@ -198,14 +198,14 @@ zation): `f`[0m
 0m
 
 [1m[93mwarning[0m[1m[97m: variable `new_F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:540:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:540:13
     [1m[96m|[0m
 [1m[96m540[0m [1m[96m|[0m         let new_F = mat_mul(&r, &new_s);
     [1m[96m|[0m             [1m[93m^^^^^[0m [1m[93mhelp: convert the identifier to snake case (notice the capit
 alization): `new_f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:567:20
+   [1m[96m--> [0mae_particle\src\constitutive.rs:567:20
     [1m[96m|[0m
 [1m[96m567[0m [1m[96m|[0m fn newtonian_fluid(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f
 32; 9], bool) {
@@ -213,7 +213,7 @@ alization): `new_f`[0m
 pitalization): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:567:34
+   [1m[96m--> [0mae_particle\src\constitutive.rs:567:34
     [1m[96m|[0m
 [1m[96m567[0m [1m[96m|[0m fn newtonian_fluid(F: &[f32; 9], J: f32, params: &MaterialParams) -> ([f32; 9], f32, [f
 32; 9], bool) {
@@ -221,71 +221,71 @@ pitalization): `f`[0m
  `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:585:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:585:13
     [1m[96m|[0m
 [1m[96m585[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitaliz
 ation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:595:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:595:13
     [1m[96m|[0m
 [1m[96m595[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitaliz
 ation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:604:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:604:13
     [1m[96m|[0m
 [1m[96m604[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitaliz
 ation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:612:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:612:13
     [1m[96m|[0m
 [1m[96m612[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitaliz
 ation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `shear_F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:614:17
+   [1m[96m--> [0mae_particle\src\constitutive.rs:614:17
     [1m[96m|[0m
 [1m[96m614[0m [1m[96m|[0m         let mut shear_F = identity3();
     [1m[96m|[0m                 [1m[93m^^^^^^^[0m [1m[93mhelp: convert the identifier to snake case (notice the
  capitalization): `shear_f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\constitutive.rs:622:13
+   [1m[96m--> [0mae_particle\src\constitutive.rs:622:13
     [1m[96m|[0m
 [1m[96m622[0m [1m[96m|[0m         let F = identity3();
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case (notice the capitaliz
 ation): `f`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\mpm_solver.rs:128:13
+   [1m[96m--> [0mae_particle\src\mpm_solver.rs:128:13
     [1m[96m|[0m
 [1m[96m128[0m [1m[96m|[0m         let J = strain[0] * (strain[4] * strain[8] - strain[5] * strain[7])
     [1m[96m|[0m             [1m[93m^[0m [1m[93mhelp: convert the identifier to snake case: `j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `_new_J` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\mpm_solver.rs:133:22
+   [1m[96m--> [0mae_particle\src\mpm_solver.rs:133:22
     [1m[96m|[0m
 [1m[96m133[0m [1m[96m|[0m         let (stress, _new_J, new_F, plastic) = constitutive::compute_stress(
     [1m[96m|[0m                      [1m[93m^^^^^^[0m [1m[93mhelp: convert the identifier to snake case: `_new_
 j`[0m
 
 [1m[93mwarning[0m[1m[97m: variable `new_F` should have a snake case name[0m
-   [1m[96m--> [0mwasteland_particle\src\mpm_solver.rs:133:30
+   [1m[96m--> [0mae_particle\src\mpm_solver.rs:133:30
     [1m[96m|[0m
 [1m[96m133[0m [1m[96m|[0m         let (stress, _new_J, new_F, plastic) = constitutive::compute_stress(
     [1m[96m|[0m                              [1m[93m^^^^^[0m [1m[93mhelp: convert the identifier to snake case 
 (notice the capitalization): `new_f`[0m
 
-[1m[93mwarning[0m: `wasteland_particle` (lib test) generated 37 warnings (run `cargo fix --lib -p wasteland_particle
+[1m[93mwarning[0m: `ae_particle` (lib test) generated 37 warnings (run `cargo fix --lib -p ae_particle
  --tests` to apply 8 suggestions)
 [1m[92m    Finished[0m `test` profile [optimized + debuginfo] target(s) in 0.37s
-[1m[92m     Running[0m unittests src\lib.rs (target\debug\deps\wasteland_particle-7a8fba36fd4842c4.exe)
+[1m[92m     Running[0m unittests src\lib.rs (target\debug\deps\ae_particle-7a8fba36fd4842c4.exe)
 
 running 1 test
 P2G[0]: F=[0.98304754, 0.0, 0.0, 0.0, 0.98304754, 0.0, 0.0, 0.0, 0.98304754]
@@ -337,7 +337,7 @@ P2G[0]: vol=0.000001
 G2P[0]: new_vel=[0.0, 0.0, 0.0]
 G2P[0]: grad_v=[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
 
-thread 'mpm_solver::tests::test_water_pressure' (21548) panicked at wasteland_particle\src\mpm_solver.rs:538:17:
+thread 'mpm_solver::tests::test_water_pressure' (21548) panicked at ae_particle\src\mpm_solver.rs:538:17:
 Water particle 0 over-compressed: J=0.6080748
 note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
 test mpm_solver::tests::test_water_pressure ... FAILED
@@ -349,4 +349,4 @@ failures:
 
 test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 105 filtered out; finished in 0.00s
 
-[1m[91merror[0m: test failed, to rerun pass `-p wasteland_particle --lib`
+[1m[91merror[0m: test failed, to rerun pass `-p ae_particle --lib`

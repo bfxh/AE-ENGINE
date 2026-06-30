@@ -1,10 +1,10 @@
 use godot::prelude::*;
 
-use wasteland_io::feedback::ForceFeedbackDevice;
-use wasteland_io::gamepad::{GamepadAxis, GamepadButton, GamepadState};
-use wasteland_io::keyboard::{Key, KeyState, KeyboardEvent, KeyboardState, Modifiers};
-use wasteland_io::mapping::{ActionMap, InputBinding, InputMapper};
-use wasteland_io::mouse::{ButtonState, MouseButton, MouseEvent, MousePosition, MouseState};
+use ae_io::feedback::ForceFeedbackDevice;
+use ae_io::gamepad::{GamepadAxis, GamepadButton, GamepadState};
+use ae_io::keyboard::{Key, KeyState, KeyboardEvent, KeyboardState, Modifiers};
+use ae_io::mapping::{ActionMap, InputBinding, InputMapper};
+use ae_io::mouse::{ButtonState, MouseButton, MouseEvent, MousePosition, MouseState};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

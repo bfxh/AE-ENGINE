@@ -1,4 +1,4 @@
-//! SSR Pass（port 自 v1 wasteland_render::ssr）
+//! SSR Pass（port 自 v1 ae_render::ssr）
 //!
 //! 屏幕空间反射：在屏幕空间内通过 ray marching 近似镜面反射。
 //!
@@ -284,7 +284,7 @@ fn fs_apply(@builtin(position) pos: vec4<f32>) -> @location(0) vec4<f32> {
 }
 "#;
 
-/// SSR 渲染 Pass（port 自 v1 wasteland_render::SsrRenderer）
+/// SSR 渲染 Pass（port 自 v1 ae_render::SsrRenderer）
 ///
 /// 使用方式：
 /// ```ignore

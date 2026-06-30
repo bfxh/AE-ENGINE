@@ -1,9 +1,9 @@
 use godot::prelude::*;
 
-use wasteland_network::connection::{ConnectionManager, PeerId};
-use wasteland_network::frame::{Frame, MessageType};
-use wasteland_network::lockstep::LockstepState;
-use wasteland_network::rollback::RollbackBuffer;
+use ae_network::connection::{ConnectionManager, PeerId};
+use ae_network::frame::{Frame, MessageType};
+use ae_network::lockstep::LockstepState;
+use ae_network::rollback::RollbackBuffer;
 
 #[derive(GodotClass)]
 #[class(base=Node)]

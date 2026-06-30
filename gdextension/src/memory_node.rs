@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_memory::arena::Arena;
-use wasteland_memory::tracker;
+use ae_memory::arena::Arena;
+use ae_memory::tracker;
 
 #[derive(GodotClass)]
 #[class(base=Node, rename=WastelandMemoryManager)]

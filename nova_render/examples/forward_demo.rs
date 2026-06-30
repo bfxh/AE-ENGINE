@@ -7,7 +7,7 @@
 //!
 //! Run:
 //! ```bash
-//! cargo run --example forward_demo --target-dir d:\rj\wasteland_project\target2
+//! cargo run --example forward_demo --target-dir d:\rj\ae_project\target2
 //! ```
 
 use std::cell::Cell;

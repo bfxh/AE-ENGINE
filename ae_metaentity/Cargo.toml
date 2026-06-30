@@ -1,0 +1,20 @@
+[package]
+name = "ae_metaentity"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+glam = { workspace = true }
+uuid = { workspace = true }
+slotmap = { workspace = true }
+smallvec = { workspace = true }
+hashbrown = { workspace = true }
+lru = "0.12"
+ae_physics = { path = "../ae_physics" }
+ae_weave = { path = "../ae_weave" }
+ae_materials = { path = "../ae_materials" }

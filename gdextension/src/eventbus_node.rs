@@ -1,7 +1,7 @@
 use godot::prelude::*;
 
-use wasteland_eventbus::bus::EventBus;
-use wasteland_eventbus::event::{Event, EventData, EventType};
+use ae_eventbus::bus::EventBus;
+use ae_eventbus::event::{Event, EventData, EventType};
 
 #[derive(GodotClass)]
 #[class(base=Node)]

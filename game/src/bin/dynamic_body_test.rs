@@ -6,10 +6,10 @@
 //! 3. 在 PhysicsWorld 中创建一个 Dynamic rigid body, mpss_index 指向该粒子
 //! 4. 运行 ticks, 验证 MpssBuffer 粒子位置跟随 rigid body 下落
 
-use wasteland_engine::{GameWorld, WorldBounds};
-use wasteland_engine::{FixedPoint, FixedQuat, FixedVec3};
-use wasteland_engine::{BodyType, RigidBody};
-use wasteland_engine::MaterialProperties;
+use ae_engine::{GameWorld, WorldBounds};
+use ae_engine::{FixedPoint, FixedQuat, FixedVec3};
+use ae_engine::{BodyType, RigidBody};
+use ae_engine::MaterialProperties;
 
 fn main() {
     println!("=== Phase 6 Step 2: Dynamic Body Sync Test ===\n");
@@ -32,7 +32,7 @@ fn main() {
 
     // 2. Create a Dynamic rigid body linked to this MPSS particle
     let body = RigidBody {
-        id: wasteland_engine::EngineUuid::new_v4(),
+        id: ae_engine::EngineUuid::new_v4(),
         position: FixedVec3::from_f32(0.0, 20.0, 0.0),
         rotation: FixedQuat::IDENTITY,
         velocity: FixedVec3::from_f32(0.0, 0.0, 0.0),

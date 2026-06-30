@@ -1,7 +1,7 @@
 //! 无图形界面的引擎测试程序
 //! 验证 LOD 分层、域隔离检测、粒子温度更新
 
-use wasteland_engine::{GameWorld, WorldBounds};
+use ae_engine::{GameWorld, WorldBounds};
 
 fn main() {
     println!("=== Wasteland Engine - Headless Test ===");

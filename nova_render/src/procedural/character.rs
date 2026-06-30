@@ -1,4 +1,4 @@
-//! 程序化角色生成器（从 v1 wasteland_render/procedural/{npc,skeleton}.rs 移植）
+//! 程序化角色生成器（从 v1 ae_render/procedural/{npc,skeleton}.rs 移植）
 //!
 //! 突破性 NPC 程序化生成：
 //! - 12 部位人形骨骼（头/颈/胸/腰/上臂×2/前臂×2/大腿×2/小腿×2）

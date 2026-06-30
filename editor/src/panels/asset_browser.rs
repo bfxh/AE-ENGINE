@@ -41,12 +41,12 @@ impl FileTypeFilter {
     fn matches(&self, ext: &str) -> bool {
         match self {
             FileTypeFilter::All => true,
-            FileTypeFilter::Scenes => matches!(ext, "wasteland" | "json" | "scene"),
+            FileTypeFilter::Scenes => matches!(ext, "ae" | "json" | "scene"),
             FileTypeFilter::Models => matches!(ext, "gltf" | "glb" | "obj" | "fbx" | "mesh"),
             FileTypeFilter::Textures => matches!(ext, "png" | "jpg" | "jpeg" | "bmp" | "tga" | "hdr" | "exr"),
             FileTypeFilter::Audio => matches!(ext, "wav" | "mp3" | "ogg" | "flac"),
             FileTypeFilter::Scripts => matches!(ext, "rs" | "py" | "lua" | "js" | "ts"),
-            FileTypeFilter::Other => !matches!(ext, "wasteland" | "json" | "scene" | "gltf" | "glb" | "obj" | "fbx" | "mesh" | "png" | "jpg" | "jpeg" | "bmp" | "tga" | "hdr" | "exr" | "wav" | "mp3" | "ogg" | "flac" | "rs" | "py" | "lua" | "js" | "ts"),
+            FileTypeFilter::Other => !matches!(ext, "ae" | "json" | "scene" | "gltf" | "glb" | "obj" | "fbx" | "mesh" | "png" | "jpg" | "jpeg" | "bmp" | "tga" | "hdr" | "exr" | "wav" | "mp3" | "ogg" | "flac" | "rs" | "py" | "lua" | "js" | "ts"),
         }
     }
 }
@@ -94,7 +94,7 @@ impl AssetEntry {
             return "[D]";
         }
         match self.extension.as_str() {
-            "wasteland" | "json" | "scene" => "[S]",
+            "ae" | "json" | "scene" => "[S]",
             "gltf" | "glb" | "obj" | "fbx" | "mesh" => "[M]",
             "png" | "jpg" | "jpeg" | "bmp" | "tga" | "hdr" | "exr" => "[T]",
             "wav" | "mp3" | "ogg" | "flac" => "[A]",
@@ -108,7 +108,7 @@ impl AssetEntry {
             return egui::Color32::from_rgb(255, 220, 100);
         }
         match self.extension.as_str() {
-            "wasteland" | "json" | "scene" => egui::Color32::from_rgb(180, 220, 255),
+            "ae" | "json" | "scene" => egui::Color32::from_rgb(180, 220, 255),
             "gltf" | "glb" | "obj" | "fbx" | "mesh" => egui::Color32::from_rgb(100, 200, 255),
             "png" | "jpg" | "jpeg" | "bmp" | "tga" | "hdr" | "exr" => egui::Color32::from_rgb(255, 180, 220),
             "wav" | "mp3" | "ogg" | "flac" => egui::Color32::from_rgb(200, 255, 150),

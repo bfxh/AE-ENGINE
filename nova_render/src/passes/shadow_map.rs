@@ -1,4 +1,4 @@
-//! ShadowMap Pass（port 自 v1 wasteland_render::shadow_map）
+//! ShadowMap Pass（port 自 v1 ae_render::shadow_map）
 //!
 //! 方向光阴影系统，PCF 软阴影：
 //! - 从光源视角渲染深度（depth-only pass）
@@ -102,7 +102,7 @@ pub struct RegisteredShadowMesh {
     pub index_format: wgpu::IndexFormat,
 }
 
-/// ShadowMap Pass（port 自 v1 wasteland_render::ShadowMapRenderer）
+/// ShadowMap Pass（port 自 v1 ae_render::ShadowMapRenderer）
 pub struct ShadowMapPass {
     pub shadow_pipeline: RenderPipeline,
     pub shadow_texture: wgpu::Texture,

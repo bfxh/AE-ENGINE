@@ -1,0 +1,19 @@
+[package]
+name = "ae_timeslice"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+bincode = { workspace = true }
+glam = { workspace = true }
+uuid = { workspace = true }
+hashbrown = { workspace = true }
+rusqlite = { version = "0.31", features = ["bundled"], optional = true }
+
+[features]
+default = []
+sqlite = ["rusqlite"]

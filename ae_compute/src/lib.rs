@@ -31,6 +31,7 @@ pub mod duffing;
 pub mod dynamic_aabb_tree;
 pub mod eigenfluid;
 pub mod electromagnetic_fdtd;
+pub mod euler_rigid_body;
 pub mod fisher_kpp;
 pub mod fitzhugh_nagumo;
 pub mod fluid;

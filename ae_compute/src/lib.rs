@@ -19,6 +19,7 @@ pub mod ck_mpm;
 pub mod clebsch_fluid;
 pub mod cloth;
 pub mod collision;
+pub mod dadras_momeni_attractor;
 // pub mod contact_manifold; // TODO: fix unique_face_groups method
 // pub mod contact_solver; // TODO: fix normalize_or_zero (glam 0.29 compat)
 // pub mod constraint_solver; // TODO: fix borrow conflicts

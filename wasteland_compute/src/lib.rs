@@ -18,6 +18,7 @@ pub mod eigenfluid;
 pub mod fluid;
 pub mod fms;
 pub mod hardware;
+pub mod heat_diffusion;
 pub mod job;
 pub mod leapfrog_flow_maps;
 pub mod mass_splitting_solver;

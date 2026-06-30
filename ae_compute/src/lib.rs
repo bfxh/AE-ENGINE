@@ -39,6 +39,7 @@ pub mod kuramoto_sivashinsky;
 pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
 pub mod lorenz96;
+pub mod lotka_volterra;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
 pub mod molecular_dynamics;
 pub mod mpm_compute;

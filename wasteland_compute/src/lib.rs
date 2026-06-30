@@ -35,6 +35,7 @@ pub mod phase_change;
 pub mod plastic_fem;
 pub mod projective_dynamics;
 pub mod resting_rigid_bodies;
+pub mod schrodinger;
 pub mod rigid_body;
 pub mod sdf;
 pub mod shape_matching;

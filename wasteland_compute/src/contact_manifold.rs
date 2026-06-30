@@ -269,7 +269,7 @@ impl ContactManifold {
     }
 
     /// 从法线计算切向方向
-    fn compute_tangents(&mut self) {
+    pub fn compute_tangents(&mut self) {
         let n = self.normal;
         let t1 = if n.x.abs() < 0.9 {
             Vec3::X.cross(n).normalize_or_zero()

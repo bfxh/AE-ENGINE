@@ -1,4 +1,5 @@
 ﻿pub mod avbd;
+pub mod barnes_hut;
 pub mod broadphase_sap;
 pub mod bvh;
 pub mod ccd;

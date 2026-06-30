@@ -33,6 +33,7 @@ pub mod shape_matching;
 pub mod strain_based_dynamics;
 pub mod vbd_solver;
 pub mod wavelet_turbulence;
+pub mod wcsph;
 
 pub use avbd::{
     AvbdConfig, AvbdParticle, AvbdRigidBody, AvbdSolver, ContactConstraint, DistanceConstraint,

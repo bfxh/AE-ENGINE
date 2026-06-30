@@ -59,6 +59,7 @@ pub mod projective_dynamics;
 pub mod reaction_diffusion;
 // pub mod resting_rigid_bodies; // TODO: fix ambiguous numeric type and mismatched types
 pub mod rigid_body;
+pub mod sandpile;
 pub mod schrodinger;
 pub mod sdf;
 pub mod shallow_water;

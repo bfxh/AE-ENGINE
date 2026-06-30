@@ -47,6 +47,7 @@ pub mod lotka_volterra;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold
 pub mod molecular_dynamics;
 pub mod mpm_compute;
+pub mod navier_stokes_2d;
 pub mod nls_solver;
 pub mod noise;
 pub mod ogc;

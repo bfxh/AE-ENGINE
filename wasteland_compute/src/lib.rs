@@ -12,6 +12,7 @@ pub mod contact_solver;
 pub mod corotational_fem;
 pub mod cosserat_rod;
 pub mod dispatcher;
+pub mod drucker_prager;
 pub mod dynamic_aabb_tree;
 pub mod eigenfluid;
 pub mod fluid;

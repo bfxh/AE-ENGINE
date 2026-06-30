@@ -32,6 +32,7 @@ pub mod ising_model;
 pub mod job;
 pub mod kdv_soliton;
 pub mod kuramoto;
+pub mod kuramoto_sivashinsky;
 pub mod lattice_boltzmann;
 pub mod leapfrog_flow_maps;
 // pub mod mass_splitting_solver; // TODO: depends on contact_manifold

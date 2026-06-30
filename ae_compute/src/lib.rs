@@ -71,6 +71,7 @@ pub mod strain_based_dynamics;
 pub mod swift_hohenberg;
 pub mod van_der_pol;
 pub mod vbd_solver;
+pub mod vicsek;
 pub mod wavelet_turbulence;
 // pub mod wcsph; // TODO: depends on pbf
 

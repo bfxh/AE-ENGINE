@@ -28,6 +28,7 @@ pub mod fisher_kpp;
 pub mod fitzhugh_nagumo;
 pub mod fluid;
 pub mod fms;
+pub mod gross_pitaevskii;
 pub mod hardware;
 pub mod heat_diffusion;
 pub mod hodgkin_huxley;

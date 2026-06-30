@@ -29,6 +29,7 @@ pub mod fluid;
 pub mod fms;
 pub mod hardware;
 pub mod heat_diffusion;
+pub mod hodgkin_huxley;
 pub mod ising_model;
 pub mod job;
 pub mod kdv_soliton;

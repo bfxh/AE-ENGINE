@@ -8,6 +8,7 @@ pub mod burgers;
 pub mod bvh;
 pub mod cahn_hilliard;
 // pub mod ccd; // TODO: fix Clone trait bounds
+pub mod cgle;
 pub mod chaotic_dynamics;
 pub mod ck_mpm;
 pub mod clebsch_fluid;

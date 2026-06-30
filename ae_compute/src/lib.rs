@@ -59,6 +59,7 @@ pub mod schrodinger;
 pub mod sdf;
 pub mod shape_matching;
 pub mod sine_gordon;
+pub mod sir_model;
 pub mod stable_neo_hookean;
 pub mod strain_based_dynamics;
 pub mod swift_hohenberg;

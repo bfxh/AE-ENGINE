@@ -27,6 +27,7 @@ pub mod contact_manifold;
 pub mod broadphase_sap;
 pub mod contact_solver;
 pub mod dynamic_aabb_tree;
+pub mod mass_splitting_solver;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

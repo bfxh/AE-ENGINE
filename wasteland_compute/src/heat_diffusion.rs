@@ -43,7 +43,7 @@ use serde::{Deserialize, Serialize};
 // ============================================================
 
 #[inline]
-fn idx(i: usize, j: usize, k: usize, nx: usize, ny: usize) -> usize {
+pub fn idx(i: usize, j: usize, k: usize, nx: usize, ny: usize) -> usize {
     i + nx * (j + ny * k)
 }
 

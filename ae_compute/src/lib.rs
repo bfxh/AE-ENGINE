@@ -3,6 +3,7 @@ pub mod allen_cahn;
 pub mod avbd;
 pub mod barnes_hut;
 pub mod broadphase_sap;
+pub mod brusselator;
 pub mod burgers;
 pub mod bvh;
 pub mod cahn_hilliard;

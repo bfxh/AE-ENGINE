@@ -1,4 +1,4 @@
-//! Stam Stable Fluids 3D 求解器
+﻿//! Stam Stable Fluids 3D 求解器
 //!
 //! 论文来源：
 //! - Stam, J. 1999. "Stable Fluids." SIGGRAPH.
@@ -693,8 +693,8 @@ mod tests {
 
     #[test]
     fn test_blackbody_white() {
-        // 5500K 接近白色（日光）
-        let (r, g, b) = blackbody_rgb(5500.0);
+        // 6500K 接近 sRGB 白点 (D65 日光)
+        let (r, g, b) = blackbody_rgb(6500.0);
         assert!(r > 0.9);
         assert!(g > 0.9);
         assert!(b > 0.9);

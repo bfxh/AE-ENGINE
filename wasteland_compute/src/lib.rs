@@ -23,6 +23,7 @@ pub mod rigid_body;
 pub mod constraint_solver;
 pub mod ccd;
 pub mod resting_rigid_bodies;
+pub mod contact_manifold;
 
 pub use fluid::{StamFluidSolver3D, blackbody_rgb};
 pub use mpm_compute::{MpmConfig, MpmSolver, MpmParticle, MpmGrid3D};

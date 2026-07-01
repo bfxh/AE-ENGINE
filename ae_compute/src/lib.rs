@@ -105,6 +105,7 @@ pub mod sprott_g_attractor;
 pub mod sprott_h_attractor;
 pub mod sprott_i_attractor;
 pub mod sprott_j_attractor;
+pub mod sprott_k_attractor;
 pub mod stable_neo_hookean;
 pub mod standard_map;
 pub mod strain_based_dynamics;
